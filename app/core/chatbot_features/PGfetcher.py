@@ -1,0 +1,221 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Sep 17 13:07:47 2023
+
+@author: agarc
+
+"""
+import datetime
+
+from app.settings import Settings
+import pandas as pd
+import logging
+import ast
+from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.core.models.PGcols import CHUNK_PG
+from app.core.models.PGcols import COLLAB_PG
+from app.core.models.PGcols import CV_PG
+from app.core.models.PGcols import PROFILE_PG
+from app.core.models import con_string
+
+
+class InvalidColumnsError(Exception):
+    pass
+
+
+class PGfetcher:
+    """ Connects to postgres and fetches tables after filtering"""
+
+    def __init__(self, settings):
+        self.settings = settings
+        pass
+
+    # =============================================================================
+    # internal functions
+    # =============================================================================
+    def fetch_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """
+        Fetch all profiles from the PostGres db.
+        The other tables (chunks, cvs, collabs) are only fetched if their collab_id is in profile
+
+        Returns
+        -------
+        df_profiles : pd.DataFrame
+            profiles table.  
+        df_chunks : pd.DataFrame
+            chunk table. Only if collab_id in df_profiles
+        df_collabs : pd.DataFrame
+            collab table. Only if collab_id in df_profiles
+        df_cvs : pd.DataFrame
+            cv tables. Only if collab_id in df_profiles
+
+        """
+
+        # fetch profiles
+        df_profiles = self._fetch_profiles()
+        # get all collab_ids in the profile table. Used to filter out candidates.
+        collab_ids = df_profiles[PROFILE_PG.collab_id].tolist()
+
+        # create string of collab_ids for the query
+        collab_ids_string = self._make_collab_string(collab_ids)
+
+        # fetch chunks
+        df_chunks = self._fetch_chunks(collab_ids_string)
+
+        # fetch cvs
+        df_cvs = self._fetch_cvs(collab_ids_string)
+
+        # fecth collabs
+        df_collabs = self._fetch_collabs(collab_ids_string)
+
+        return df_chunks, df_collabs, df_cvs, df_profiles
+
+    # =============================================================================
+    # internal function
+    # =============================================================================
+
+    def _fetch_profiles(self):
+        """ fetch the entire profile table"""
+        query = "select p.* from profiles p left join collabs c on p.collab_id = c.collab_id where true "
+        regions = ""
+        if len(regions) > 0:
+            query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
+        cities = ""
+        if len(cities) > 0:
+            cities = [elem.lower() for elem in cities]
+            query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
+        grades = ""
+        if len(grades) > 0:
+            query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
+
+        query += " and (false "
+        date = ""
+
+        if len(date) > 0:
+            query += f" or c.assigned_until <= '{date[0].strftime('%Y-%m-%d')}' "
+        availability_score = 50
+        query += f" or c.availability_score >= {float(availability_score)} "
+
+        query += ");"
+        query = query.replace(',)', ')')
+        logging.info(query)
+        df_profiles_ = pd.read_sql(query, con_string)
+        if not DataFrameHandler.assert_df(df_profiles_, PROFILE_PG):
+            raise InvalidColumnsError("df_profiles is missing the required columns")
+        return df_profiles_
+
+    def filter_collabs(self):
+        """ fetch the entire profile table"""
+        query = 'select c.surname as "Nom", c."name" as "Prénom", c.email as "Email", c.manager as "Manager", c.city as "Ville", c."domain"  as "Métier" , c.grade  as "Grade", c.availability_score, c.assigned_until from collabs c where true '
+        regions = ""
+        if len(regions) > 0:
+            query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
+        cities = ""
+        if len(cities) > 0:
+            cities = [elem.lower() for elem in cities]
+            query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
+        grades = ""
+        if len(grades) > 0:
+            query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
+
+        query += " and (false "
+        date = ""
+
+        availability_score = 50
+        query += f" or c.availability_score >= {float(availability_score)} "
+
+        query += ");"
+        query = query.replace(',)', ')')
+        logging.info(query)
+        df_profiles_ = pd.read_sql(query, con_string)
+        if len(date) > 0:
+            df_profiles_ = df_profiles_.apply(PGfetcher._adjust_availability_score, axis=1, start_date = date[0])
+
+        df_profiles_.rename(columns={COLLAB_PG.availability_score : "Disponibilité"}, inplace=True)
+        return df_profiles_
+
+    @staticmethod
+    def _adjust_availability_score(row:pd.Series, start_date)->pd.Series:
+        try:
+            if row[COLLAB_PG.assigned_until] is None or datetime.datetime.strptime(row[COLLAB_PG.assigned_until], '%Y-%m-%d').date() <= start_date:
+                row[COLLAB_PG.availability_score] = 100
+        except:
+            logging.warning(f"Date not conform, skipping collab {row}")
+        return row
+    def _fetch_chunks(self, collab_ids_string):
+        try:
+            """ Create the SQL query using the formatted collab_ids_str """
+            query = f"select * from chunks where collab_id in ({collab_ids_string})"
+            logging.info(query)
+            # Execute the query and fetch the result as a DataFrame
+            df_chunks = pd.read_sql(query, con_string)
+            if not DataFrameHandler.assert_df(df_chunks, CHUNK_PG):
+                raise InvalidColumnsError("df_profiles is missing the required columns")
+            # convert chunk embeddings to array[float]
+            df_chunks[CHUNK_PG.chunk_embeddings] = df_chunks[CHUNK_PG.chunk_embeddings].apply(ast.literal_eval)
+            return df_chunks
+
+        except InvalidColumnsError as e:
+            logging.error(e)
+            raise
+
+        except Exception as e:
+            logging.error(f"An error occurred while executing the query: {e}")
+            raise
+
+    def _fetch_cvs(self, collab_ids_string):
+        try:
+            """ Create the SQL query using the formatted collab_ids_str """
+            query = f"select * from cvs where collab_id in ({collab_ids_string})"
+            logging.info(query)
+            # Execute the query and fetch the result as a DataFrame
+            df_cvs = pd.read_sql(query, con_string)
+            if not DataFrameHandler.assert_df(df_cvs, CV_PG):
+                raise InvalidColumnsError("df_cvs is missing the required columns")
+            return df_cvs
+
+        except InvalidColumnsError as e:
+            logging.error(e)
+            raise
+
+        except Exception as e:
+            logging.error(f"An error occurred while executing the query: {e}")
+            raise
+
+    def _fetch_collabs(self, collab_ids_string):
+        try:
+            """ Create the SQL query using the formatted collab_ids_str """
+            query = f"select * from collabs where collab_id in ({collab_ids_string})"
+            logging.info(query)
+            # Execute the query and fetch the result as a DataFrame
+            df_collabs = pd.read_sql(query, con_string)
+            if not DataFrameHandler.assert_df(df_collabs, COLLAB_PG):
+                raise InvalidColumnsError("df_collabs is missing the required columns")
+            return df_collabs
+
+        except InvalidColumnsError as e:
+            logging.error(e)
+            raise
+
+        except Exception as e:
+            logging.error(f"An error occurred while executing the query: {e}")
+            raise
+
+    def _make_collab_string(self, collab_ids):
+        try:
+            """ Wrap each collab_id in single quotes and join them with commas """
+            collab_ids_string = ','.join([f'\'{id}\'' for id in collab_ids])
+            return collab_ids_string
+        except Exception as e:
+            logging.error(f"An error occurred while parsing collab_ids: {e}")
+            raise
+
+
+if __name__ == '__main__':
+    settings = Settings()
+    fetcher = PGfetcher(settings)
+    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
+    print(df_chunks)
+    print(df_collabs)
+    print(df_cvs)
+    print(df_profiles)

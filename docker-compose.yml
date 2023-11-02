@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: ankane/pgvector:v0.4.4
+    container_name: neostaff-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: neostaff_pipeline_azurite
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite_data:/workspace
+    command:
+      [
+        "azurite-blob",
+        "--blobHost",
+        "0.0.0.0",
+        "--blobPort",
+        "10000",
+        "--location",
+        "/workspace",
+      ]
+
+volumes:
+  azurite_data:
+  postgres_data:
