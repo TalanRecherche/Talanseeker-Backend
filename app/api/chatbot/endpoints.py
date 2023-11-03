@@ -1,7 +1,6 @@
 from fastapi import Depends
 from app.models import get_db
 from sqlalchemy.orm import Session
-from app.models.user import User
 from fastapi import APIRouter
 from app.schema.chatbot import ChatbotResponse, ChatbotRequest
 
