@@ -1,8 +1,7 @@
-import logging
 import os
 import openai
-import yaml
 from dotenv import load_dotenv
+from app.core.shared_modules.load_llm_settings import load_llm_settings
 
 
 # =============================================================================
@@ -13,21 +12,8 @@ class Settings:
     def __init__(self):
         # load .env (for local secrets only, connection strings, db passwords etc.)
         load_dotenv()
-
-        # loading llm_settings.yaml and set as env variable.
-        llm_settings_file = "llm_settings.YAML"
-        # llm_settings only exists in local. Env. variables should be pushed into the webapp.
-        if os.path.exists(llm_settings_file):
-            with open(llm_settings_file, "r", encoding="utf-8") as file:
-                llm_settings = yaml.safe_load(file)
-            # push all values in os.environ variables
-            for key_1, dict_2 in llm_settings.items():
-                for key_2, value in dict_2.items():
-                    environ_key = key_1 + "__" + key_2
-                    os.environ[environ_key] = value
-            logging.info("llm_settings.YAML loaded and pushed to os.environ variables.")
-        else:
-            logging.info("llm_settings.YAML does not exists. Not pushed to os.environ variables.")
+        # load .yaml llm settings and push to env variables
+        load_llm_settings()
 
         # openAI keys must be set to these environment variables (that's how Azure API works...)
         # openAI API variable must ALSO be set.

@@ -20,33 +20,28 @@ class EmbedderBackend:
         self.embedding_function = OpenAIEmbeddings(model=self.embedding_model, chunk_size=1)
         pass
 
-# =============================================================================
-# user function
-# =============================================================================
+    # =============================================================================
+    # user function
+    # =============================================================================
     def embed_string(self, text_to_embed: str) -> list[float] | None:
         if len(text_to_embed) == 0:
             logging.error("Query embeddings failed: empty query string")
             return None
 
-        try_counter = 0
-        embeddings = None  # returns None by default if API fails
-
-        while try_counter < 10:
+        max_retries = 10
+        for retry in range(max_retries):
             try:
+                # pause for API safety
                 time.sleep(0.1)
-                response = openai.Embedding.create(
-                    engine=self.embedding_model,
-                    input=text_to_embed
-                )
+                response = openai.Embedding.create(engine=self.embedding_model, input=text_to_embed)
 
                 embeddings = response['data'][0]['embedding']
-
+                # exit the retry loop if the llm response is not None
                 if embeddings is not None:
                     return embeddings
 
-            except Exception:
-                logging.exception(f"openAI embedding API failed. Waiting and retry: {try_counter}")
-                try_counter += 1
+            except Exception as e:
+                logging.exception(f"openAI embedding API failed. Waiting and retry: {retry} : Exception {e}")
                 # wait before retrying
                 time.sleep(1)
 

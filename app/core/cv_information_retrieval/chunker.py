@@ -10,8 +10,8 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 
-from app.core.models.pandascols import CHUNK_DF
-from app.core.models.pandascols import TEXT_DF
+from app.core.models.ETL_pandasmodels import CHUNK_DF
+from app.core.models.ETL_pandasmodels import TEXT_DF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
@@ -38,10 +38,10 @@ class Chunker:
             dataframe containing all chunks, metadata and embeddings. One row per chunk.
         """
         # assert if input dataframe is of correct format (columns)
-        if DataFrameHandler.assert_df(df_documents, TEXT_DF) is False: return None
+        if not TEXT_DF.validate_dataframe(df_documents): return None
 
         # prepare output container
-        df_chunks = pd.DataFrame(columns=CHUNK_DF.get_attributes_())
+        df_chunks = pd.DataFrame(columns=CHUNK_DF.get_attributes())
 
         # iterate through each CV
         for index, row in tqdm(df_documents.iterrows(), desc="Chunking document:", total=len(df_documents)):
@@ -54,8 +54,8 @@ class Chunker:
             # push each chunk in a new row of the output pandas dataframe
             for chunk in chunks:
                 # temp container
-                chunk_df_temp = pd.DataFrame(columns=CHUNK_DF.get_attributes_())
-                common_cols = list(set(TEXT_DF.get_attributes_()).intersection(set(CHUNK_DF.get_attributes_())))
+                chunk_df_temp = pd.DataFrame(columns=CHUNK_DF.get_attributes())
+                common_cols = list(set(TEXT_DF.get_attributes()).intersection(set(CHUNK_DF.get_attributes())))
                 chunk_df_temp.loc[0, common_cols] = row[common_cols].values
                 # assign current chunk
                 chunk_df_temp[CHUNK_DF.chunk_text] = chunk

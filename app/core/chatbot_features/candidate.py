@@ -7,10 +7,10 @@ Created on 14.09.2023
 
 import pandas as pd
 
-from app.core.models.PGcols import CHUNK_PG
-from app.core.models.PGcols import COLLAB_PG
-from app.core.models.PGcols import CV_PG
-from app.core.models.PGcols import PROFILE_PG
+from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.PG_pandasmodels import CV_PG
+from app.core.models.PG_pandasmodels import PROFILE_PG
 from app.core.shared_modules.listhandler import ListHandler
 
 

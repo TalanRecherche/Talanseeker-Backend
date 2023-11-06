@@ -1,4 +1,4 @@
-from app.core.shared_modules.LLMbackend import LLMBackend
+from app.core.shared_modules.GPTbackend import GPTBackend
 from collections import defaultdict
 import os
 from itertools import islice
@@ -7,7 +7,7 @@ from app.core.shared_modules.stringhandler import StringHandler
 from app.core.chatbot_features.candidate import Candidates
 from app.core.chatbot_features.candidate import Candidate
 import pandas as pd
-
+from app.settings import Settings
 
 class DataViz:
     """class that creates the radarplot of skills based on the profile_pg
@@ -22,7 +22,7 @@ class DataViz:
 
         self.engine = self.settings.chatbot_ui_settings.dataviz_llm_model
         self.max_token_in_response = 300
-        self.llm_backend = LLMBackend(self.engine, self.max_token_in_response)
+        self.llm_backend = GPTBackend(self.engine, self.max_token_in_response)
 
     def get_df_competence(self):
         """compute score for each skills before plot.
@@ -105,37 +105,14 @@ class DataViz:
 
         return df_competences_filtered
 
-
-# %%
-if __name__ == "__main__":
-    from app.settings import Settings
-
+def get_skills_table(chunks:pd.DataFrame, collabs:pd.DataFrame, cvs:pd.DataFrame, profiles:pd.DataFrame)->dict:
+    skills = {}
     settings = Settings()
-
-    from app.core.chatbot_app.core.intentionfinder import IntentionFinder
-    QUERY_EXAMPLE = "J'ai besoin de trois personnes junior et un manager pour une mission dans la gestion de projet en assurance"
-    intention_finder = IntentionFinder(settings)
-    guessIntention_query = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(guessIntention_query)
-
-    # fetch from postgres with filters based on query
-    from app.core.chatbot_app.core.PGfetcher import PGfetcher
-    PGfetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = PGfetcher.fetch_all()
-    print("fetched")
-
-    # select best candidates
-    from app.core.chatbot_app.core.candidatesselector import CandidatesSelector
-    selector = CandidatesSelector(settings)
-    chunks, collabs, cvs, profiles = selector.select_candidates(df_chunks,
-                                                                df_collabs,
-                                                                df_cvs,
-                                                                df_profiles,
-                                                                guessIntention_query)
-    print("selected")
-
     candidates = Candidates(chunks, collabs, cvs, profiles)
     for candidate in candidates.list_candidates:
         dataviz = DataViz(settings, candidate)
         df_competences = dataviz.get_df_competence()
-        print(df_competences)
+        skills[candidate.email] = df_competences
+    return skills
+
+# %%

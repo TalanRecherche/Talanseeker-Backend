@@ -10,7 +10,7 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 
-from app.core.models.pandascols import TEXT_DF
+from app.core.models.ETL_pandasmodels import TEXT_DF
 from app.core.cv_information_retrieval.filereader import FileReader
 from app.core.shared_modules.pathexplorer import PathExplorer
 
@@ -84,7 +84,7 @@ class FileMassExtractor:
             return None
 
         # prepare output df
-        df_text = pd.DataFrame(columns=TEXT_DF.get_attributes_())
+        df_text = TEXT_DF.generate_dataframe()
         # filter only files with extension provided:
         file_paths = self._filter_extensions(file_paths, read_only_extensions, ignore_extensions)
 

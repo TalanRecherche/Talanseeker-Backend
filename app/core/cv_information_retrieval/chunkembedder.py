@@ -11,8 +11,8 @@ import re
 import pandas as pd
 from tqdm import tqdm
 
-from app.core.models.pandascols import CHUNK_DF
-from app.core.models.pandascols import EMBEDDING_DF
+from app.core.models.ETL_pandasmodels import CHUNK_DF
+from app.core.models.ETL_pandasmodels import EMBEDDING_DF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.embedderbackend import EmbedderBackend
 
@@ -42,8 +42,7 @@ class ChunkEmbedder:
             pd.DataFrame: A DataFrame containing the original data and the new embeddings column.
         """
         # assert if input dataframe is of correct format (columns)
-        if DataFrameHandler.assert_df(df_chunks, CHUNK_DF) is False:
-            return None
+        if not CHUNK_DF.validate_dataframe(df_chunks): return None
 
         logging.info("Embeddings {l} chunks...".format(l=len(df_chunks)))
         # Use a list comprehension to apply the _embed_single_chunk() function

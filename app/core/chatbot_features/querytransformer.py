@@ -5,11 +5,12 @@ Created on Thu Sep 14 10:50:00 2023
 @author: agarc
 
 """
+
 import pandas as pd
 
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.core.models.querykeywordscols import QUERY_KEYWORDS
-from app.core.models.querykeywordscols import QUERY_STRUCT
+from app.core.models.query_pandasmodels import QUERY_KEYWORDS
+from app.core.models.query_pandasmodels import QUERY_STRUCT
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
@@ -41,11 +42,11 @@ class QueryTransformer:
 
         """
         # assert case
-        if not DataFrameHandler.assert_df(row_df_query, QUERY_STRUCT):
+        if not QUERY_STRUCT.validate_dataframe(row_df_query):
             return None
 
         # filter only fields to be used to score
-        filtered_df = row_df_query[list(QUERY_KEYWORDS.get_attributes_())]
+        filtered_df = row_df_query[QUERY_KEYWORDS.get_attributes()]
 
         # concatenate keywords which will be used during the profile scoring
         list_keywords = ListHandler.flatten_list(filtered_df.values.tolist())

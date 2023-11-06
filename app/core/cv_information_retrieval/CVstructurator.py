@@ -8,9 +8,8 @@ Created on Wed Aug 23 10:00:25 2023
 import logging
 import pandas as pd
 
-from app.core.models.pandascols import PARSED_DF
-from app.core.models.pandascols import STRUCTCV_DF
-from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.core.models.ETL_pandasmodels import PARSED_DF
+from app.core.models.ETL_pandasmodels import STRUCTCV_DF
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
@@ -61,11 +60,10 @@ class CvStructurator:
             One row per cv. All chunks information have been merged
         """
         # assert if input dataframe is of correct format (columns)
-        if DataFrameHandler.assert_df(df_profile_chunks, PARSED_DF) is False:
-            return None
+        if not PARSED_DF.validate_dataframe(df_profile_chunks): return None
 
         # prepare output dataframe
-        df_consolidated_cvs = pd.DataFrame(columns=STRUCTCV_DF.get_attributes_())
+        df_consolidated_cvs = STRUCTCV_DF.generate_dataframe()
         # create a hashmap of unique profile using similarity on profile_id
         hashmap_profile_filename = self._get_unique_cvs(df_profile_chunks)
 
@@ -117,7 +115,8 @@ class CvStructurator:
         for column in STRUCTCV_DF.string_columns_:
             hashmap_single_cv[column] = self._merge_string_columns(column, df_chunks_profile)
 
-        df_single_cv = pd.Series(hashmap_single_cv).to_frame().T
+        # create a dataframe from the hashmap
+        df_single_cv = pd.DataFrame([hashmap_single_cv])
         return df_single_cv
 
     def _merge_static_columns(self, column, df_chunks_profile):
@@ -154,15 +153,14 @@ class CvStructurator:
         returns the list of string
         """
         try:
-            # split into readable list of unique elements separated by ","
-            values = list(df_chunks_profile[column].fillna(''))
-            values = [value.split(',') for value in values if value]
-            values = sum(values, [])
+            # cast values of columns into a list
+            values = df_chunks_profile[column].tolist()
+            values = ListHandler.flatten_list(values)
             # get rid of useless strings
             values = [value for value in values if value not in self.string_replacements]
             # remove trailing spaces and new lines
-            values = [value.rstrip() for value in values]
             values = [value.strip() for value in values]
+            values = [value.strip('\n') for value in values]
             # clean strings
             values = [StringHandler.replace_in_string(value) for value in values]
             # normalize strings
@@ -207,7 +205,7 @@ class CvStructurator:
 
 # %%
 if __name__ == "__main__":
-    directory = r'data_dev/data_1'
+    directory = r'data_test/CV_pptx'
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
 

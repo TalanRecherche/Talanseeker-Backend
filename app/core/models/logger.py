@@ -1,6 +1,5 @@
-from models.logger import Logs
-from models.chatbot_logger import ChatbotLogs
-import streamlit as st
+from app.models.logger import Logs
+from app.models.chatbot_logger import ChatbotLogs
 
 
 def db_logger(func):
@@ -8,7 +7,7 @@ def db_logger(func):
         log = Logs()
         log.request_args = str(args)
         log.request_kwargs = str(kwargs)
-        log.request_issuer = st.session_state['username'] if 'username' in st.session_state else None
+        log.request_issuer = "test"
         log.request_func = func.__qualname__
         log.log()
         return func(*args, **kwargs)

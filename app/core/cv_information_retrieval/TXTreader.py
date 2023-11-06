@@ -5,9 +5,10 @@ Created on Wed Aug 30 14:29:24 2023
 @author: agarc
 
 """
+from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
-class TXTReader:
+class TXTReader(ABCReader):
 
     @staticmethod
     def read_text(file_path: str) -> str | None:

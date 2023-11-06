@@ -8,10 +8,10 @@ Created on Thu Sep 14 13:31:50 2023
 import numpy as np
 import pandas as pd
 from cdifflib import CSequenceMatcher
-from app.core.models.PGcols import CHUNK_PG
-from app.core.models.PGcols import PROFILE_PG
-from app.core.models.scoredprofilescols import SCORED_CHUNKS_DF
-from app.core.models.scoredprofilescols import SCORED_PROFILES_DF
+from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import PROFILE_PG
+from app.core.models.scoredprofiles_pandasmodels import SCORED_CHUNKS_DF
+from app.core.models.scoredprofiles_pandasmodels import SCORED_PROFILES_DF
 from app.core.shared_modules.listhandler import ListHandler
 
 

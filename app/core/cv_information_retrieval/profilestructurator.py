@@ -9,8 +9,8 @@ import logging
 
 import pandas as pd
 
-from app.core.models.pandascols import STRUCTCV_DF
-from app.core.models.pandascols import STRUCTPROFILE_DF
+from app.core.models.ETL_pandasmodels import STRUCTCV_DF
+from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
@@ -42,12 +42,11 @@ class ProfileStructurator:
         None.
         """
         # assert if input dataframe is of correct format (columns)
-        if DataFrameHandler.assert_df(df_consolidated_cvs, STRUCTCV_DF) is False:
-            return None
+        if not STRUCTCV_DF.validate_dataframe(df_consolidated_cvs): return None
 
         # assign collab_ids to consolidated cvs
         # prepare output dataframe
-        df_consolidated_profiles = pd.DataFrame(columns=STRUCTPROFILE_DF.get_attributes_())
+        df_consolidated_profiles = STRUCTPROFILE_DF.generate_dataframe()
 
         # get unique profiles
         hashmap_collabid_cvsid = self._get_unique_profiles(df_consolidated_cvs)
@@ -129,7 +128,8 @@ class ProfileStructurator:
             string_values = self._merge_string_columns(column, df_filtered_cvs)
             hashmap_consolidated_profile[column] = string_values
 
-        df_consolidated_profile = pd.Series(hashmap_consolidated_profile).to_frame().T
+        # create a dataframe from the hashmap
+        df_consolidated_profile = pd.DataFrame([hashmap_consolidated_profile])
         return df_consolidated_profile
 
     def _merge_string_columns(self, column, df_filtered_cvs) -> list[str]:
@@ -164,7 +164,7 @@ class ProfileStructurator:
 
 
 if __name__ == "__main__":
-    directory = r'data_dev/data_1'
+    directory = r'data_dev/3CV'
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
     files = PathExplorer.get_all_paths_with_extension_name(directory)

@@ -8,7 +8,7 @@ Created on Thu Sep 14 13:31:50 2023
 import pandas as pd
 
 from app.core.chatbot_features.scorerprofiles import ScorerProfiles
-from app.core.models.scoredprofilescols import SCORED_PROFILES_DF
+from app.core.models.scoredprofiles_pandasmodels import SCORED_PROFILES_DF
 
 
 class ScorerOverall:

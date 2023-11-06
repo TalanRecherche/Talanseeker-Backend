@@ -7,9 +7,10 @@ Created on Wed Aug 30 14:27:23 2023
 """
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
-class PPTXReader:
+class PPTXReader(ABCReader):
 
     @staticmethod
     def read_text(file_path: str) -> str | None:
@@ -25,33 +26,6 @@ class PPTXReader:
         from pptx.enum.shapes import MSO_SHAPE_TYPE
         """
 
-        def extract_text_from_shape(shape) -> str:
-            """
-            Extract any text from mutiple shapes types
-            This could be defined recursively also but this seems easyier that way.
-            """
-            sub_texts = []
-            if shape.has_text_frame:  # from text frame
-                for paragraph in shape.text_frame.paragraphs:
-                    for run in paragraph.runs:
-                        sub_texts.append(run.text)
-            elif shape.shape_type == MSO_SHAPE_TYPE.TABLE:  # from tables
-                for row in shape.table.rows:
-                    for cell in row.cells:
-                        for paragraph in cell.text_frame.paragraphs:
-                            for run in paragraph.runs:
-                                sub_texts.append(run.text)
-            elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:  # from groups
-                for sub_shape in shape.shapes:
-                    sub_texts.extend(extract_text_from_shape(sub_shape))
-            elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA:  # from media
-                if shape.has_text_frame:
-                    for paragraph in shape.text_frame.paragraphs:
-                        for run in paragraph.runs:
-                            sub_texts.append(run.text)
-
-            return " ".join(sub_texts).strip()
-
         # load presentation
         prs = Presentation(file_path)
         # instantiate empty output
@@ -60,7 +34,7 @@ class PPTXReader:
         for slide in prs.slides:
             for shape in slide.shapes:
                 # get text from shape
-                shape_text = extract_text_from_shape(shape)
+                shape_text = PPTXReader._extract_text_from_shape(shape)
                 if shape_text:
                     text_runs.append(shape_text)
 
@@ -86,3 +60,31 @@ class PPTXReader:
             return text
         else:
             return None
+
+    @staticmethod
+    def _extract_text_from_shape(shape) -> str:
+        """
+        Extract any text from multiple shapes types
+        This could be defined recursively also but this seems easier that way.
+        """
+        sub_texts = []
+        if shape.has_text_frame:  # from text frame
+            for paragraph in shape.text_frame.paragraphs:
+                for run in paragraph.runs:
+                    sub_texts.append(run.text)
+        elif shape.shape_type == MSO_SHAPE_TYPE.TABLE:  # from tables
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.text_frame.paragraphs:
+                        for run in paragraph.runs:
+                            sub_texts.append(run.text)
+        elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:  # from groups
+            for sub_shape in shape.shapes:
+                sub_texts.extend(PPTXReader._extract_text_from_shape(sub_shape))
+        elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA:  # from media
+            if shape.has_text_frame:
+                for paragraph in shape.text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        sub_texts.append(run.text)
+
+        return " ".join(sub_texts).strip()

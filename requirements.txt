@@ -42,3 +42,8 @@ unidecode
 pypdf
 python-pptx
 tiktoken
+docx~=0.2.4
+pypdf2~=3.0.1
+pandera~=0.17.2
+azure-storage-blob==12.17.0
+azure-identity==1.14.0

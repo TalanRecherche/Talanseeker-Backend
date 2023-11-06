@@ -6,9 +6,10 @@ Created on Wed Aug 30 14:28:28 2023
 
 """
 import docx
+from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
-class DOCXReader:
+class DOCXReader(ABCReader):
 
     @staticmethod
     def read_text(file_path: str) -> str | None:

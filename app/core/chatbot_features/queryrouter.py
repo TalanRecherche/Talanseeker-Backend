@@ -1,9 +1,9 @@
 """
 Created by agarc at 11/10/2023
-app.core:
+Features:
 """
 from app.settings import Settings
-from app.core.shared_modules.LLMbackend import LLMBackend
+from app.core.shared_modules.GPTbackend import GPTBackend
 from app.core.shared_modules.stringhandler import StringHandler
 
 
@@ -27,7 +27,7 @@ class QueryRouter:
         self.current_nb_tokens = 0
 
         # initialize the backend llm
-        self.llm_backend = LLMBackend(self.engine, max_token_in_response=max_tokens_in_response)
+        self.llm_backend = GPTBackend(self.engine, max_token_in_response=max_tokens_in_response)
 
         # encoding name is used to compute number of tokens in context
         self.encoding_name = settings.embedder_settings.encoding_name

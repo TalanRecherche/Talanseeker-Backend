@@ -7,7 +7,7 @@ Created on Tue Aug  8 15:47:38 2023
 """
 import logging
 
-from app.core.models.pandascols import TEXT_DF
+from app.core.models.ETL_pandasmodels import TEXT_DF
 from app.core.shared_modules.pathexplorer import PathExplorer
 from app.core.shared_modules.stringhandler import StringHandler
 from app.core.cv_information_retrieval.DOCXreader import DOCXReader

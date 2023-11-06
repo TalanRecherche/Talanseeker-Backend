@@ -17,11 +17,11 @@ import logging
 
 import pandas as pd
 
-from app.core.models.pandascols import EMBEDDING_DF
-from app.core.models.pandascols import STRUCTPROFILE_DF
-from app.core.models.PGcols import CHUNK_PG
-from app.core.models.PGcols import CV_PG
-from app.core.models.PGcols import PROFILE_PG
+from app.core.models.ETL_pandasmodels import EMBEDDING_DF
+from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
+from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import CV_PG
+from app.core.models.PG_pandasmodels import PROFILE_PG
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
@@ -39,10 +39,8 @@ class TableMaker:
             df_embeddings: pd.DataFrame
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
         # assert if input dataframe is of correct format (columns)
-        df_profiles_bool = DataFrameHandler.assert_df(df_profiles, STRUCTPROFILE_DF)
-        df_embeddings_bool = DataFrameHandler.assert_df(df_embeddings, EMBEDDING_DF)
-        if (df_profiles_bool is False) or (df_embeddings_bool is False):
-            return [None] * 3
+        if not STRUCTPROFILE_DF.validate_dataframe(df_profiles): return [None]*3
+        if not EMBEDDING_DF.validate_dataframe(df_embeddings): return [None]*3
 
         pg_profiles = self._make_pg_profiles(df_profiles)
         pg_cvs = self._make_pg_cvs(df_profiles, df_embeddings)
@@ -59,7 +57,7 @@ class TableMaker:
         Drops irrelevant columns to prepare pg_profiles
         """
         # reorder columns
-        pg_profiles = df_profiles[PROFILE_PG.get_attributes_()]
+        pg_profiles = df_profiles[PROFILE_PG.get_attributes()]
         return pg_profiles
 
     def _make_pg_cvs(self, df_profiles: pd.DataFrame, df_embeddings: pd.DataFrame) -> pd.DataFrame | None:
@@ -80,14 +78,14 @@ class TableMaker:
             logging.warning("returns empty")
             return None
         # reorder columns
-        pg_cvs = pg_cvs[CV_PG.get_attributes_()]
+        pg_cvs = pg_cvs[CV_PG.get_attributes()]
         return pg_cvs
 
     def _make_pg_chunks(self, df_profiles: pd.DataFrame, df_embeddings: pd.DataFrame) -> pd.DataFrame | None:
         # prepare output container
-        pg_chunks = pd.DataFrame(columns=CHUNK_PG.get_attributes_())
+        pg_chunks = pd.DataFrame(columns=CHUNK_PG.get_attributes())
         # get values from embeddings_df
-        merge_cols = [col for col in CHUNK_PG.get_attributes_() if col in EMBEDDING_DF.get_attributes_()]
+        merge_cols = [col for col in CHUNK_PG.get_attributes() if col in EMBEDDING_DF.get_attributes()]
         pg_chunks = pg_chunks.merge(df_embeddings, on=merge_cols, how="outer")
 
         for idx in range(len(df_profiles)):
@@ -103,7 +101,7 @@ class TableMaker:
             return None
 
         # reorder columns
-        pg_chunks = pg_chunks[CHUNK_PG.get_attributes_()]
+        pg_chunks = pg_chunks[CHUNK_PG.get_attributes()]
         return pg_chunks
 
 

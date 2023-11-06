@@ -3,12 +3,12 @@ import logging
 import pandas as pd
 
 from app.models.pg_chunks import PG_Chunks
-from app.models.pg_cvs import PG_CVs
-from app.models.pg_profiles import PG_Profiles
+from app.models.cvs import PG_CVs
+from app.models.profiles import PG_Profiles
 from app.core.azure_modules.azurePGmanager import AzurePGManager
 from app.core.shared_modules.stringhandler import StringHandler
 from app.core.azure_modules.models import UpsertPolicies
-from app.core.models.PGcols import COLLAB_PG
+from app.core.models.PG_pandasmodels import COLLAB_PG
 
 
 class KimbleUpdater:

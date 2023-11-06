@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 from langchain.llms import AzureOpenAI
 from app.settings import Settings
-from app.core.models.querykeywordscols import QUERY_STRUCT
+from app.core.models.query_pandasmodels import QUERY_STRUCT
 from app.core.shared_modules.stringhandler import StringHandler
 
 
@@ -19,7 +19,7 @@ class IntentionFinder:
             file containing the system template. Set it in .env file.
         - GUESSINTENTION__LLM_DEPLOY_NAME environment variable to be set to the name of the
             deployment of the llm in azure resource. Set it in .env file.
-        - Import the Settings class from settings.py which contains the settings of guessintention.
+        - Import the Settings class from app.settings.py which contains the settings of guessintention.
 
     Example:
         #>>> from app.settings import Settings
@@ -296,6 +296,8 @@ if __name__ == "__main__":
     settings = Settings()
     QUERY_EXAMPLE = "Trouve moi deux data scientists"
     intention_finder = IntentionFinder(settings)
-    res_to_send_to_cvranker = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(res_to_send_to_cvranker)
-    # res_to_send_to_cvranker.to_csv("test_guessintention1.csv", index=None)
+    result = intention_finder.guess_intention(QUERY_EXAMPLE)
+    print(result)
+    QUERY_STRUCT.validate_dataframe(result)
+    from app.core.shared_modules.dataframehandler import DataFrameHandler
+    DataFrameHandler.save_df(result, "data_test/dataframes/df_struct_query.pkl")

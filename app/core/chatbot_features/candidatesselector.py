@@ -5,24 +5,22 @@ Created on Thu Sep 13 10:04:44 2023
 @author: agarc
 
 """
+import logging
+import time
 from typing import Any
 
-from app.settings import Settings
-
 import pandas as pd
-import time
-import logging
 
-from app.core.models.PGcols import PROFILE_PG
-from app.core.models.PGcols import CHUNK_PG
-from app.core.models.PGcols import CV_PG
-from app.core.models.PGcols import COLLAB_PG
-from app.core.models.querykeywordscols import QUERY_STRUCT
-from app.core.models.scoredprofilescols import SCORED_PROFILES_DF
-from app.core.models.scoredprofilescols import SCORED_CHUNKS_DF
-from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
-from app.core.chatbot_features.core.querytransformer import QueryTransformer
+from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.PG_pandasmodels import CV_PG
+from app.core.models.PG_pandasmodels import PROFILE_PG
+from app.core.models.query_pandasmodels import QUERY_STRUCT
+from app.core.models.scoredprofiles_pandasmodels import SCORED_CHUNKS_DF
+from app.core.models.scoredprofiles_pandasmodels import SCORED_PROFILES_DF
+from app.settings import Settings
 
 
 class CandidatesSelector:
@@ -47,16 +45,11 @@ class CandidatesSelector:
                           df_query: pd.DataFrame) -> (tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]
                                                       | list[None]):
         # assert df format coming from PostGres
-        if not DataFrameHandler.assert_df(df_chunks, CHUNK_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_collabs, COLLAB_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_cvs, CV_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_profiles, PROFILE_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_query, QUERY_STRUCT):
-            return [None] * 4
+        if not CHUNK_PG.validate_dataframe(df_chunks): return [None] * 4
+        if not COLLAB_PG.validate_dataframe(df_collabs): return [None] * 4
+        if not CV_PG.validate_dataframe(df_cvs): return [None] * 4
+        if not PROFILE_PG.validate_dataframe(df_profiles): return [None] * 4
+        if not QUERY_STRUCT.validate_dataframe(df_query): return [None] * 4
 
         t = time.time()
         # Prepare list of selected ids
@@ -84,14 +77,10 @@ class CandidatesSelector:
             df_profiles_scored,
             already_selected_profiles_ids)
         # assert df formats
-        if not DataFrameHandler.assert_df(df_candidates_chunks, SCORED_CHUNKS_DF):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_candidates_collabs, COLLAB_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_candidates_cvs, CV_PG):
-            return [None] * 4
-        if not DataFrameHandler.assert_df(df_candidates_profiles, SCORED_PROFILES_DF):
-            return [None] * 4
+        if not SCORED_CHUNKS_DF.validate_dataframe(df_candidates_chunks): return [None] * 4
+        if not COLLAB_PG.validate_dataframe(df_candidates_collabs): return [None] * 4
+        if not CV_PG.validate_dataframe(df_candidates_cvs): return [None] * 4
+        if not SCORED_PROFILES_DF.validate_dataframe(df_candidates_profiles): return [None] * 4
         # return if all goes well
         logging.info("Selection done" + str(time.time() - t))
         return df_candidates_chunks, df_candidates_collabs, df_candidates_cvs, df_candidates_profiles

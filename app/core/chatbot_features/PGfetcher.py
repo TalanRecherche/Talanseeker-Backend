@@ -5,18 +5,18 @@ Created on Sun Sep 17 13:07:47 2023
 @author: agarc
 
 """
-import datetime
-
-from app.settings import Settings
-import pandas as pd
-import logging
 import ast
-from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.core.models.PGcols import CHUNK_PG
-from app.core.models.PGcols import COLLAB_PG
-from app.core.models.PGcols import CV_PG
-from app.core.models.PGcols import PROFILE_PG
+import datetime
+import logging
+
+import pandas as pd
+
 from app.core.models import con_string
+from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.PG_pandasmodels import CV_PG
+from app.core.models.PG_pandasmodels import PROFILE_PG
+from app.settings import Settings
 
 
 class InvalidColumnsError(Exception):
@@ -90,17 +90,19 @@ class PGfetcher:
 
         query += " and (false "
         date = ""
-
         if len(date) > 0:
             query += f" or c.assigned_until <= '{date[0].strftime('%Y-%m-%d')}' "
         availability_score = 50
-        query += f" or c.availability_score >= {float(availability_score)} "
+        if availability_score:
+            query += f" or c.availability_score >= {float(availability_score)} "
+        else:
+            query += f" or c.availability_score >= {float('0')} "
 
         query += ");"
         query = query.replace(',)', ')')
         logging.info(query)
         df_profiles_ = pd.read_sql(query, con_string)
-        if not DataFrameHandler.assert_df(df_profiles_, PROFILE_PG):
+        if not PROFILE_PG.validate_dataframe(df_profiles_):
             raise InvalidColumnsError("df_profiles is missing the required columns")
         return df_profiles_
 
@@ -129,19 +131,21 @@ class PGfetcher:
         logging.info(query)
         df_profiles_ = pd.read_sql(query, con_string)
         if len(date) > 0:
-            df_profiles_ = df_profiles_.apply(PGfetcher._adjust_availability_score, axis=1, start_date = date[0])
+            df_profiles_ = df_profiles_.apply(PGfetcher._adjust_availability_score, axis=1, start_date=date[0])
 
-        df_profiles_.rename(columns={COLLAB_PG.availability_score : "Disponibilité"}, inplace=True)
+        df_profiles_.rename(columns={COLLAB_PG.availability_score: "Disponibilité"}, inplace=True)
         return df_profiles_
 
     @staticmethod
-    def _adjust_availability_score(row:pd.Series, start_date)->pd.Series:
+    def _adjust_availability_score(row: pd.Series, start_date) -> pd.Series:
         try:
-            if row[COLLAB_PG.assigned_until] is None or datetime.datetime.strptime(row[COLLAB_PG.assigned_until], '%Y-%m-%d').date() <= start_date:
+            if row[COLLAB_PG.assigned_until] is None or datetime.datetime.strptime(row[COLLAB_PG.assigned_until],
+                                                                                   '%Y-%m-%d').date() <= start_date:
                 row[COLLAB_PG.availability_score] = 100
         except:
             logging.warning(f"Date not conform, skipping collab {row}")
         return row
+
     def _fetch_chunks(self, collab_ids_string):
         try:
             """ Create the SQL query using the formatted collab_ids_str """
@@ -149,10 +153,11 @@ class PGfetcher:
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_chunks = pd.read_sql(query, con_string)
-            if not DataFrameHandler.assert_df(df_chunks, CHUNK_PG):
-                raise InvalidColumnsError("df_profiles is missing the required columns")
             # convert chunk embeddings to array[float]
             df_chunks[CHUNK_PG.chunk_embeddings] = df_chunks[CHUNK_PG.chunk_embeddings].apply(ast.literal_eval)
+            if not CHUNK_PG.validate_dataframe(df_chunks):
+                raise InvalidColumnsError("df_profiles is missing the required columns")
+
             return df_chunks
 
         except InvalidColumnsError as e:
@@ -170,7 +175,7 @@ class PGfetcher:
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_cvs = pd.read_sql(query, con_string)
-            if not DataFrameHandler.assert_df(df_cvs, CV_PG):
+            if not CV_PG.validate_dataframe(df_cvs):
                 raise InvalidColumnsError("df_cvs is missing the required columns")
             return df_cvs
 
@@ -189,7 +194,7 @@ class PGfetcher:
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_collabs = pd.read_sql(query, con_string)
-            if not DataFrameHandler.assert_df(df_collabs, COLLAB_PG):
+            if not COLLAB_PG.validate_dataframe(df_collabs):
                 raise InvalidColumnsError("df_collabs is missing the required columns")
             return df_collabs
 

@@ -16,5 +16,3 @@ _legacy
 *.pdf
 *.doc
 *.pkl
-*.env
-.env

@@ -4,12 +4,12 @@ import logging
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-from models.pg_cvs import PG_CVs
-from models.pg_profiles import PG_Profiles
-from models.pg_chunks import PG_Chunks
-from models import con_string, engine
-from app.core.models.pandascols import STRUCTCV_DF
-from app.core.models.PGcols import PROFILE_PG, CHUNK_PG
+from app.models.cvs import PG_CVs
+from app.models.profiles import PG_Profiles
+from app.models.pg_chunks import PG_Chunks
+from app.models import con_string, engine
+from app.core.models.ETL_pandasmodels import STRUCTCV_DF
+from app.core.models.PG_pandasmodels import PROFILE_PG, CHUNK_PG
 from app.core.azure_modules.models import UpsertPolicies
 
 
@@ -124,21 +124,3 @@ class AzurePGManager:
         AzurePGManager.save_to_db(PG_CVs.__tablename__, pg_cvs, UpsertPolicies.APPEND)
         AzurePGManager.save_to_db(PG_Chunks.__tablename__, pg_chunks, UpsertPolicies.CHUNK_UPDATE)
 
-
-if __name__ == "__main__":
-    req = text("SELECT * FROM {} WHERE collab_id = '{}';".format("profiles",
-                                                                 "f90713d91d80a1e23671606e0695d07690b1c56baf23df11f440b902e807df82"))
-    data = pd.read_sql(req, con_string)
-    data.loc[1] = data.iloc[0]
-    data[STRUCTCV_DF.cv_id] = 1
-    data[STRUCTCV_DF.file_path] = ''
-    data[STRUCTCV_DF.file_name] = ''
-    data[STRUCTCV_DF.file_extension] = ''
-    data[STRUCTCV_DF.file_full_name] = ''
-
-    from app.core.cv_information_retrieval.profilestructurator import ProfileStructurator
-
-    stucture = ProfileStructurator()
-    df_profiles = stucture.consolidate_profiles(data)
-
-    AzurePGManager.save_to_db(PG_Profiles.__tablename__, data, UpsertPolicies.PROFILE_UPDATE)

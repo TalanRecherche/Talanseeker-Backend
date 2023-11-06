@@ -14,11 +14,11 @@ import time
 
 import pandas as pd
 
-from app.core.models.PGcols import COLLAB_PG
-from app.core.models.querykeywordscols import QUERY_STRUCT
-from app.core.models.scoredprofilescols import SCORED_CHUNKS_DF
-from app.core.models.scoredprofilescols import SCORED_PROFILES_DF
-from app.core.shared_modules.LLMbackend import LLMBackend
+from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.query_pandasmodels import QUERY_STRUCT
+from app.core.models.scoredprofiles_pandasmodels import SCORED_CHUNKS_DF
+from app.core.models.scoredprofiles_pandasmodels import SCORED_PROFILES_DF
+from app.core.shared_modules.GPTbackend import GPTBackend
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.tokenshandler import TokenHandler
 from app.settings import Settings
@@ -64,7 +64,7 @@ class Chatbot:
         self.current_nb_tokens = 0
 
         # pass settings to backend
-        self.llm_backend = LLMBackend(self.engine, max_tokens_in_response)
+        self.llm_backend = GPTBackend(self.engine, max_tokens_in_response)
 
         # similarity threshold to pass a chunk to the context
         self.similarity_threshold = 0.8  # 0-1 min-max
@@ -91,10 +91,10 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        if not DataFrameHandler.assert_df(candidates_profiles, SCORED_PROFILES_DF): return None
-        if not DataFrameHandler.assert_df(candidates_chunks, SCORED_CHUNKS_DF): return None
-        if not DataFrameHandler.assert_df(guessintention_query, QUERY_STRUCT): return None
-        if not DataFrameHandler.assert_df(candidate_collabs, COLLAB_PG): return None
+        if not SCORED_PROFILES_DF.validate_dataframe(candidates_profiles): return None
+        if not SCORED_CHUNKS_DF.validate_dataframe(candidates_chunks): return None
+        if not QUERY_STRUCT.validate_dataframe(guessintention_query): return None
+        if not COLLAB_PG.validate_dataframe(candidate_collabs): return None
         self.current_nb_tokens = 0
 
         # make system function string (contains chunks)
@@ -126,7 +126,7 @@ class Chatbot:
         # make query footer string
         query_string_footer = self._make_query_footer(user_query, candidate_collabs)
 
-        # make context hashamp to hold individual profile subquery
+        # make context hashmap to hold individual profile subquery
         context_placeholder = self._make_query_context_placeholder(candidates_profiles)
         # place structured data into context_placeholder
         query_structured_info = self._add_structured_info(candidate_collabs,

@@ -6,9 +6,10 @@ Created on Wed Aug 30 14:25:54 2023
 
 """
 from PyPDF2 import PdfReader
+from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
-class PDFReader:
+class PDFReader(ABCReader):
 
     @staticmethod
     def read_text(file_path: str) -> str | None:

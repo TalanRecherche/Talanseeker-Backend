@@ -1,7 +1,7 @@
 import pandas as pd
 
-from app.core.models.PGcols import COLLAB_PG
-from models import con_string
+from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.models import con_string
 
 
 class FormOptions:
