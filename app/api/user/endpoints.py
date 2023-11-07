@@ -1,8 +1,10 @@
 from fastapi import  HTTPException, Depends
+
+from app.exceptions.exceptions import UserIntegrityException
 from app.models import get_db
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.schema.user import UserCreate, UserUpdate
+from app.schema.user import UserCreate, UserUpdate, UserResponse
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/user")
@@ -20,16 +22,19 @@ def get_user_by_email(user_id: int, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail="User not found")
 
 
-@router.post("/")
+@router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = User(name=user.name, email=user.email, password=user.password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    try:
+        db_user = User(email=user.email, pwd=user.pwd, authorizations=user.authorizations)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+    except:
+        raise(UserIntegrityException)
     return db_user
 
 
-@router.put("/{user_id}")
+@router.patch("/{user_id}")
 def update_user_by_email(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
