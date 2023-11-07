@@ -6,11 +6,11 @@ from typing import List, Optional
 
 
 class Filters(BaseModel):
-    region: str
-    city: str
-    grade: str
-    assigned_until: str
-    availability_score: int
+    region: Optional[List[str]] = None
+    city: Optional[List[str]] = None
+    grade: Optional[List[str]] = None
+    assigned_until: Optional[str] = None
+    availability_score: Optional[int] = 0
 
 
 class ChatbotRequest(BaseModel):

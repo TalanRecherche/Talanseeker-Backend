@@ -5,7 +5,6 @@ data_dev
 _data_raw
 _legacy
 __pychache__
-_legacy
 *.pyc
 .idea
 .env_example

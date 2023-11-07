@@ -59,46 +59,52 @@ def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd
     candidates.append(candidate)
 
 
+
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     chatbot_response = ChatbotResponse()
     settings = Settings()
-    query = chatbot_request.user_query
 
     # check if query is meaningful and related to staffing
     router = QueryRouter(settings)
-    query_valid_bool = router.get_router_response(query)
-
+    query_valid_bool = router.get_router_response(chatbot_request.user_query)
     if query_valid_bool:
-        # Structure Query using IntentionFinderSettings
-        intention_finder = IntentionFinder(settings)
-        guessIntention_query = intention_finder.guess_intention(query)
-
-        # Fetch data from postgres
-        fetcher = PGfetcher(settings)
-        df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
-
-        # Select best candidates
-        selector = CandidatesSelector(settings)
-        chunks, collabs, cvs, profiles = selector.select_candidates(df_chunks,
-                                                                    df_collabs,
-                                                                    df_cvs,
-                                                                    df_profiles,
-                                                                    guessIntention_query)
-        skills_table = get_skills_table(chunks, collabs, cvs, profiles)
-
-        profiles_data = collabs.merge(profiles, on="collab_id")
-
-        chatbot_response.candidates = df_to_candidate_schema(profiles_data, cvs, skills_table)
-        # Send candidates data to chatbot and get answer
-        chatbot = Chatbot(settings)
-        response, query_sent = chatbot.get_chatbot_response(guessIntention_query,
-                                                            chunks,
-                                                            collabs,
-                                                            profiles)
-        chatbot_response.chatbot_response = response
+        try:
+            chatbot_business_helper(chatbot_request, settings, chatbot_response)
+        except Exception as e:
+            chatbot_response.question_valid = False
+            chatbot_response.chatbot_response = "Aucun profil ne correspond aux critères demandés!"
 
     else:
         chatbot_response.question_valid = False
         chatbot_response.chatbot_response = "Je suis désolé, mais cette question ne concerne pas le staffing de consultants."
 
     return chatbot_response
+def chatbot_business_helper(chatbot_request: ChatbotRequest, settings : Settings, chatbot_response : ChatbotResponse) -> None:
+
+    # Structure Query using IntentionFinderSettings
+    intention_finder = IntentionFinder(settings)
+    guessIntention_query = intention_finder.guess_intention(chatbot_request.user_query)
+
+    # Fetch data from postgres
+    fetcher = PGfetcher(settings)
+    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters= chatbot_request.filters)
+
+    # Select best candidates
+    selector = CandidatesSelector(settings)
+    chunks, collabs, cvs, profiles = selector.select_candidates(df_chunks,
+                                                                df_collabs,
+                                                                df_cvs,
+                                                                df_profiles,
+                                                                guessIntention_query)
+    skills_table = get_skills_table(chunks, collabs, cvs, profiles)
+
+    profiles_data = collabs.merge(profiles, on="collab_id")
+
+    chatbot_response.candidates = df_to_candidate_schema(profiles_data, cvs, skills_table)
+    # Send candidates data to chatbot and get answer
+    chatbot = Chatbot(settings)
+    response, query_sent = chatbot.get_chatbot_response(guessIntention_query,
+                                                        chunks,
+                                                        collabs,
+                                                        profiles)
+    chatbot_response.chatbot_response = response

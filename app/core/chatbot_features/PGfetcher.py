@@ -8,6 +8,7 @@ Created on Sun Sep 17 13:07:47 2023
 import ast
 import datetime
 import logging
+from typing import Optional
 
 import pandas as pd
 
@@ -16,6 +17,7 @@ from app.core.models.PG_pandasmodels import CHUNK_PG
 from app.core.models.PG_pandasmodels import COLLAB_PG
 from app.core.models.PG_pandasmodels import CV_PG
 from app.core.models.PG_pandasmodels import PROFILE_PG
+from app.schema.chatbot import Filters
 from app.settings import Settings
 
 
@@ -33,7 +35,7 @@ class PGfetcher:
     # =============================================================================
     # internal functions
     # =============================================================================
-    def fetch_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def fetch_all(self, filters: Filters = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Fetch all profiles from the PostGres db.
         The other tables (chunks, cvs, collabs) are only fetched if their collab_id is in profile
@@ -52,7 +54,7 @@ class PGfetcher:
         """
 
         # fetch profiles
-        df_profiles = self._fetch_profiles()
+        df_profiles = self._fetch_profiles(filters=filters)
         # get all collab_ids in the profile table. Used to filter out candidates.
         collab_ids = df_profiles[PROFILE_PG.collab_id].tolist()
 
@@ -73,65 +75,59 @@ class PGfetcher:
     # =============================================================================
     # internal function
     # =============================================================================
+    @staticmethod
+    def _build_filtered_request(query:str,  filters: Optional[Filters] = None) -> str:
+        """
+        :param req: is the start of the request e.g. select p.* from profiles p left join collabs c on p.collab_id = c.collab_id where true
+        :param filters: filters object
+        :return: request with filter
+        """
+        if filters:
+            regions = filters.region
+            if regions and len(regions) > 0:
+                query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
+            cities = filters.city
+            if cities and len(cities) > 0:
+                cities = [elem.lower() for elem in cities]
+                query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
+            grades = filters.grade
+            if grades and len(grades) > 0:
+                query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
 
-    def _fetch_profiles(self):
-        """ fetch the entire profile table"""
+            query += " and (false "
+            date = filters.assigned_until
+            try:
+                if date:
+                    query += f" or c.assigned_until <= '{date}' "
+            except:
+                pass
+            availability_score = filters.availability_score
+            if availability_score:
+                query += f" or c.availability_score >= {float(availability_score)} "
+
+            query += ");"
+            query = query.replace(',)', ')')
+        return query
+    def _fetch_profiles(self, filters: Optional[Filters]=None):
         query = "select p.* from profiles p left join collabs c on p.collab_id = c.collab_id where true "
-        regions = ""
-        if len(regions) > 0:
-            query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
-        cities = ""
-        if len(cities) > 0:
-            cities = [elem.lower() for elem in cities]
-            query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
-        grades = ""
-        if len(grades) > 0:
-            query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
-
-        query += " and (false "
-        date = ""
-        if len(date) > 0:
-            query += f" or c.assigned_until <= '{date[0].strftime('%Y-%m-%d')}' "
-        availability_score = 50
-        if availability_score:
-            query += f" or c.availability_score >= {float(availability_score)} "
-        else:
-            query += f" or c.availability_score >= {float('0')} "
-
-        query += ");"
-        query = query.replace(',)', ')')
+        query = PGfetcher._build_filtered_request(query, filters)
+        """ fetch the entire profile table"""
         logging.info(query)
+        print(query)
         df_profiles_ = pd.read_sql(query, con_string)
         if not PROFILE_PG.validate_dataframe(df_profiles_):
             raise InvalidColumnsError("df_profiles is missing the required columns")
         return df_profiles_
 
-    def filter_collabs(self):
+    def filter_collabs(self, filters: Optional[Filters]=None):
         """ fetch the entire profile table"""
         query = 'select c.surname as "Nom", c."name" as "Prénom", c.email as "Email", c.manager as "Manager", c.city as "Ville", c."domain"  as "Métier" , c.grade  as "Grade", c.availability_score, c.assigned_until from collabs c where true '
-        regions = ""
-        if len(regions) > 0:
-            query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
-        cities = ""
-        if len(cities) > 0:
-            cities = [elem.lower() for elem in cities]
-            query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
-        grades = ""
-        if len(grades) > 0:
-            query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
-
-        query += " and (false "
-        date = ""
-
-        availability_score = 50
-        query += f" or c.availability_score >= {float(availability_score)} "
-
-        query += ");"
-        query = query.replace(',)', ')')
+        query = PGfetcher._build_filtered_request(query, filters)
         logging.info(query)
         df_profiles_ = pd.read_sql(query, con_string)
-        if len(date) > 0:
-            df_profiles_ = df_profiles_.apply(PGfetcher._adjust_availability_score, axis=1, start_date=date[0])
+        date = filters.assigned_until
+        if date and len(date) > 0:
+            df_profiles_ = df_profiles_.apply(PGfetcher._adjust_availability_score, axis=1, start_date=date)
 
         df_profiles_.rename(columns={COLLAB_PG.availability_score: "Disponibilité"}, inplace=True)
         return df_profiles_
