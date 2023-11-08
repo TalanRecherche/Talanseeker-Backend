@@ -7,5 +7,5 @@ class PG_Chunks(Base):
     cv_id = Column(String)
     profile_id = Column(String)
     chunk_text = Column(String)
-    chunk_embeddings = Column(String)
+    chunk_embeddings = Column(String) #TODO: change to array of floats
 

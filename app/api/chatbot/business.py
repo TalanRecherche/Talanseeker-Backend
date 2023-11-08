@@ -14,13 +14,15 @@ from app.settings import Settings
 from app.core.chatbot_features.dataviz import get_skills_table
 
 
-def df_to_candidate_schema(profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table:pd.DataFrame) -> List[Candidate]:
+def df_to_candidate_schema(profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: pd.DataFrame) -> List[
+    Candidate]:
     candidates = []
     profiles_data.apply(row_to_candidate_schema, axis=1, candidates=candidates, cvs=cvs, skills_table=skills_table)
     return candidates
 
 
-def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd.DataFrame, skills_table:pd.DataFrame) -> None:
+def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd.DataFrame,
+                            skills_table: pd.DataFrame) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
         collab_id=row[COLLAB_PG.collab_id],
@@ -44,20 +46,19 @@ def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd
 
     # get cv of the profile
     collab_cvs = list(cvs[cvs[COLLAB_PG.collab_id] == row[COLLAB_PG.collab_id]][
-                       [CV_PG.cv_id, CV_PG.file_full_name]].T.to_dict().values())
+                          [CV_PG.cv_id, CV_PG.file_full_name]].T.to_dict().values())
     # adjust naming file_full_name => cv_name
     candidate.cvs_information = [CvsInformation(cv_id=cv[CV_PG.cv_id], cv_name=cv[CV_PG.file_full_name]) for cv in
                                  collab_cvs]
 
     skills = skills_table[row[COLLAB_PG.email]]
     skill_table = SkillsTable(
-        global_skill = skills["competence"].to_list(),
-        score = skills["n_occurence"].to_list(),
-        skills = skills["skills"].to_list())
+        global_skill=skills["competence"].to_list(),
+        score=skills["n_occurence"].to_list(),
+        skills=skills["skills"].to_list())
 
     candidate.skills_table = skill_table
     candidates.append(candidate)
-
 
 
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
@@ -79,15 +80,17 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
         chatbot_response.chatbot_response = "Je suis désolé, mais cette question ne concerne pas le staffing de consultants."
 
     return chatbot_response
-def chatbot_business_helper(chatbot_request: ChatbotRequest, settings : Settings, chatbot_response : ChatbotResponse) -> None:
 
+
+def chatbot_business_helper(chatbot_request: ChatbotRequest, settings: Settings,
+                            chatbot_response: ChatbotResponse) -> None:
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guessIntention_query = intention_finder.guess_intention(chatbot_request.user_query)
 
     # Fetch data from postgres
     fetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters= chatbot_request.filters)
+    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters=chatbot_request.filters)
 
     # Select best candidates
     selector = CandidatesSelector(settings)

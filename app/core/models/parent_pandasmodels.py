@@ -52,6 +52,12 @@ class ParentPandasModel:
         bool: True if all attributes are in the dataframe columns
             False otherwise
         """
+        #TODO: add check for null values
+        #TODO: add check for value type
+        #TODO: add check for value format
+        #TODO: add check for value length
+        #TODO: add check for empty dataframe
+        #TODO: for some execption can be the same, but return string is different
         try:
             cls.schema.validate(df)
             is_valid = True
