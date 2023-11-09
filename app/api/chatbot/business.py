@@ -83,7 +83,7 @@ def chatbot_business_helper(chatbot_request: ChatbotRequest, settings : Settings
 
     # Fetch data from postgres
     fetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters= chatbot_request.filters)
+    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters= chatbot_request)
 
     # Select best candidates
     selector = CandidatesSelector(settings)

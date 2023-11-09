@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from fastapi import Depends, Query
+from pydantic import BaseModel, Field
 
-from typing import List, Optional
+from typing import List, Optional, Annotated
 
 
 class Filters(BaseModel):
@@ -15,7 +16,11 @@ class Filters(BaseModel):
 
 class ChatbotRequest(BaseModel):
     user_query: str
-    filters: Optional[Filters] = None
+    region: Optional[List[str]] = Field(Query(None, description='Séléctionner des régions'))
+    city: Optional[List[str]] = Field(Query(None, description='Séléctionner des villes'))
+    grade: Optional[List[str]] = Field(Query(None, description='Séléctionner des grades'))
+    assigned_until: Optional[str] = Field(Query(None))
+    availability_score: Optional[int] = Field(Query(None))
 
 
 class GeneralInformation(BaseModel):
