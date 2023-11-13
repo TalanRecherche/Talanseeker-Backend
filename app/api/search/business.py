@@ -49,7 +49,7 @@ def search_business(request: SearchRequest) -> SearchResponse:
     response = SearchResponse()
     settings = Settings()
     fetcher = PGfetcher(settings)
-    chunks, collabs, cvs, profiles = fetcher.fetch_all(filters=request.filters)
+    chunks, collabs, cvs, profiles = fetcher.fetch_all(filters=request)
 
     profiles_data = collabs.merge(profiles, on="collab_id")
 

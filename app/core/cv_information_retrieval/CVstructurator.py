@@ -60,7 +60,7 @@ class CvStructurator:
             One row per cv. All chunks information have been merged
         """
         # assert if input dataframe is of correct format (columns)
-        if not PARSED_DF.validate_dataframe(df_profile_chunks): return None
+        #if not PARSED_DF.validate_dataframe(df_profile_chunks): return None
 
         # prepare output dataframe
         df_consolidated_cvs = STRUCTCV_DF.generate_dataframe()

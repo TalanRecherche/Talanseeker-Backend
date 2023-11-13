@@ -1,4 +1,8 @@
-"""
-Created by agarc at 01/10/2023
-app.core:
-"""
+from .azure_modules.azureblobmanager import AzureBlobManager
+from .azure_modules.azurePGmanager import AzurePGManager
+from app.settings import Settings
+from .kimble.updateDB import KimbleUpdater
+
+azure_blob_manager = AzureBlobManager(Settings())
+azure_pg_manager = AzurePGManager()
+kimble_updater = KimbleUpdater()

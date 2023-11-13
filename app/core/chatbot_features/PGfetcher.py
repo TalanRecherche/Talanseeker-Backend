@@ -83,10 +83,10 @@ class PGfetcher:
         """
         if filters:
             regions = filters.region
-            if regions and len(regions) > 0:
+            if regions:
                 query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
             cities = filters.city
-            if cities and len(cities) > 0:
+            if cities:
                 cities = [elem.lower() for elem in cities]
                 query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
             grades = filters.grade
