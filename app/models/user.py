@@ -8,8 +8,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    f_name = Column(String)
-    l_name = Column(String)
     pwd = Column(String)
     email = Column(String, unique=True)
     activated = Column(Boolean, default=True)

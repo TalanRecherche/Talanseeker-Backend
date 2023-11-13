@@ -12,17 +12,16 @@ from typing import Optional
 
 import pandas as pd
 
+from app.exceptions.exceptions import InvalidColumnsError
 from app.core.models import con_string
 from app.core.models.PG_pandasmodels import CHUNK_PG
 from app.core.models.PG_pandasmodels import COLLAB_PG
 from app.core.models.PG_pandasmodels import CV_PG
 from app.core.models.PG_pandasmodels import PROFILE_PG
-from app.schema.chatbot import Filters
+from app.schema.chatbot import Filters, ChatbotRequest
 from app.settings import Settings
 
 
-class InvalidColumnsError(Exception):
-    pass
 
 
 class PGfetcher:
@@ -35,7 +34,7 @@ class PGfetcher:
     # =============================================================================
     # internal functions
     # =============================================================================
-    def fetch_all(self, filters: Filters = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def fetch_all(self, filters: ChatbotRequest = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Fetch all profiles from the PostGres db.
         The other tables (chunks, cvs, collabs) are only fetched if their collab_id is in profile
@@ -94,18 +93,19 @@ class PGfetcher:
             if grades and len(grades) > 0:
                 query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
 
-            query += " and (false "
             date = filters.assigned_until
-            try:
+            availability_score = filters.availability_score
+
+            if date or availability_score:
+                query += " and (false "
                 if date:
                     query += f" or c.assigned_until <= '{date}' "
-            except:
-                pass
-            availability_score = filters.availability_score
-            if availability_score:
-                query += f" or c.availability_score >= {float(availability_score)} "
 
-            query += ");"
+                if availability_score:
+                    query += f" or c.availability_score >= {float(availability_score)} "
+
+                query += ")"
+            query += ";"
             query = query.replace(',)', ')')
         return query
     def _fetch_profiles(self, filters: Optional[Filters]=None):

@@ -69,11 +69,7 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     router = QueryRouter(settings)
     query_valid_bool = router.get_router_response(chatbot_request.user_query)
     if query_valid_bool:
-        try:
-            chatbot_business_helper(chatbot_request, settings, chatbot_response)
-        except Exception as e:
-            chatbot_response.question_valid = False
-            chatbot_response.chatbot_response = "Aucun profil ne correspond aux critères demandés!"
+        chatbot_business_helper(chatbot_request, settings, chatbot_response)
 
     else:
         chatbot_response.question_valid = False
@@ -90,7 +86,7 @@ def chatbot_business_helper(chatbot_request: ChatbotRequest, settings: Settings,
 
     # Fetch data from postgres
     fetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters=chatbot_request.filters)
+    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(filters= chatbot_request)
 
     # Select best candidates
     selector = CandidatesSelector(settings)

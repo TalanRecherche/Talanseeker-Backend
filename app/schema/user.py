@@ -1,11 +1,22 @@
+from __future__ import annotations
+
+from typing import List, Optional
+
 from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
-    name: str
+    pwd: str
     email: str
-    password: str
+    authorizations: List[int]
 
 class UserUpdate(BaseModel):
-    name: str
+    pwd: Optional[str] = None
     email: str
+    authorizations: Optional[List[int]] = None
+
+class UserResponse(BaseModel):
+    email: str
+    authorizations: List[int]
+
+
