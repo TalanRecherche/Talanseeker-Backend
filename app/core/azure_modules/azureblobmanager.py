@@ -42,3 +42,6 @@ class AzureBlobManager:
 
     def download_file(self, file_name: str):
         return self.container_client.download_blob(file_name).readall()
+
+    def get_file_url(self, file_name: str)->str:
+        return self.container_client.get_blob_client(file_name).url

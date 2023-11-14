@@ -1,4 +1,4 @@
-from models import Base
+from app.models import Base
 from sqlalchemy import Column, Integer, String
 class PG_Collabs(Base):
     __tablename__ = "collabs"

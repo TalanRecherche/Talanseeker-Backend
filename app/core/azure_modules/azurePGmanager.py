@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from app.models.cvs import PG_CVs
 from app.models.profiles import PG_Profiles
-from app.models.pg_chunks import PG_Chunks
+from app.models.chunks import PG_Chunks
 from app.models import con_string, engine
 from app.core.models.ETL_pandasmodels import STRUCTCV_DF
 from app.core.models.PG_pandasmodels import PROFILE_PG, CHUNK_PG

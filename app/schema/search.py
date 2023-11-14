@@ -5,16 +5,13 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
-class Filters(BaseModel):
+class SearchRequest(BaseModel):
     region: Optional[List[str]] = None
     city: Optional[List[str]] = None
     grade: Optional[List[str]] = None
     assigned_until: Optional[str] = None
-    availability_score: Optional[int] = 0
+    availability_score: Optional[int] = None
 
-
-class SearchRequest(BaseModel):
-    filters: Optional[Filters]
 
 class GeneralInformation(BaseModel):
     collab_id: Optional[str] = None

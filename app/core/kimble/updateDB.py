@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from app.models.pg_chunks import PG_Chunks
+from app.models.chunks import PG_Chunks
 from app.models.cvs import PG_CVs
 from app.models.profiles import PG_Profiles
 from app.core.azure_modules.azurePGmanager import AzurePGManager
@@ -103,14 +103,13 @@ class KimbleUpdater:
         return '-'.join(reversed(date_.split('/')))
 
     @staticmethod
-    def update_db():
+    def update_db(file:bytes):
         """
         erase the old data and insert new ones
         """
-        uploaded_file = b""
         try:
             logging.warning("Start updating Kimble")
-            data = pd.read_excel(uploaded_file)
+            data = pd.read_excel(file)
             data = KimbleUpdater.process_data(data)
             AzurePGManager.save_to_db("collabs", data, UpsertPolicies.ERASE)
             KimbleUpdater.clean_db()
