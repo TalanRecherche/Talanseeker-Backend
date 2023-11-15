@@ -13,7 +13,7 @@ from typing import Optional
 import pandas as pd
 
 from app.exceptions.exceptions import InvalidColumnsError
-from app.core.models import con_string
+from app.models import con_string
 from app.core.models.PG_pandasmodels import CHUNK_PG
 from app.core.models.PG_pandasmodels import COLLAB_PG
 from app.core.models.PG_pandasmodels import CV_PG

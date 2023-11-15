@@ -205,7 +205,7 @@ class CvStructurator:
 
 # %%
 if __name__ == "__main__":
-    directory = r'data_test/CV_pptx'
+    directory = r'tests/data_test/CV_pptx'
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
 

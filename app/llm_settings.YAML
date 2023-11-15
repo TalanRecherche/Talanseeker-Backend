@@ -316,18 +316,21 @@ ETL:
     You will be given parts of Resumes/CV. 
     You will extract information from the context resume cv prodived. 
     Only answer if information provided in the context is good.
-    If the information is not provided, answer: "Not provided".
+    If the information is not provided, answer an empty list [].
     
-    You will fill the following list:
-    Years of experience = int
-    Diploma or certifications = _,_,_,
-    Roles = _,_,_,_
-    Activity sector = _,_,_,_
-    Company name = _,_,_,_,_
-    Soft skills = _,_,_,
-    Technical skills = _,_,_,_,_,_,
+    You will find the following information:
+    Years of experience
+    Diploma or certifications
+    Roles
+    Activity sector
+    Company name
+    Soft skills
+    Technical skills
     
-    "Roles" are things like : 
+    "years", "Years of experience" is how many years has the person worked. Only if indicated in the resume.
+    "years" must be a single-element list integer. Only if provided, otherwise a list containing only zero [0].
+    
+    "Roles" are things like (but not limited to) : 
     [Business Analyst,
     Software Developer,
     Mechanical Engineer,
@@ -344,7 +347,7 @@ ETL:
     User Experience (UX) Designer,
     Cybersecurity Consultant]
     
-    "Activity sector" are things like :
+    "Activity sector" are things like (but not limited to) :
     [Agriculture, 
     Mining,
     Manufacturing,
@@ -362,7 +365,7 @@ ETL:
     Health, 
     Social Work] 
     
-    "Soft skills" are things like :
+    "Soft skills" are things like (but not limited to) :
     [Agile,
     Scrum,
     Lean Six Sigma,
@@ -376,7 +379,7 @@ ETL:
     Leadership,
     Communication]
     
-    "Technical skills" are thinks like :
+    "Technical skills" are thinks like (but not limited to) :
     [Data science,
     Python,
     SQL,
@@ -390,6 +393,8 @@ ETL:
     "Diploma or certifications" are actual degrees, university diploma (Bsc, Msc, PhD, Master, Bachelor, Licence, IUT, BTS etc.) or online certification courses (Azure, AWS, Snowflake, Coursera certifications). They are NOT skills.
     
     "Company name" is the name of the company the person may have worked for.
+    
+    if information is not provided you must return an empty list [].
   QUERY_TEMPLATE: |
     Use the following resume:
     {source}
@@ -400,15 +405,16 @@ ETL:
     -------------------------------
 
     Use only information provided. Do not infer extra information.
-    Write "Not provided" if information is not provided.
-
+    Return a JSON object with the following keys and values.
+    ! ALWAYS MAKE SURE THE JSON FORMAT IS RESPECTED. THAT IS INCLUDING THE BRACKETS !
+    IF THE INFORMATION IS NOT PROVIDED PLACE AN EMPTY LIST [] IN THE CORRESPONDING FIELD.
+    WHEN THE INFORMATION IS PROVIDED YOU MUST ANSWER A LIST OF STRING list[str]
     -------------------------------
-
-    Return fill the following list:
-    Years of experience = int
-    Diploma or certifications = _,_,_,
-    Roles = _,_,_,_
-    Activity sector = _,_,_,_
-    Company name = _,_,_,_,_
-    Soft skills = _,_,_,
-    Technical skills = _,_,_,_,_,_,
+    
+    {"years" : [int],
+    "diplomas_certifications" : [_,_,...],
+    "roles" : [_,_,...],
+    "sectors" : [_,_,...],
+    "companies" : [_,_,...],
+    "soft_skills" : [_,_,...],
+    "technical_skills" : [_,_,...]}
