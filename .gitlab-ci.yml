@@ -1,0 +1,13 @@
+stages:
+  - test
+
+pytest:
+  stage: test
+  script:
+    - pip install -r requirements.txt  # Install your project dependencies
+    - pytest -m "not skip_this"
+  cache:
+    paths:
+      - __pycache__
+      - .pytest_cache
+
