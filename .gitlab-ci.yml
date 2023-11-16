@@ -1,6 +1,10 @@
 stages:
   - test
 
+variables:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: "${PYTHONPATH}:${CI_PROJECT_DIR}"
+
 pytest:
   stage: test
   script:
