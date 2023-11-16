@@ -156,7 +156,7 @@ if __name__ == '__main__':
         return queries
 
 
-    queries = load_queries_from_json('data_test/queryrouter_json/testset.JSON')
+    queries = load_queries_from_json('tests/data_test/queryrouter_json/testset.JSON')
 
     settings = Settings()
     router = QueryRouter(settings)

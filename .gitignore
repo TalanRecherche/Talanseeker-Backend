@@ -18,5 +18,5 @@ data/
 .env.local
 .env_backup
 data_dev/
-data_test/
+tests/data_test/
 qodana.yaml

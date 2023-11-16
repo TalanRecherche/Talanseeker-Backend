@@ -300,4 +300,4 @@ if __name__ == "__main__":
     print(result)
     QUERY_STRUCT.validate_dataframe(result)
     from app.core.shared_modules.dataframehandler import DataFrameHandler
-    DataFrameHandler.save_df(result, "data_test/dataframes/df_struct_query.pkl")
+    DataFrameHandler.save_df(result, "tests/data_test/dataframes/df_struct_query.pkl")
