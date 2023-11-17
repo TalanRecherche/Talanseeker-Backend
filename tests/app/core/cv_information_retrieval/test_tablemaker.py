@@ -18,8 +18,8 @@ env = Settings()
 
 @pytest.fixture(scope='module')
 def setup_data():
-    data_1_path = r'tests/data_test/dataframes/df_profiles.pkl'
-    data_2_path = r'tests/data_test/dataframes/df_embeddings.pkl'
+    data_1_path = r'tests/data_test/df_profiles.pkl'
+    data_2_path = r'tests/data_test/df_embeddings.pkl'
     df_profiles = DataFrameHandler.load_df(data_1_path)
     df_embeddings = DataFrameHandler.load_df(data_2_path)
     maker = TableMaker()

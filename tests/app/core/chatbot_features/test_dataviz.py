@@ -21,7 +21,7 @@ settings = Settings()
 @pytest.fixture(scope='module')
 def setup_data():
     # load test structured query
-    data_path = r'tests/data_test/dataframes'
+    data_path = r'tests/data_test/'
     query_filename = 'df_struct_query.pkl'
     df_query = DataFrameHandler.load_df(os.path.join(data_path, query_filename))
 

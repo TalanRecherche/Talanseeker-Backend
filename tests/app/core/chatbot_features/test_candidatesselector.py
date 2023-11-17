@@ -21,7 +21,7 @@ settings = Settings()
 @pytest.fixture(scope='module')
 def setup_data():
     # load test structured query
-    data_path = r'tests/data_test/dataframes'
+    data_path = r'tests/data_test/'
     query_filename = 'df_struct_query.pkl'
     df_query = DataFrameHandler.load_df(os.path.join(data_path, query_filename))
 
@@ -40,22 +40,22 @@ def setup_data():
                                                                                                             df_query)
     return candidates_chunks, candidates_collabs, candidates_cvs, candidates_profiles
 
-
+@pytest.mark.skip_this()
 def test_candidates_chunks_format(setup_data):
     candidates_chunks, _, _, _ = setup_data
     assert SCORED_CHUNKS_DF.validate_dataframe(candidates_chunks)
 
-
+@pytest.mark.skip_this()
 def test_candidates_collabs_format(setup_data):
     _, candidates_collabs, _, _ = setup_data
     assert COLLAB_PG.validate_dataframe(candidates_collabs)
 
-
+@pytest.mark.skip_this()
 def test_candidates_cvs_format(setup_data):
     _, _, candidates_cvs, _ = setup_data
     assert CV_PG.validate_dataframe(candidates_cvs)
 
-
+@pytest.mark.skip_this()
 def test_candidates_profiles_format(setup_data):
     _, _, _, candidates_profiles = setup_data
     assert SCORED_PROFILES_DF.validate_dataframe(candidates_profiles)

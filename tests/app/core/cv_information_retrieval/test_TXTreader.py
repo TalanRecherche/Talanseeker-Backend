@@ -10,7 +10,7 @@ from app.core.cv_information_retrieval.TXTreader import TXTReader
 
 
 def test_read_text():
-    test_file_path = r'./tests/data_test/CV_txt/MelissaJohn.txt'
+    test_file_path = r'./tests/data_test/MelissaJohn.txt'
     result = TXTReader.read_text(test_file_path)
 
     # Check if the output is a non-empty string

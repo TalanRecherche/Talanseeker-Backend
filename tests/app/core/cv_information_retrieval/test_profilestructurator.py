@@ -13,7 +13,7 @@ from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
 
 @pytest.fixture(scope='module')
 def setup_data():
-    df_struct_cvs = r"tests/data_test/dataframes/df_struct_cvs.pkl"
+    df_struct_cvs = r"tests/data_test/df_struct_cvs.pkl"
     loaded_struct_cvs = DataFrameHandler.load_df(df_struct_cvs)
     structurator = ProfileStructurator()
     profile_struct = structurator.consolidate_profiles(loaded_struct_cvs)
