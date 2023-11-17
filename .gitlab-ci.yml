@@ -1,0 +1,15 @@
+stages:
+  - test
+
+pytest:
+  stage: test
+  image: python:3.10
+  variables:
+    PYTHONDONTWRITEBYTECODE: 1
+    PYTHONPATH: ${PYTHONPATH}:${CI_PROJECT_DIR}
+    SECURE_FILES_DOWNLOAD_PATH: './tests/data_test/'
+
+  script:
+    - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | bash
+    - pip install -r requirements.txt  # Install your project dependencies
+    - pytest -m "not skip_this"

@@ -11,7 +11,7 @@ from app.core.cv_information_retrieval.filereader import FileReader
 
 @pytest.fixture(scope='module')
 def setup_data():
-    data_path = r'tests/data_test/CV_docx/AthurAndersen.docx'
+    data_path = r'tests/data_test/AthurAndersen.docx'
     reader = FileReader()
     data = reader.read_single_document(data_path)
     return data
@@ -19,7 +19,7 @@ def setup_data():
 
 def test_file_path(setup_data):
     data = setup_data
-    assert data['file_path'] == 'tests/data_test/CV_docx/AthurAndersen.docx'
+    assert data['file_path'] == 'tests/data_test/AthurAndersen.docx'
 
 
 def test_file_name(setup_data):

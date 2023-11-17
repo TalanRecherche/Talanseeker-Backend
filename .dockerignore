@@ -8,11 +8,5 @@ __pychache__
 *.pyc
 .idea
 .env_example
-*.csv
-*.xlsx
-*.pptx
-*.docx
-*.pdf
-*.doc
-*.pkl
 .env
+tests/data_test/

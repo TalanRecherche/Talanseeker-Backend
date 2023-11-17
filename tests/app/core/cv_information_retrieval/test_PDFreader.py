@@ -10,7 +10,7 @@ from app.core.cv_information_retrieval.PDFreader import PDFReader
 
 
 def test_read_text():
-    test_file_path = r'tests/data_test/CV_pdf/HeleneHaot.pdf'
+    test_file_path = r'./tests/data_test/HeleneHaot.pdf'
     result = PDFReader.read_text(test_file_path)
     # Check if the output is a non-empty string
     assert isinstance(result, str)

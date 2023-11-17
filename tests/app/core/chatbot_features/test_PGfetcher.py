@@ -23,22 +23,22 @@ def setup_data():
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
     return df_chunks, df_collabs, df_cvs, df_profiles
 
-
+@pytest.mark.skip_this(reason="Skipping test from running because it is calling PG")
 def test_01_fetched_chunks_format(setup_data):
     df_chunks, _, _, _ = setup_data
     assert CHUNK_PG.validate_dataframe(df_chunks)
 
-
+@pytest.mark.skip_this(reason="Skipping test from running because it is calling PG")
 def test_02_fetched_collabs_format(setup_data):
     _, df_collabs, _, _ = setup_data
     assert COLLAB_PG.validate_dataframe(df_collabs)
 
-
+@pytest.mark.skip_this(reason="Skipping test from running because it is calling PG")
 def test_03_fetched_cvs_format(setup_data):
     _, _, df_cvs, _ = setup_data
     assert CV_PG.validate_dataframe(df_cvs)
 
-
+@pytest.mark.skip_this(reason="Skipping test from running because it is calling PG")
 def test_04_fetched_profiles_format(setup_data):
     _, _, _, df_profiles = setup_data
     assert PROFILE_PG.validate_dataframe(df_profiles)

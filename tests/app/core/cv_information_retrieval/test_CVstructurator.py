@@ -13,7 +13,7 @@ from app.core.models.ETL_pandasmodels import STRUCTCV_DF
 
 @pytest.fixture(scope='module')
 def setup_data():
-    chunked_parsed_path = r"tests/data_test/dataframes/df_parsed_chunks.pkl"
+    chunked_parsed_path = r"tests/data_test/df_parsed_chunks.pkl"
     loaded_parsed_chunks = DataFrameHandler.load_df(chunked_parsed_path)
     structurator = CvStructurator()
     cvs_struct = structurator.consolidate_cvs(loaded_parsed_chunks)

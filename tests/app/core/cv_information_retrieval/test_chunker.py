@@ -15,7 +15,7 @@ from app.core.shared_modules.dataframehandler import DataFrameHandler
 # prepare files
 @pytest.fixture(scope='module')
 def setup_data():
-    text_df = DataFrameHandler.load_df('tests/data_test/dataframes/df_text.pkl')
+    text_df = DataFrameHandler.load_df('tests/data_test/df_text.pkl')
     # make chunks, One row per chunks
     chunker = Chunker()
     df_chunks = chunker.chunk_documents(text_df)

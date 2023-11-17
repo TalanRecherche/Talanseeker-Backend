@@ -10,7 +10,7 @@ from app.core.cv_information_retrieval.DOCXreader import DOCXReader
 
 
 def test_read_text():
-    test_file_path = r'tests/data_test/CV_docx/AthurAndersen.docx'
+    test_file_path = r'tests/data_test/AthurAndersen.docx'
     result = DOCXReader.read_text(test_file_path)
     # Check if the output is a non-empty string
     assert isinstance(result, str)
