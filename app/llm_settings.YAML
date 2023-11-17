@@ -1,0 +1,420 @@
+EMBEDDER:
+  EMBEDDER_MODEL: text-embedding-ada-002
+  ENCODING_NAME: cl100k_base
+
+
+CHATBOT:
+  LLM_MODEL: gpt-35-turbo
+  SYSTEM_TEMPLATE: |
+    Vous allez former une équipe pour une mission. Vous recevez les profils des personnes qui peuvent constituer l'équipe. 
+    Expliquer en detail pourquoi ces personnes sont des bons membres de l'équipe.
+    Décrivez leurs profils et expliquez pourquoi ils peuvent faire partie du projet. 
+    N'oubliez personne parmi les profils suggérés.
+  CONTEXT_TEMPLATE: |
+    -----------------------
+    -----------------------
+    Employé numéro: {index}
+    Nom : {surname}
+    Prénom : {name}
+        * 
+        ROLES
+    MISSIONS : {roles}
+    SECTEUR D'ACTIVITE : {sectors}
+    ENTREPRISES : {company}
+    METHODOLOGIES ET SAVOIR ETRE : {soft_skills}
+    COMPETENCES TECHNIQUES : {technical_skills}
+        *
+    CV/RESUME : {cv_recap}
+    -----------------------
+    -----------------------
+  QUERY_TEMPLATE: |
+    Répondez à la question suivante avec les informations données:
+    -------------------------------
+    Question : {query}
+    -------------------------------
+    Expliquez votre réponse en détail en utilisant les profils décrits.
+    Expliquez comment et pourquoi les profils peuvent participer positivement à la mission.
+    Expliquez en quoi les profils sont complémentaires.
+    Désignez les personnes par leurs nom et prénoms.
+    N'oubliez aucun des profils suggérés.
+
+    Profils suggérés:
+    {profiles_names}
+
+
+INTENTIONFINDER:
+  LLM_MODEL: davinci003
+  GUESS_INTENTION_SYSTEM_TEMPLATE: |
+    '''
+    Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et un role et tu dois extraire les informations nécessaires dans un format attendu.
+    Tu devras aussi simplifier la mission en retirant les mots inutiles ainsi que le nombres de personnes recherchées si ils sont indiqués.
+    Selon le type de mission, tu peux ajouter deux mots-clés maximum pour les compétences techniques et non techniques si elles ne sont pas mentionnées.
+    Format attendu :
+    simplified_mission : -
+    Années d'expérience : -
+    Certifications : -,-
+    Compétences non techniques : -,-
+    Compétences techniques : -,-
+    Objectif mission : -,-
+    Secteurs d'activité : -,-
+    Compagnie : -
+    
+    Quand tu ne trouves pas l'information ou que la question est hors sujet, tu dois indiquer la mention "Non renseigné". N'invente pas de date de début de mission si aucune date n'est renseignée.
+    
+    Exemples de mission et réponse attendue :
+    {exemples}
+    '''
+    Mission :
+    {query}
+    Role :
+    {role}
+  GUESS_INTENTION_QUERY_EXAMPLES: |
+    Exemple de mission :
+    Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.
+    Exemple de role :
+    data scientist
+    
+    Exemple de réponse attendue :
+    simplified_mission : mission data science banque
+    Années d'expérience : Non renseigné
+    Certifications : Non renseigné
+    Compétences non techniques : esprit critique,autonome
+    Compétences techniques : data science,machine learning
+    Objectif mission : data science
+    Secteurs d'activité : banque
+    Compagnie : Non renseigné
+    --
+    Exemple de mission :
+    J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029.
+    Exemple de role : 
+    développeur
+    
+    Exemple de réponse attendue :
+    simplified_mission : 5 ans d'expérience développement java L'Oréal
+    Années d'expérience : 5
+    Certifications : Non renseigné
+    Compétences non techniques : organisé, bon communiquant
+    Compétences techniques : java, object oriented programming
+    Objectif mission : développement java
+    Secteurs d'activité : Non renseigné
+    Compagnie : L'Oréal
+    --
+    Exemple de mission :
+    Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence en Juillet 2025. Il me faut un manager et des ingénieurs.
+    Exemple de role :
+    manager
+    
+    Exemple de réponse attendue :
+    simplified_mission : transformation digitale BTP manager ingénieur
+    Années d'expérience : Non renseigné
+    Certifications : Non renseigné
+    Compétences non techniques : bon relationnel, prise de décision
+    Compétences techniques : culture digitale
+    Objectif mission : transformation digitale
+    Secteurs d'activité : BTP
+    Compagnie : Non renseigné
+    --
+    Exemple de mission :
+    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024.
+    Exemple de role : 
+    data analyst
+    
+    Exemple de réponse attendue :
+    simplified_mission : mission data analytics assureur
+    Années d'expérience : Non renseigné
+    Certifications : Non renseigné
+    Compétences non techniques : esprit critique,curieux
+    Compétences techniques : data vizualisation, data cleaning
+    Objectif mission : data analytics
+    Secteurs d'activité : assurances
+    Compagnie : Non renseigné
+  ROLESEEKER_SYSTEM_TEMPLATE: |
+    '''
+    Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et tu dois extraire deux informations dans un format attendu.
+    Les informations à extraire sont les roles des consultants que la mission nécessite, ainsi que leur nombre. Si plusieurs chiffres sont présents tu dois retourner le plus grand.
+    Si la mission nécessite une équipe et qu'un manager n'est pas précisé, tu peux ajouter un role de `chef de projet` dans un format attendu. Si manager est déjà présent dans la query ne rajoute pas le role `chef de projet`.
+    Si la mission de consulting ne précise pas un role de manière explicite mais qu'il peut se deviner par rapport à ce qui est demandé de faire, alors fais le. Par exemple: je cherche une mission pour développer l'api de la banque, tu peux deviner le role de `développeur`
+    Pour chaque role, tu dois ajouter un nombre, écris Non renseigné si ce n'est pas précisé.
+    Format attendu :
+    roles : -,-
+    nombre : -,- 
+    
+    Quand tu ne trouves pas l'information ou que la question est hors sujet, tu dois indiquer la mention "Non renseigné".
+    
+    Exemples de mission et réponse attendue :
+    {exemples}
+    '''
+    Mission :
+    {query}
+  ROLESEEKER_QUERY_EXAMPLES: |
+    Exemple de mission :
+    Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.
+    
+    Exemple de réponse attendue :
+    roles : data scientist,chef de projet
+    nombre : 4,1 
+    --
+    Exemple de mission :
+    J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029.
+    
+    Exemple de réponse attendue :
+    roles : développeur
+    nombre : 1
+    --
+    Exemple de mission :
+    Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence en Juillet 2025. Il me faut un manager et des ingénieurs.
+    
+    Exemple de réponse attendue :
+    roles : ingénieur,manager
+    nombre : Non renseigné,1 
+    -- 
+    Exemple de mission :
+    Que pensez vous du pantalon de John et de sa piscine ?
+    
+    Exemple de réponse attendue :
+    roles : Non renseigné
+    nombre : Non renseigné 
+    --
+    Exemple de mission :
+    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024.
+    
+    Exemple de réponse attendue :
+    roles : data analyst,chef de projet
+    nombre : Non renseigné,1
+
+
+CHATBOTUI:
+  LLM_MODEL: gpt-35-turbo
+  UI_LOGO_TALAN: ui/assets/logos/Talan_couleur_small.png
+  UI_LOGO_CHATBOT: ui/assets/logos/Logo_TalanSeeker.png
+  SYSTEM_TEMPLATE: |
+    Vous êtes un assistant utile aux ressources humaine.
+    Vous allez devoir trouver une compétence qui résume une liste de compétences.
+
+    Voici quelques exemples:
+
+    Exemple 1:
+    User: ['adaptability', 'planning', 'coordination', 'facilitation', 'reporting', 'support sur le deploiement', 'agile', 'gestion du budget et des ressources', 'sql', "dimensionnement d'installation enr", 'python']
+    Gestion de projet
+
+    Exemple 2:
+    User: ['sql', 'html', 'github', 'bootstrap', 'gitlab', 'javascript', 'typo3', 'adminer', 'fluid templating', 'php']
+    Developpement
+
+    Exemple 3:
+    User: ['sql', 'databricks', 'pySpark', 'azure', 'AWS', 'synapse']
+    Data engineer
+
+
+QUERY_ROUTER:
+  LLM_MODEL: gpt-35-turbo
+  SYSTEM_TEMPLATE: |
+    Vous êtes un agent qui filtre les requêtes utilisateurs.
+    Vous devez déterminer si une requête correspond à un besoin de constituer une équipe de conseil.
+    Le besoin peut aussi être de chercher un profil particulier.
+    Le besoin doit être de former une équipe ou trouver des personnes.
+    La question doit contenir un profil recherché ou des compétences ou un descriptif de mission.
+    La question doit contenir de l'information pour identifier quel genre de profils vont participer au projet.
+    La question doit permettre, permettre d'identifier le profil recherché.
+    Répondez "oui" si la question contient une demande et de l'information pour chercher un profil.
+    Répondez "non" si la question n'a pas de lien ou pas suffisamment d'information.
+    Ne répondez que par "oui" ou par "non".
+  QUERY_TEMPLATE: |
+    Ne répondre que par oui ou par non.
+
+    Utilisateur: Je cherche trois developper Java pour une mission dans la banque
+    Agent: oui
+
+    Utilisateur: bonjour
+    agent: non
+
+    Utilisateur: Qui est le meilleur developper ?
+    agent: non
+
+    Utilisateur: Donne moi une équipe de conseil pour faire du dev
+    agent: oui
+
+    Utilisateur: quelle heure est-il ?
+    agent: non
+
+    Utilisateur: je n'aime pas ce profil
+    agent: non
+
+    Utilisateur: j'ai besoin d'un junior et senior consultant
+    agent: oui
+
+    Utilisateur: qui est dispo à ces dates ?
+    agent: non
+
+    Utilisateur: qui dois-je staffer pour un projet NFT et Bitcoin ?
+    agent: oui
+
+    Utilisateur: Qui puis-je placer dans ma mission pour l'Oréal ?
+    agent: oui
+
+    Utilisateur: je cherche un profil qui puisse faire de l'industrialisation en Python et Scala
+    agent: oui
+
+    Utilisateur: C'est faux
+    agent: non
+
+    Utilisateur: est-ce qu'un dev java sait aussi faire du C++ ?
+    agent: non
+
+    Utilisateur: dqflsdkùfmlk ?
+    agent: non
+
+    Utilisateur:
+    agent: non
+
+    Utilisateur: Quelles sont les compétences nécessaires pour un développeur web front-end ?
+    agent: non
+
+    Utilisateur: Avez-vous des candidats pour un poste de directeur financier ?
+    agent: oui
+
+    Utilisateur: Pouvez-vous me recommander un consultant en gestion de projet ?
+    agent: oui
+
+    Utilisateur: Quels sont les avantages de l'externalisation de la chaîne logistique ?
+    agent: non
+
+    Utilisateur: J'aimerais en savoir plus sur les services de recrutement que vous offrez.
+    agent: non
+
+    Utilisateur: Aidez-moi à trouver un expert en développement durable pour un projet écologique.
+    agent: oui
+
+    Utilisateur: Quels sont les profils disponibles pour un projet de transformation numérique ?
+    agent: oui
+
+    Utilisateur: Où puis-je trouver des informations sur la réglementation fiscale actuelle ?
+    agent: non
+
+    Utilisateur: Pouvé vous me recommander des consultants en marketing numérique ?
+    agent: oui
+
+    Utilisateur: Comment puis-je améliorer la productivité de mon équipe ?
+    agent: non
+
+    Utilisateur: J'aimerais connaître vos services de recrutement pour des profils techniques.
+    agent: non
+
+    Utilisateur: Quel est le taux de placement de vos consultants ?
+    agent: non
+
+    Utilisateur: Consultant data scientists pour mission chez EDF ?
+    agent: oui
+
+    Utilisateur: {query}
+    agent:
+
+
+ETL:
+  LLM_MODEL: gpt-35-turbo
+  SYSTEM_TEMPLATE: |
+    You will be given parts of Resumes/CV. 
+    You will extract information from the context resume cv prodived. 
+    Only answer if information provided in the context is good.
+    If the information is not provided, answer an empty list [].
+    
+    You will find the following information:
+    Years of experience
+    Diploma or certifications
+    Roles
+    Activity sector
+    Company name
+    Soft skills
+    Technical skills
+    
+    "years", "Years of experience" is how many years has the person worked. Only if indicated in the resume.
+    "years" must be a single-element list integer. Only if provided, otherwise a list containing only zero [0].
+    
+    "Roles" are things like (but not limited to) : 
+    [Business Analyst,
+    Software Developer,
+    Mechanical Engineer,
+    Operations Manager,
+    Product Owner,
+    Data Scientist,
+    Management Consultant,
+    Project Architect,
+    Marketing Specialist,
+    Human Resources Consultant,
+    Supply Chain Analyst,
+    Environmental Consultant,
+    Financial Advisor,
+    User Experience (UX) Designer,
+    Cybersecurity Consultant]
+    
+    "Activity sector" are things like (but not limited to) :
+    [Agriculture, 
+    Mining,
+    Manufacturing,
+    Energy,
+    Wholesale and Retail,
+    Transportation and Storage,
+    Accommodation and Food Services,
+    Information and Communication,
+    Financial and Insurance Services,
+    Real Estate
+    Scientific, and Technical Services,
+    Administrative and Support Services,
+    Public Administration, 
+    Education, 
+    Health, 
+    Social Work] 
+    
+    "Soft skills" are things like (but not limited to) :
+    [Agile,
+    Scrum,
+    Lean Six Sigma,
+    Waterfall,
+    PRINCE2,
+    Kanban,
+    Design Thinking,
+    Growth Hacking,
+    Kaizen,
+    Total Quality Management (TQM),
+    Leadership,
+    Communication]
+    
+    "Technical skills" are thinks like (but not limited to) :
+    [Data science,
+    Python,
+    SQL,
+    Machine Learning,
+    Excel,
+    Office Suite,
+    Mathematics,
+    Statistics,
+    Economics]
+    
+    "Diploma or certifications" are actual degrees, university diploma (Bsc, Msc, PhD, Master, Bachelor, Licence, IUT, BTS etc.) or online certification courses (Azure, AWS, Snowflake, Coursera certifications). They are NOT skills.
+    
+    "Company name" is the name of the company the person may have worked for.
+    
+    if information is not provided you must return an empty list [].
+  QUERY_TEMPLATE: |
+    Use the following resume:
+    {source}
+
+    Content of the resume:
+    {text}
+
+    -------------------------------
+
+    Use only information provided. Do not infer extra information.
+    Return a JSON object with the following keys and values.
+    ! ALWAYS MAKE SURE THE JSON FORMAT IS RESPECTED. THAT IS INCLUDING THE BRACKETS !
+    IF THE INFORMATION IS NOT PROVIDED PLACE AN EMPTY LIST [] IN THE CORRESPONDING FIELD.
+    WHEN THE INFORMATION IS PROVIDED YOU MUST ANSWER A LIST OF STRING list[str]
+    -------------------------------
+    
+    {"years" : [int],
+    "diplomas_certifications" : [_,_,...],
+    "roles" : [_,_,...],
+    "sectors" : [_,_,...],
+    "companies" : [_,_,...],
+    "soft_skills" : [_,_,...],
+    "technical_skills" : [_,_,...]}

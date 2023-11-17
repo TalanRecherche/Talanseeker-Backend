@@ -1,0 +1,12 @@
+venv
+data
+_data_dev
+data_dev
+_data_raw
+_legacy
+__pychache__
+*.pyc
+.idea
+.env_example
+.env
+tests/data_test/
