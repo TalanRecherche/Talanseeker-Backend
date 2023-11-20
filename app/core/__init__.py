@@ -1,6 +1,6 @@
-from .azure_modules.azureblobmanager import AzureBlobManager
-from .azure_modules.azurePGmanager import AzurePGManager
 from app.settings import Settings
+from .azure_modules.azurePGmanager import AzurePGManager
+from .azure_modules.azureblobmanager import AzureBlobManager
 from .kimble.updateDB import KimbleUpdater
 
 azure_blob_manager = AzureBlobManager(Settings())

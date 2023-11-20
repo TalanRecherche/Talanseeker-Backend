@@ -1,5 +1,14 @@
 stages:
+  - code_quality
   - test
+
+code_quality:
+  stage: code_quality
+  image: python:3.10
+  script:
+    - pip install ruff
+    - ruff --version
+    - ruff .
 
 pytest:
   stage: test
@@ -13,6 +22,6 @@ pytest:
     - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | bash
     - pip install -r requirements.txt  # Install your project dependencies
     - pytest -m "not skip_this"
-    
+
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

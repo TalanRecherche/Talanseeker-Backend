@@ -1,5 +1,6 @@
-from app.core import kimble_updater
 from fastapi import Response
+
+from app.core import kimble_updater
 
 
 class KimbleBusiness:

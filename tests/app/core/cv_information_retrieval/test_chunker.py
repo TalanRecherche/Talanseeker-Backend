@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Aug 25 13:51:53 2023
+"""Created on Fri Aug 25 13:51:53 2023
 
 @author: agarc
 
@@ -13,9 +11,9 @@ from app.core.shared_modules.dataframehandler import DataFrameHandler
 
 
 # prepare files
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
-    text_df = DataFrameHandler.load_df('tests/data_test/df_text.pkl')
+    text_df = DataFrameHandler.load_df("tests/data_test/df_text.pkl")
     # make chunks, One row per chunks
     chunker = Chunker()
     df_chunks = chunker.chunk_documents(text_df)
@@ -34,7 +32,11 @@ def test_dataframe_length(setup_data):
 
 def test_chunk_text_format(setup_data):
     df_chunks = setup_data
-    assert df_chunks[CHUNK_DF.chunk_text].apply(lambda x: isinstance(x, str) and len(x) > 0).all()
+    assert (
+        df_chunks[CHUNK_DF.chunk_text]
+        .apply(lambda x: isinstance(x, str) and len(x) > 0)
+        .all()
+    )
 
 
 if __name__ == "__main__":

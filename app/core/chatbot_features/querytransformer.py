@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 14 10:50:00 2023
+"""Created on Thu Sep 14 10:50:00 2023
 
 @author: agarc
 
@@ -8,28 +6,24 @@ Created on Thu Sep 14 10:50:00 2023
 
 import pandas as pd
 
+from app.core.models.query_pandasmodels import QUERY_KEYWORDS, QUERY_STRUCT
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.core.models.query_pandasmodels import QUERY_KEYWORDS
-from app.core.models.query_pandasmodels import QUERY_STRUCT
-from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
 
 class QueryTransformer:
-    """ This class generate the keywords/semantic queries to compute similarities. """
+    """This class generate the keywords/semantic queries to compute similarities."""
 
     def __init__(self, settings):
         # initialize embedder to vectorized query for semantic search
         self.embedder = EmbedderBackend(settings)
-        pass
 
     # =============================================================================
     # user functions
     # =============================================================================
     def get_keywords_query(self, row_df_query: pd.DataFrame) -> list[str] | None:
-        """
-        Generate a list of keywords for the keyword search
+        """Generate a list of keywords for the keyword search
 
         Parameters
         ----------
@@ -51,24 +45,29 @@ class QueryTransformer:
         # concatenate keywords which will be used during the profile scoring
         list_keywords = ListHandler.flatten_list(filtered_df.values.tolist())
         # split
-        list_keywords = [elem.split(',') for elem in list_keywords]
+        list_keywords = [elem.split(",") for elem in list_keywords]
         # reflatten
         list_keywords = ListHandler.flatten_list(list_keywords)
         # normalise strings and remove empties
-        list_keywords = [StringHandler.normalize_string(string) for string in list_keywords if string != '']
+        list_keywords = [
+            StringHandler.normalize_string(string)
+            for string in list_keywords
+            if string != ""
+        ]
         # getting rid of duplicates
         list_keywords = list(set(list_keywords))
         # replace "useless" characters
-        list_keywords = [StringHandler.replace_in_string(string) for string in list_keywords]
+        list_keywords = [
+            StringHandler.replace_in_string(string) for string in list_keywords
+        ]
         # remove useless keywords typically found in guessIntention
-        to_remove = ['non renseigne', '', '_', 'n.a.', 'unknown', 'renseigne']
+        to_remove = ["non renseigne", "", "_", "n.a.", "unknown", "renseigne"]
         list_keywords = [string for string in list_keywords if string not in to_remove]
 
         return list_keywords
 
     def get_embedded_query(self, row_df_query: pd.DataFrame) -> list[float]:
-        """
-        Generate the embedded query used during similarity search
+        """Generate the embedded query used during similarity search
 
         Parameters
         ----------
@@ -92,8 +91,7 @@ class QueryTransformer:
     # internal functions
     # =============================================================================
     def _get_semantic(self, row_df_query: pd.DataFrame) -> str:
-        """
-        Select fields which will be used as k
+        """Select fields which will be used as k
 
         Parameters
         ----------
@@ -109,14 +107,13 @@ class QueryTransformer:
         try:  # try to get GuessIntension simplified query
             query_string = "Profil recherché:\n"
             query_string += row_df_query[QUERY_STRUCT.simplified_query].values[0]
-        except:  # else we take the user query
+        except Exception:  # else we take the user query
             query_string = row_df_query[QUERY_STRUCT.user_query].values[0]
 
         return query_string
 
     def _embed_query(self, query: str) -> list[float]:
-        """
-        Generate embeddings from a string using the llmbackend module
+        """Generate embeddings from a string using the llmbackend module
 
         Parameters
         ----------

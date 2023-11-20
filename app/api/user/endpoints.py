@@ -1,13 +1,12 @@
-from fastapi import  HTTPException, Depends
-
-from app.exceptions.exceptions import UserIntegrityException
-from app.models import get_db
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+from app.models import get_db
 from app.models.user import User
-from app.schema.user import UserCreate, UserUpdate, UserResponse
-from fastapi import APIRouter
+from app.schema.user import UserCreate, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/user")
+
 
 @router.get("/")
 def get_all_users(db: Session = Depends(get_db)):
@@ -24,13 +23,14 @@ def get_user_by_email(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    try:
-        db_user = User(email=user.email, pwd=user.pwd, authorizations=user.authorizations)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-    except:
-        raise(UserIntegrityException)
+    db_user = User(
+        email=user.email,
+        pwd=user.pwd,
+        authorizations=user.authorizations,
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
     return db_user
 
 
@@ -39,7 +39,6 @@ def update_user_by_email(user_id: int, user: UserUpdate, db: Session = Depends(g
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    db_user.name = user.name
     db_user.email = user.email
     db.commit()
     return {"message": "User updated successfully"}

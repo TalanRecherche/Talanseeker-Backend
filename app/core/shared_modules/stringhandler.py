@@ -1,27 +1,27 @@
-"""
-Created by agarc at 01/10/2023
+"""Created by agarc at 01/10/2023
 Features:
 """
 import hashlib
-from difflib import SequenceMatcher
-from unidecode import unidecode
 import re
+from difflib import SequenceMatcher
+
+from unidecode import unidecode
 
 
 class StringHandler:
-
     @staticmethod
     def normalize_string(string: str, remove_special_chars: bool = False) -> str:
-        """ remove trailing spaces and new lines
+        """Remove trailing spaces and new lines
         remove accents, non ascii characters and upper cases
-        if remove_special_chars is True it will also remove any space"""
+        if remove_special_chars is True it will also remove any space
+        """
         try:
             string = string.strip()
             string = string.rstrip()
             string = string.lower()
             string = unidecode(string)
             if remove_special_chars:
-                string = re.sub('[^a-zA-Z]', '', string)
+                string = re.sub("[^a-zA-Z]", "", string)
         except Exception:
             pass
         return string
@@ -34,34 +34,39 @@ class StringHandler:
 
     @staticmethod
     def remove_similar_strings(strings: list[str], threshold=0.8) -> list[str]:
-        """Fuzzy string removal. Remove similar strings from a list based on a similarity threshold."""
-
+        """Fuzzy string removal. Remove similar strings from a list based on a
+        similarity threshold."""
         unique_strings = []
         for s in strings:
-            if not any(StringHandler.check_similarity_string(s, u, threshold) for u in unique_strings):
+            if not any(
+                StringHandler.check_similarity_string(s, u, threshold)
+                for u in unique_strings
+            ):
                 unique_strings.append(s)
         return unique_strings
 
     @staticmethod
     def generate_unique_id(input_string: str) -> str:
-        """ Use Sha to create unique ids"""
+        """Use Sha to create unique ids"""
         sha256 = hashlib.sha256()
-        sha256.update(input_string.encode('utf-8'))
+        sha256.update(input_string.encode("utf-8"))
         unique_id = sha256.hexdigest()
         return unique_id
 
     @staticmethod
     def replace_in_string(input_string: str, string_replacements: dict = None) -> str:
-        """ Replace characters in strings using a hashmap (keys mapped to values) """
+        """Replace characters in strings using a hashmap (keys mapped to values)"""
         if string_replacements is None:
-            string_replacements = {'not provided': '',
-                                   '(': '',
-                                   ')': '',
-                                   '/': ',',
-                                   '[': '',
-                                   ']': '',
-                                   '  ': ' ',
-                                   '   ': ' '}
+            string_replacements = {
+                "not provided": "",
+                "(": "",
+                ")": "",
+                "/": ",",
+                "[": "",
+                "]": "",
+                "  ": " ",
+                "   ": " ",
+            }
 
         for target, replacement in string_replacements.items():
             input_string = input_string.replace(target, replacement)
@@ -70,13 +75,16 @@ class StringHandler:
         return output_string
 
     @staticmethod
-    def string_to_list_with_separator(input_string: str, separator: str = ','):
+    def string_to_list_with_separator(input_string: str, separator: str = ","):
         """Converts a text separated by the separator into a list of unique values.
+
         Args:
+        ----
             separator: str
             input_string: str
 
         Returns:
+        -------
             list[str]: List of unique values.
         """
         list_text = input_string.split(separator)

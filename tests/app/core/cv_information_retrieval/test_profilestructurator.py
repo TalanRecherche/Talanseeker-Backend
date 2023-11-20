@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep  1 17:00:41 2023
+"""Created on Fri Sep  1 17:00:41 2023
 
 @author: agarc
 
 """
 import pytest
+
 from app.core.cv_information_retrieval.profilestructurator import ProfileStructurator
-from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
+from app.core.shared_modules.dataframehandler import DataFrameHandler
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
     df_struct_cvs = r"tests/data_test/df_struct_cvs.pkl"
     loaded_struct_cvs = DataFrameHandler.load_df(df_struct_cvs)

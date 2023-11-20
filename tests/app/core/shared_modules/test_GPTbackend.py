@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 22 14:59:58 2023
+r"""Created on Tue Aug 22 14:59:58 2023
 
 @author: agarc
 
 /!\ THIS TESTS CALLS THE OPENAI API AND WILL BE BILLED /!\
 """
 import pytest
+
 from app.core.shared_modules.GPTbackend import GPTBackend
 from app.settings import Settings
 
@@ -16,7 +15,9 @@ query = "What is the capital of France?"
 system_function = "Answer questions about capitals."
 
 
-@pytest.mark.skip_this(reason="Skipping test from running because it is calling OpenAI-API")
+@pytest.mark.skip_this(
+    reason="Skipping test from running because it is calling OpenAI-API",
+)
 def test_send_receive_message_response_type():
     llm_backend = GPTBackend(LLM_MODEL)
 

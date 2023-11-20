@@ -1,5 +1,8 @@
+from sqlalchemy import Column, String
+
 from app.models import Base
-from sqlalchemy import Column, Integer, String
+
+
 class PG_Chunks(Base):
     __tablename__ = "chunks"
 
@@ -7,5 +10,4 @@ class PG_Chunks(Base):
     cv_id = Column(String)
     profile_id = Column(String)
     chunk_text = Column(String)
-    chunk_embeddings = Column(String) #TODO: change to array of floats
-
+    chunk_embeddings = Column(String)  # TODO: change to array of floats

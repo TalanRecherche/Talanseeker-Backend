@@ -1,14 +1,12 @@
-"""
-Created by agarc at 11/10/2023
+"""Created by agarc at 11/10/2023
 Features:
 """
-from app.settings import Settings
 from app.core.shared_modules.GPTbackend import GPTBackend
 from app.core.shared_modules.stringhandler import StringHandler
+from app.settings import Settings
 
 
 class QueryRouter:
-
     def __init__(self, settings):
         # engine
         self.engine = settings.query_router_settings.query_router_llm_model
@@ -27,24 +25,28 @@ class QueryRouter:
         self.current_nb_tokens = 0
 
         # initialize the backend llm
-        self.llm_backend = GPTBackend(self.engine, max_token_in_response=max_tokens_in_response)
+        self.llm_backend = GPTBackend(
+            self.engine,
+            max_token_in_response=max_tokens_in_response,
+        )
 
         # encoding name is used to compute number of tokens in context
         self.encoding_name = settings.embedder_settings.encoding_name
 
         # string matching variables
         self.threshold = 0.9
-        self.target_strings = ['oui', 'non']
+        self.target_strings = ["oui", "non"]
 
     #####################################################
     #   ## user functions
     #####################################################
 
     def get_router_response(self, user_query: str) -> bool:
-        """
-        This function sends the user_query to the llm.
-        If the LLM answers yes no no, or something close (fuzzy matching) -> we return a bool
-        Else, the query is resent to the llm with the added mention that the format was not correct.
+        """This function sends the user_query to the llm.
+        If the LLM answers yes no no, or something close (fuzzy matching) -> we return
+        a bool
+        Else, the query is resent to the llm with the added mention that the format was
+        not correct.
 
         output: bool
             True : the query is a staffing question
@@ -82,14 +84,21 @@ class QueryRouter:
     #####################################################
     def _parse_llm_response(self, llm_response) -> bool:
         # normalize string
-        llm_response = StringHandler.normalize_string(llm_response, remove_special_chars=True)
+        llm_response = StringHandler.normalize_string(
+            llm_response,
+            remove_special_chars=True,
+        )
 
         # check if the answer is yes
         if llm_response == self.target_strings[0]:
             return True
 
         # check if the answer is close to yes
-        if StringHandler.check_similarity_string(llm_response, self.target_strings[0], self.threshold):
+        if StringHandler.check_similarity_string(
+            llm_response,
+            self.target_strings[0],
+            self.threshold,
+        ):
             return True
 
         # return False is llm_response is far from yes
@@ -97,7 +106,10 @@ class QueryRouter:
 
     def _check_llm_response(self, llm_response) -> bool:
         # normalize string
-        llm_response = StringHandler.normalize_string(llm_response, remove_special_chars=True)
+        llm_response = StringHandler.normalize_string(
+            llm_response,
+            remove_special_chars=True,
+        )
 
         # check if string is empty
         if len(llm_response) == 0:
@@ -113,7 +125,11 @@ class QueryRouter:
 
         # check if string is close to any targets
         for target in self.target_strings:
-            if StringHandler.check_similarity_string(llm_response, target, self.threshold):
+            if StringHandler.check_similarity_string(
+                llm_response,
+                target,
+                self.threshold,
+            ):
                 return True
 
         # we return False if no condition is met
@@ -129,11 +145,16 @@ class QueryRouter:
 
     def _make_newquery_string(self, user_query: str, llm_response: str) -> str:
         # second attempt with new query
-        newquery_query_string = self.query_string + llm_response + '\n\n'
-        newquery_query_string += "**Votre réponse n'est pas au bon format. Répondez par oui ou non.**\n"
+        newquery_query_string = self.query_string + llm_response + "\n\n"
+        newquery_query_string += (
+            "**Votre réponse n'est pas au bon format. Répondez par oui ou non.**\n"
+        )
         newquery_query_string += "Utilisateur: {query_2}\n"
         newquery_query_string += "Agent: "
-        newquery_query_string = newquery_query_string.format(query=user_query, query_2=user_query)
+        newquery_query_string = newquery_query_string.format(
+            query=user_query,
+            query_2=user_query,
+        )
         return newquery_query_string
 
     def _get_llm_response(self, query_string: str, system_string: str) -> str:
@@ -141,22 +162,20 @@ class QueryRouter:
         return response
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import json
 
-
     def load_queries_from_json(json_file):
-        with open(json_file, 'r', encoding='utf-8') as file:
+        with open(json_file, encoding="utf-8") as file:
             data = json.load(file)
 
         queries = {}
-        for entry in data['questions']:
-            queries[entry['query']] = entry['label']
+        for entry in data["questions"]:
+            queries[entry["query"]] = entry["label"]
 
         return queries
 
-
-    queries = load_queries_from_json('tests/data_test/queryrouter_json/testset.JSON')
+    queries = load_queries_from_json("tests/data_test/queryrouter_json/testset.JSON")
 
     settings = Settings()
     router = QueryRouter(settings)

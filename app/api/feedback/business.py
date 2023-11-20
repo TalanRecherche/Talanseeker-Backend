@@ -1,6 +1,7 @@
+from fastapi.responses import JSONResponse
+
 from app.models.feedback import FeedbacksModel
 from app.schema.feedback import FeedbackRequest
-from fastapi.responses import JSONResponse
 
 
 class FeedbackBusiness:
@@ -10,7 +11,7 @@ class FeedbackBusiness:
             query_id=request.query_id,
             collab_id=request.collab_id,
             evaluation=request.feedback,
-            user_id=request.user_id
+            user_id=request.user_id,
         )
         feedback.add()
         return JSONResponse(status_code=200, content="Success")
@@ -21,7 +22,7 @@ class FeedbackBusiness:
             query_id=request.query_id,
             collab_id=request.collab_id,
             evaluation=request.feedback,
-            user_id=request.user_id
+            user_id=request.user_id,
         )
         feedback.patch()
         return JSONResponse(status_code=200, content="Success")

@@ -1,20 +1,31 @@
-from typing import List
-
 import pandas as pd
 
 from app.core.chatbot_features.PGfetcher import PGfetcher
-from app.core.models.PG_pandasmodels import COLLAB_PG, PROFILE_PG, CV_PG
-from app.schema.search import CvsInformation, SearchResponse, SearchRequest, Candidate, GeneralInformation
+from app.core.models.PG_pandasmodels import COLLAB_PG, CV_PG, PROFILE_PG
+from app.schema.search import (
+    Candidate,
+    CvsInformation,
+    GeneralInformation,
+    SearchRequest,
+    SearchResponse,
+)
 from app.settings import Settings
 
 
-def df_to_candidate_schema(profiles_data: pd.DataFrame, cvs: pd.DataFrame) -> List[Candidate]:
+def df_to_candidate_schema(
+    profiles_data: pd.DataFrame,
+    cvs: pd.DataFrame,
+) -> list[Candidate]:
     candidates = []
     profiles_data.apply(row_to_candidate_schema, axis=1, candidates=candidates, cvs=cvs)
     return candidates
 
 
-def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd.DataFrame) -> None:
+def row_to_candidate_schema(
+    row: pd.Series,
+    candidates: list[Candidate],
+    cvs: pd.DataFrame,
+) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
         collab_id=row[COLLAB_PG.collab_id],
@@ -34,14 +45,22 @@ def row_to_candidate_schema(row: pd.Series, candidates: List[Candidate], cvs: pd
         sectors=row[PROFILE_PG.sectors],
         companies=row[PROFILE_PG.companies],
         soft_skills=row[PROFILE_PG.soft_skills],
-        technical_skills=row[PROFILE_PG.technical_skills])
+        technical_skills=row[PROFILE_PG.technical_skills],
+    )
 
     # get cv of the profile
-    collab_cvs = list(cvs[cvs[COLLAB_PG.collab_id] == row[COLLAB_PG.collab_id]][
-                          [CV_PG.cv_id, CV_PG.file_full_name]].T.to_dict().values())
+    collab_cvs = list(
+        cvs[cvs[COLLAB_PG.collab_id] == row[COLLAB_PG.collab_id]][
+            [CV_PG.cv_id, CV_PG.file_full_name]
+        ]
+        .T.to_dict()
+        .values(),
+    )
     # adjust naming file_full_name => cv_name
-    candidate.cvs_information = [CvsInformation(cv_id=cv[CV_PG.cv_id], cv_name=cv[CV_PG.file_full_name]) for cv in
-                                 collab_cvs]
+    candidate.cvs_information = [
+        CvsInformation(cv_id=cv[CV_PG.cv_id], cv_name=cv[CV_PG.file_full_name])
+        for cv in collab_cvs
+    ]
     candidates.append(candidate)
 
 
