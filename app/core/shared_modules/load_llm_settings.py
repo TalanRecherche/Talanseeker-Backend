@@ -1,18 +1,16 @@
-"""
-Created by agarc at 23/10/2023
+"""Created by agarc at 23/10/2023
 Features:
 """
-import os
 import logging
+import os
+
 import yaml
 
 
 def load_llm_settings(llm_settings_file="app/llm_settings.YAML"):
-    """
-    loads llm settings YAML file and push the data to environment variable.
-    """
+    """Loads llm settings YAML file and push the data to environment variable."""
     if os.path.exists(llm_settings_file):
-        with open(llm_settings_file, "r", encoding="utf-8") as file:
+        with open(llm_settings_file, encoding="utf-8") as file:
             llm_settings = yaml.safe_load(file)
         # push all values in os.environ variables
         for key_1, dict_2 in llm_settings.items():
@@ -21,7 +19,10 @@ def load_llm_settings(llm_settings_file="app/llm_settings.YAML"):
                 os.environ[environ_key] = value
         logging.info("llm settings.YAML loaded and pushed to os.environ variables.")
     else:
-        logging.info("llm settings.YAML does not exists. Nothing pushed to os.environ variables.")
+        logging.info(
+            "llm settings.YAML does not exists. Nothing pushed to os.environ "
+            "variables."
+        )
         raise FileNotFoundError(f"{llm_settings_file} does not exist.")
 
     return llm_settings

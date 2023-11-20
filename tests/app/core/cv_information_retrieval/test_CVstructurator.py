@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 23 10:00:25 2023
+"""Created on Wed Aug 23 10:00:25 2023
 
 @author: agarc
 
 """
 import pytest
+
 from app.core.cv_information_retrieval.CVstructurator import CvStructurator
-from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.models.ETL_pandasmodels import STRUCTCV_DF
+from app.core.shared_modules.dataframehandler import DataFrameHandler
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
     chunked_parsed_path = r"tests/data_test/df_parsed_chunks.pkl"
     loaded_parsed_chunks = DataFrameHandler.load_df(chunked_parsed_path)

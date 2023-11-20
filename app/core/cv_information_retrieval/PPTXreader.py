@@ -1,31 +1,31 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 30 14:27:23 2023
+"""Created on Wed Aug 30 14:27:23 2023
 
 @author: agarc
 
 """
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+
 from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
 class PPTXReader(ABCReader):
-
     @staticmethod
     def read_text(file_path: str) -> str | None:
-        """
-        Read all text from a PowerPoint (PPTX) file.
+        """Read all text from a PowerPoint (PPTX) file.
+
         Args:
+        ----
         file_path (str): The path of the PPTX file.
+
         Returns:
+        -------
         str: The extracted text from the PPTX file.
 
         Dependencies:
         from pptx import Presentation
         from pptx.enum.shapes import MSO_SHAPE_TYPE
         """
-
         # load presentation
         prs = Presentation(file_path)
         # instantiate empty output
@@ -39,20 +39,23 @@ class PPTXReader(ABCReader):
                     text_runs.append(shape_text)
 
         # remove special characters
-        text_runs = [run.encode('latin-1', errors='ignore').decode('latin-1') for run in text_runs]
+        text_runs = [
+            run.encode("latin-1", errors="ignore").decode("latin-1")
+            for run in text_runs
+        ]
 
         # remove trailing spaces
         text_runs = [run.strip() for run in text_runs]
 
         # generate full text
-        text = '\n\n\n'.join(text_runs)
+        text = "\n\n\n".join(text_runs)
         # triple spaces are mapped to line breaks
-        text = text.replace('   ', '\n')
+        text = text.replace("   ", "\n")
         # remove multiple spaces
-        text = text.replace('  ', ' ')
+        text = text.replace("  ", " ")
 
         # remove trailing spaces and linebreaks
-        text = text.rstrip('\n')
+        text = text.rstrip("\n")
         text = text.strip()
 
         # return only if not empty
@@ -63,8 +66,7 @@ class PPTXReader(ABCReader):
 
     @staticmethod
     def _extract_text_from_shape(shape) -> str:
-        """
-        Extract any text from multiple shapes types
+        """Extract any text from multiple shapes types
         This could be defined recursively also but this seems easier that way.
         """
         sub_texts = []

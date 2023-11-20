@@ -1,7 +1,7 @@
+from sqlalchemy import Column, String, select
 from sqlalchemy.orm import Session
 
 from app.models import Base, engine
-from sqlalchemy import Column, Integer, String, select
 
 
 class PG_CVs(Base):

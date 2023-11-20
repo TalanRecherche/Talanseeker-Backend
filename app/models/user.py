@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from app.models import Base
@@ -12,7 +12,3 @@ class User(Base):
     email = Column(String, unique=True)
     activated = Column(Boolean, default=True)
     authorizations = Column(ARRAY(Integer))
-
-
-    def __repr__(self):
-        return f"{self.f_name} {self.l_name} {self.email} {self.activated} {self.authorizations}"

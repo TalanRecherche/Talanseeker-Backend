@@ -13,6 +13,6 @@ pytest:
     - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | bash
     - pip install -r requirements.txt  # Install your project dependencies
     - pytest -m "not skip_this"
-    
+
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

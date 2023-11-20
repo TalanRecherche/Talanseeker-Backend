@@ -6,9 +6,9 @@ EMBEDDER:
 CHATBOT:
   LLM_MODEL: gpt-35-turbo
   SYSTEM_TEMPLATE: |
-    Vous allez former une équipe pour une mission. Vous recevez les profils des personnes qui peuvent constituer l'équipe. 
+    Vous allez former une équipe pour une mission. Vous recevez les profils des personnes qui peuvent constituer l'équipe.
     Expliquer en detail pourquoi ces personnes sont des bons membres de l'équipe.
-    Décrivez leurs profils et expliquez pourquoi ils peuvent faire partie du projet. 
+    Décrivez leurs profils et expliquez pourquoi ils peuvent faire partie du projet.
     N'oubliez personne parmi les profils suggérés.
   CONTEXT_TEMPLATE: |
     -----------------------
@@ -16,7 +16,7 @@ CHATBOT:
     Employé numéro: {index}
     Nom : {surname}
     Prénom : {name}
-        * 
+        *
         ROLES
     MISSIONS : {roles}
     SECTEUR D'ACTIVITE : {sectors}
@@ -58,9 +58,9 @@ INTENTIONFINDER:
     Objectif mission : -,-
     Secteurs d'activité : -,-
     Compagnie : -
-    
+
     Quand tu ne trouves pas l'information ou que la question est hors sujet, tu dois indiquer la mention "Non renseigné". N'invente pas de date de début de mission si aucune date n'est renseignée.
-    
+
     Exemples de mission et réponse attendue :
     {exemples}
     '''
@@ -73,7 +73,7 @@ INTENTIONFINDER:
     Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.
     Exemple de role :
     data scientist
-    
+
     Exemple de réponse attendue :
     simplified_mission : mission data science banque
     Années d'expérience : Non renseigné
@@ -86,9 +86,9 @@ INTENTIONFINDER:
     --
     Exemple de mission :
     J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029.
-    Exemple de role : 
+    Exemple de role :
     développeur
-    
+
     Exemple de réponse attendue :
     simplified_mission : 5 ans d'expérience développement java L'Oréal
     Années d'expérience : 5
@@ -103,7 +103,7 @@ INTENTIONFINDER:
     Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence en Juillet 2025. Il me faut un manager et des ingénieurs.
     Exemple de role :
     manager
-    
+
     Exemple de réponse attendue :
     simplified_mission : transformation digitale BTP manager ingénieur
     Années d'expérience : Non renseigné
@@ -116,9 +116,9 @@ INTENTIONFINDER:
     --
     Exemple de mission :
     Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024.
-    Exemple de role : 
+    Exemple de role :
     data analyst
-    
+
     Exemple de réponse attendue :
     simplified_mission : mission data analytics assureur
     Années d'expérience : Non renseigné
@@ -137,10 +137,10 @@ INTENTIONFINDER:
     Pour chaque role, tu dois ajouter un nombre, écris Non renseigné si ce n'est pas précisé.
     Format attendu :
     roles : -,-
-    nombre : -,- 
-    
+    nombre : -,-
+
     Quand tu ne trouves pas l'information ou que la question est hors sujet, tu dois indiquer la mention "Non renseigné".
-    
+
     Exemples de mission et réponse attendue :
     {exemples}
     '''
@@ -149,35 +149,35 @@ INTENTIONFINDER:
   ROLESEEKER_QUERY_EXAMPLES: |
     Exemple de mission :
     Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.
-    
+
     Exemple de réponse attendue :
     roles : data scientist,chef de projet
-    nombre : 4,1 
+    nombre : 4,1
     --
     Exemple de mission :
     J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029.
-    
+
     Exemple de réponse attendue :
     roles : développeur
     nombre : 1
     --
     Exemple de mission :
     Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence en Juillet 2025. Il me faut un manager et des ingénieurs.
-    
+
     Exemple de réponse attendue :
     roles : ingénieur,manager
-    nombre : Non renseigné,1 
-    -- 
+    nombre : Non renseigné,1
+    --
     Exemple de mission :
     Que pensez vous du pantalon de John et de sa piscine ?
-    
+
     Exemple de réponse attendue :
     roles : Non renseigné
-    nombre : Non renseigné 
+    nombre : Non renseigné
     --
     Exemple de mission :
     Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024.
-    
+
     Exemple de réponse attendue :
     roles : data analyst,chef de projet
     nombre : Non renseigné,1
@@ -313,11 +313,11 @@ QUERY_ROUTER:
 ETL:
   LLM_MODEL: gpt-35-turbo
   SYSTEM_TEMPLATE: |
-    You will be given parts of Resumes/CV. 
-    You will extract information from the context resume cv prodived. 
+    You will be given parts of Resumes/CV.
+    You will extract information from the context resume cv prodived.
     Only answer if information provided in the context is good.
     If the information is not provided, answer an empty list [].
-    
+
     You will find the following information:
     Years of experience
     Diploma or certifications
@@ -326,11 +326,11 @@ ETL:
     Company name
     Soft skills
     Technical skills
-    
+
     "years", "Years of experience" is how many years has the person worked. Only if indicated in the resume.
     "years" must be a single-element list integer. Only if provided, otherwise a list containing only zero [0].
-    
-    "Roles" are things like (but not limited to) : 
+
+    "Roles" are things like (but not limited to) :
     [Business Analyst,
     Software Developer,
     Mechanical Engineer,
@@ -346,9 +346,9 @@ ETL:
     Financial Advisor,
     User Experience (UX) Designer,
     Cybersecurity Consultant]
-    
+
     "Activity sector" are things like (but not limited to) :
-    [Agriculture, 
+    [Agriculture,
     Mining,
     Manufacturing,
     Energy,
@@ -360,11 +360,11 @@ ETL:
     Real Estate
     Scientific, and Technical Services,
     Administrative and Support Services,
-    Public Administration, 
-    Education, 
-    Health, 
-    Social Work] 
-    
+    Public Administration,
+    Education,
+    Health,
+    Social Work]
+
     "Soft skills" are things like (but not limited to) :
     [Agile,
     Scrum,
@@ -378,7 +378,7 @@ ETL:
     Total Quality Management (TQM),
     Leadership,
     Communication]
-    
+
     "Technical skills" are thinks like (but not limited to) :
     [Data science,
     Python,
@@ -389,11 +389,11 @@ ETL:
     Mathematics,
     Statistics,
     Economics]
-    
+
     "Diploma or certifications" are actual degrees, university diploma (Bsc, Msc, PhD, Master, Bachelor, Licence, IUT, BTS etc.) or online certification courses (Azure, AWS, Snowflake, Coursera certifications). They are NOT skills.
-    
+
     "Company name" is the name of the company the person may have worked for.
-    
+
     if information is not provided you must return an empty list [].
   QUERY_TEMPLATE: |
     Use the following resume:
@@ -410,7 +410,7 @@ ETL:
     IF THE INFORMATION IS NOT PROVIDED PLACE AN EMPTY LIST [] IN THE CORRESPONDING FIELD.
     WHEN THE INFORMATION IS PROVIDED YOU MUST ANSWER A LIST OF STRING list[str]
     -------------------------------
-    
+
     {"years" : [int],
     "diplomas_certifications" : [_,_,...],
     "roles" : [_,_,...],

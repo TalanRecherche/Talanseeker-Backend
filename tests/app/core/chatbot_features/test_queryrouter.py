@@ -1,27 +1,30 @@
-"""
-Created by agarc at 11/10/2023
+"""Created by agarc at 11/10/2023
 Features:
 """
-import pytest
-from app.core.chatbot_features.queryrouter import QueryRouter
 import json
+
+import pytest
+
+from app.core.chatbot_features.queryrouter import QueryRouter
 from app.settings import Settings
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
-    data_path = 'tests/data_test/queryrouter_json/testset.JSON'
-    with open(data_path, 'r', encoding='utf-8') as file:
+    data_path = "tests/data_test/queryrouter_json/testset.JSON"
+    with open(data_path, encoding="utf-8") as file:
         data = json.load(file)
 
     queries = {}
-    for entry in data['questions']:
-        queries[entry['query']] = entry['label']
+    for entry in data["questions"]:
+        queries[entry["query"]] = entry["label"]
 
     return queries
 
 
-@pytest.mark.skip_this(reason="Skipping test from running because it is calling OpenAI-API")
+@pytest.mark.skip_this(
+    reason="Skipping test from running because it is calling OpenAI-API",
+)
 def test_queryrouter(setup_data):
     queries = setup_data
 
@@ -33,5 +36,5 @@ def test_queryrouter(setup_data):
         assert response == label
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

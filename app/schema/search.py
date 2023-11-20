@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import Optional
 
-from typing import List, Optional
+from pydantic import BaseModel
 
 
 class SearchRequest(BaseModel):
-    region: Optional[List[str]] = None
-    city: Optional[List[str]] = None
-    grade: Optional[List[str]] = None
+    region: Optional[list[str]] = None
+    city: Optional[list[str]] = None
+    grade: Optional[list[str]] = None
     assigned_until: Optional[str] = None
     availability_score: Optional[int] = None
 
@@ -26,12 +26,12 @@ class GeneralInformation(BaseModel):
     assigned_until: Optional[str] = None
     availability_score: Optional[str] = None
     years: Optional[str] = None
-    diplomas_certifications: Optional[List[str]] = None
-    roles: Optional[List[str]] = None
-    sectors: Optional[List[str]] = None
-    companies: Optional[List[str]] = None
-    soft_skills: Optional[List[str]] = None
-    technical_skills: Optional[List[str]] = None
+    diplomas_certifications: Optional[list[str]] = None
+    roles: Optional[list[str]] = None
+    sectors: Optional[list[str]] = None
+    companies: Optional[list[str]] = None
+    soft_skills: Optional[list[str]] = None
+    technical_skills: Optional[list[str]] = None
 
 
 class CvsInformation(BaseModel):
@@ -41,7 +41,8 @@ class CvsInformation(BaseModel):
 
 class Candidate(BaseModel):
     general_information: Optional[GeneralInformation] = None
-    cvs_information: Optional[List[CvsInformation]] = None
+    cvs_information: Optional[list[CvsInformation]] = None
+
 
 class SearchResponse(BaseModel):
-    candidates: Optional[List[Candidate]] = None
+    candidates: Optional[list[Candidate]] = None

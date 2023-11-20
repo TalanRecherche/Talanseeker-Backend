@@ -1,7 +1,7 @@
-from fastapi import Depends, UploadFile, File
-from app.schema.cv_manager import CVUploadRequest, CVDownloadRequest
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, File, UploadFile
+
 from app.api.cv_manager.business import CVManagerBusiness
+from app.schema.cv_manager import CVDownloadRequest, CVUploadRequest
 
 router = APIRouter(prefix="/cv_manager")
 

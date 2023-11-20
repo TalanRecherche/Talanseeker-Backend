@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 22 14:59:58 2023
+"""Created on Tue Aug 22 14:59:58 2023
 
 @author: agarc
 
 """
 import logging
 import time
+
 import openai
 
 
@@ -24,15 +23,12 @@ class LLMBackend:
         self.presence_penalty = 0
         self.stop = None
         self.request_timeout = 30
-        pass
 
     # =============================================================================
     # user functions
     # =============================================================================
     def send_receive_message(self, query: str, system_function: str) -> str:
-        """
-        send single message: set role system and append to payload
-        """
+        """Send single message: set role system and append to payload"""
         # make payload
         payload = self._make_payload(query, system_function)
         # get llm response
@@ -44,8 +40,7 @@ class LLMBackend:
     # =============================================================================
 
     def _make_payload(self, query: str, system_function: str) -> list[dict]:
-        """
-        Generate the payload list[hashmap] according to openAI format
+        """Generate the payload list[hashmap] according to openAI format
 
         Parameters
         ----------
@@ -62,17 +57,19 @@ class LLMBackend:
             query:
             system_function:
         """
-        payload = [{'role': 'system', 'content': system_function}, {'role': 'user', 'content': query}]
+        payload = [
+            {"role": "system", "content": system_function},
+            {"role": "user", "content": query},
+        ]
         return payload
 
     def _send_payload(self, payload: list[dict]) -> str:
-        """
-        Send payload via API .create() function
+        """Send payload via API .create() function
         Response is dictionary containing responses and prompt
         """
         is_to_do = True
         try_counter = 0
-        response_string = ''
+        response_string = ""
 
         while is_to_do is True and try_counter < 10:
             time.sleep(0.1)
@@ -89,7 +86,7 @@ class LLMBackend:
                     stop=self.stop,
                     request_timeout=self.request_timeout,
                 )
-                response_string = response['choices'][0]['message']['content']
+                response_string = response["choices"][0]["message"]["content"]
                 if response_string:
                     is_to_do = False
             except Exception as error:

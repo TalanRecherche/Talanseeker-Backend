@@ -1,23 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 30 14:28:28 2023
+"""Created on Wed Aug 30 14:28:28 2023
 
 @author: agarc
 
 """
 import docx
+
 from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
 class DOCXReader(ABCReader):
-
     @staticmethod
     def read_text(file_path: str) -> str | None:
-        """
-        Read all text from a word (docs) file.
+        """Read all text from a word (docs) file.
+
         Args:
+        ----
         file_path (str): The path of the word file.
+
         Returns:
+        -------
         str: The extracted text from the word file.
 
         Dependencies:
@@ -43,16 +44,16 @@ class DOCXReader(ABCReader):
                         full_text.append(paragraph_text)
 
         # add linebreaks to each elements of the line
-        full_text = [line + '\n' for line in full_text]
+        full_text = [line + "\n" for line in full_text]
 
         # join each line
-        string_text = ''.join(full_text)
+        string_text = "".join(full_text)
 
         # remove non ascci character
-        string_text = string_text.encode('latin-1', errors='ignore').decode('latin-1')
+        string_text = string_text.encode("latin-1", errors="ignore").decode("latin-1")
 
         # remove trailing spaces and linebreaks
-        string_text = string_text.rstrip('\n')
+        string_text = string_text.rstrip("\n")
         string_text = string_text.strip()
 
         # return only if not empty

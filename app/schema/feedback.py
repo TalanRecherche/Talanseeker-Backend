@@ -9,4 +9,4 @@ class FeedbackRequest(BaseModel):
     query_id: str
     collab_id: str
     user_id: str
-    feedback: Literal[-1,1]
+    feedback: Literal[-1, 1]

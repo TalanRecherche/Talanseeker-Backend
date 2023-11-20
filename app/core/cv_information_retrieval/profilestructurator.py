@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep  1 17:00:41 2023
+"""Created on Fri Sep  1 17:00:41 2023
 
 @author: agarc
 
@@ -9,27 +7,25 @@ import logging
 
 import pandas as pd
 
-from app.core.models.ETL_pandasmodels import STRUCTCV_DF
-from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
-from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.core.models.ETL_pandasmodels import STRUCTCV_DF, STRUCTPROFILE_DF
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
 
 class ProfileStructurator:
-
     def __init__(self):
         self.similarity_threshold = 0.8
         # forbidden names/surname
-        self.forbidden_names = ['talan']
-        pass
+        self.forbidden_names = ["talan"]
 
     # =============================================================================
     # user functions
     # =============================================================================
-    def consolidate_profiles(self, df_consolidated_cvs: pd.DataFrame) -> pd.DataFrame | None:
-        """
-        Pass the consolidated CV to this function.
+    def consolidate_profiles(
+        self,
+        df_consolidated_cvs: pd.DataFrame,
+    ) -> pd.DataFrame | None:
+        """Pass the consolidated CV to this function.
         It will consolidate by profile (one row per profile)
 
         Parameters
@@ -42,7 +38,8 @@ class ProfileStructurator:
         None.
         """
         # assert if input dataframe is of correct format (columns)
-        if not STRUCTCV_DF.validate_dataframe(df_consolidated_cvs): return None
+        if not STRUCTCV_DF.validate_dataframe(df_consolidated_cvs):
+            return None
 
         # assign collab_ids to consolidated cvs
         # prepare output dataframe
@@ -55,14 +52,19 @@ class ProfileStructurator:
         # loop through each profile and their chunks
         for collab_id, cv_ids in hashmap_collabid_cvsid.items():
             # filter chunks to current profile
-            df_filtered_cvs = df_consolidated_cvs[df_consolidated_cvs[STRUCTPROFILE_DF.cv_id].isin(cv_ids)]
+            df_filtered_cvs = df_consolidated_cvs[
+                df_consolidated_cvs[STRUCTPROFILE_DF.cv_id].isin(cv_ids)
+            ]
             # consolidate all rows into a single profile row
             df_single_profile = self._consolidate_single_profile(df_filtered_cvs)
             # push to new pandas df
             if not df_single_profile.empty:
                 df_single_profile[STRUCTPROFILE_DF.collab_id] = collab_id
                 df_consolidated_profiles = pd.concat(
-                    [df_consolidated_profiles, df_single_profile], axis=0, ignore_index=True)
+                    [df_consolidated_profiles, df_single_profile],
+                    axis=0,
+                    ignore_index=True,
+                )
 
         if df_consolidated_profiles.empty:
             logging.warning("dataframe is empty")
@@ -76,8 +78,7 @@ class ProfileStructurator:
     # =============================================================================
 
     def _get_unique_profiles(self, df_consolidated_cvs: pd.DataFrame) -> dict:
-        """        
-        identifies unique profiles and assigns cv_id to them.
+        """Identifies unique profiles and assigns cv_id to them.
         returns a hashmap mapping profile_id to list[cv_ids]
 
         Parameters
@@ -90,14 +91,17 @@ class ProfileStructurator:
             {profile_id to list[cv_ids]}
 
         """
-
-        grouped = df_consolidated_cvs.groupby(STRUCTCV_DF.collab_id)[STRUCTCV_DF.cv_id].apply(list)
+        grouped = df_consolidated_cvs.groupby(STRUCTCV_DF.collab_id)[
+            STRUCTCV_DF.cv_id
+        ].apply(list)
         hashmap_collabid_cvsid = {key: value for key, value in grouped.items()}
         return hashmap_collabid_cvsid
 
-    def _consolidate_single_profile(self, df_filtered_cvs: pd.DataFrame) -> pd.DataFrame:
-        """
-        Consolidate all cvs of a profile into a single row pd.dataframe
+    def _consolidate_single_profile(
+        self,
+        df_filtered_cvs: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Consolidate all cvs of a profile into a single row pd.dataframe
 
         Parameters
         ----------
@@ -137,11 +141,17 @@ class ProfileStructurator:
             string_values = ListHandler.flatten_list(df_filtered_cvs[column].to_list())
             # unique strings
             string_values = list(set(string_values))
-            # 5 fuzzy string matching to remove pseudo-duplicates (this is O(n2), a C++ version exists see Cdiflib)
-            string_values = StringHandler.remove_similar_strings(string_values, threshold=self.similarity_threshold)
+            # 5 fuzzy string matching to remove pseudo-duplicates
+            # (this is O(n2), a C++ version exists see Cdiflib)
+            string_values = StringHandler.remove_similar_strings(
+                string_values,
+                threshold=self.similarity_threshold,
+            )
         except Exception as e:
             string_values = []
-            logging.warning("ProfileStructurator : string columns structuration failed: {}".format(e))
+            logging.warning(
+                f"ProfileStructurator : string columns structuration failed: {e}",
+            )
         return string_values
 
     def _merge_numerical_columns(self, column, df_filtered_cvs) -> int:
@@ -151,7 +161,9 @@ class ProfileStructurator:
             numerical_value = int(numerical_extract)
         except Exception as e:
             numerical_value = 0
-            logging.warning("ProfileStructurator : numerical columns structuration failed: {}".format(e))
+            logging.warning(
+                f"ProfileStructurator : numerical columns structuration failed: {e}",
+            )
         return numerical_value
 
     def _merge_static_columns(self, column, df_filtered_cvs) -> list:
@@ -159,33 +171,40 @@ class ProfileStructurator:
             static_value = list(df_filtered_cvs[column])
         except Exception as e:
             static_value = []
-            logging.warning("ProfileStructurator : static columns structuration failed: {}".format(e))
+            logging.warning(
+                f"ProfileStructurator : static columns structuration failed: {e}",
+            )
         return static_value
 
 
 if __name__ == "__main__":
-    directory = r'data_dev/3CV'
+    directory = r"data_dev/3CV"
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
+
     files = PathExplorer.get_all_paths_with_extension_name(directory)
     collab_ids = {files[ii]["file_full_name"]: str(ii) for ii in range(len(files))}
 
     from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
+
     extractor = FileMassExtractor()
     text_df = extractor.read_all_documents(directory, collab_ids)
 
     from app.core.cv_information_retrieval.chunker import Chunker
+
     chunker = Chunker()
     df_chunks = chunker.chunk_documents(text_df)
 
     # parse the chunks
-    from app.settings import Settings
     from app.core.cv_information_retrieval.LLMparser import LLMParser
+    from app.settings import Settings
+
     parser = LLMParser(Settings())
     parsed_chunks = parser.parse_all_chunks(df_chunks)
 
     # consolidate cvs
     from app.core.cv_information_retrieval.CVstructurator import CvStructurator
+
     structure = CvStructurator()
     cvs_struct = structure.consolidate_cvs(parsed_chunks)
 

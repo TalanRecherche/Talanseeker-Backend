@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 30 14:29:24 2023
+"""Created on Wed Aug 30 14:29:24 2023
 
 @author: agarc
 
@@ -9,11 +7,9 @@ from app.core.cv_information_retrieval.ABCreader import ABCReader
 
 
 class TXTReader(ABCReader):
-
     @staticmethod
     def read_text(file_path: str) -> str | None:
-        """
-        Read all text from a .txt fie
+        """Read all text from a .txt fie
 
         Parameters
         ----------
@@ -26,7 +22,7 @@ class TXTReader(ABCReader):
             the extracted text from the txt file.
 
         """
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, encoding="utf-8") as file:
             text = file.read()
 
         if text:

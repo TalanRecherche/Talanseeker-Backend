@@ -1,5 +1,8 @@
+from sqlalchemy import Column, String
+
 from app.models import Base
-from sqlalchemy import Column, Integer, String
+
+
 class PG_Profiles(Base):
     __tablename__ = "profiles"
 
@@ -14,7 +17,3 @@ class PG_Profiles(Base):
     company = Column(String)
     soft_skills = Column(String)
     technical_skills = Column(String)
-
-
-    def __repr__(self):
-        return f"{self.name} {self.surname} {self.years} {self.diploma_certification} {self.roles}"

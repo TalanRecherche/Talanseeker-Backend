@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 22 14:59:58 2023
+"""Created on Tue Aug 22 14:59:58 2023
 
 @author: agarc
 
 """
 import logging
 import time
+
 import openai
 
 from app.core.shared_modules.ABCLLMbackend import ABCLLMBackend
@@ -30,21 +29,20 @@ class GPTBackend(ABCLLMBackend):
         self.presence_penalty = 0
         self.stop = None
         self.request_timeout = 30
-        pass
 
     # =============================================================================
     # user functions
     # =============================================================================
     def send_receive_message(self, query: str, system_function: str) -> str:
-        """
-        send single message: set role system and append to payload
-        """
+        """Send single message: set role system and append to payload"""
         # make payload
         payload = self._make_payload(query, system_function)
         # get llm response
         response_message = self._send_payload(payload)
         if not response_message:
-            raise RuntimeError("API call failed after reaching the maximum number of retries.")
+            raise RuntimeError(
+                "API call failed after reaching the maximum number of retries.",
+            )
         return response_message
 
     # =============================================================================
@@ -52,8 +50,7 @@ class GPTBackend(ABCLLMBackend):
     # =============================================================================
 
     def _make_payload(self, query: str, system_function: str) -> list[dict]:
-        """
-        Generate the payload list[hashmap] according to openAI format
+        """Generate the payload list[hashmap] according to openAI format
 
         Parameters
         ----------
@@ -70,15 +67,17 @@ class GPTBackend(ABCLLMBackend):
             query:
             system_function:
         """
-        payload = [{'role': 'system', 'content': system_function}, {'role': 'user', 'content': query}]
+        payload = [
+            {"role": "system", "content": system_function},
+            {"role": "user", "content": query},
+        ]
         return payload
 
     def _send_payload(self, payload: list[dict]) -> str:
-        """
-        Send payload via API .create() function
+        """Send payload via API .create() function
         Response is dictionary containing responses and prompt
         """
-        response_string = ''
+        response_string = ""
         max_retries = 5
         for retry in range(max_retries):
             try:
@@ -96,7 +95,7 @@ class GPTBackend(ABCLLMBackend):
                     stop=self.stop,
                     request_timeout=self.request_timeout,
                 )
-                response_string = response['choices'][0]['message']['content']
+                response_string = response["choices"][0]["message"]["content"]
                 # exit the retry loop if the llm response is not None
                 if response_string:
                     break

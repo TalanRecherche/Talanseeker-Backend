@@ -1,25 +1,22 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 30 17:55:25 2023
+"""Created on Wed Aug 30 17:55:25 2023
 
 @author: agarc
 
 """
 import pytest
-from app.settings import Settings
-from app.core.shared_modules.dataframehandler import DataFrameHandler
+
 from app.core.cv_information_retrieval.tablemaker import TableMaker
-from app.core.models.PG_pandasmodels import PROFILE_PG
-from app.core.models.PG_pandasmodels import CV_PG
-from app.core.models.PG_pandasmodels import CHUNK_PG
+from app.core.models.PG_pandasmodels import CHUNK_PG, CV_PG, PROFILE_PG
+from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.settings import Settings
 
 env = Settings()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
-    data_1_path = r'tests/data_test/df_profiles.pkl'
-    data_2_path = r'tests/data_test/df_embeddings.pkl'
+    data_1_path = r"tests/data_test/df_profiles.pkl"
+    data_2_path = r"tests/data_test/df_embeddings.pkl"
     df_profiles = DataFrameHandler.load_df(data_1_path)
     df_embeddings = DataFrameHandler.load_df(data_2_path)
     maker = TableMaker()
