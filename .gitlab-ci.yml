@@ -1,5 +1,14 @@
 stages:
+  - code_quality
   - test
+
+code_quality:
+  stage: code_quality
+  image: python:3.10
+  script:
+    - pip install ruff
+    - ruff --version
+    - ruff .
 
 pytest:
   stage: test
