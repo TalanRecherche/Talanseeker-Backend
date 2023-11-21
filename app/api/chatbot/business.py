@@ -1,10 +1,10 @@
 import pandas as pd
 
-from app.core.chatbot_features.PGfetcher import PGfetcher
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
 from app.core.chatbot_features.dataviz import get_skills_table
 from app.core.chatbot_features.intentionfinder import IntentionFinder
+from app.core.chatbot_features.PGfetcher import PGfetcher
 from app.core.chatbot_features.queryrouter import QueryRouter
 from app.core.models.PG_pandasmodels import COLLAB_PG, CV_PG, PROFILE_PG
 from app.schema.chatbot import (

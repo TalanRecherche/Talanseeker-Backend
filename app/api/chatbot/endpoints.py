@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.schema.chatbot import ChatbotRequest, ChatbotResponse
+
 from .business import chatbot_business
 
 router = APIRouter(prefix="/chatbot")

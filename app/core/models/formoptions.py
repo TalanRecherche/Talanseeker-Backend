@@ -7,6 +7,9 @@ from app.models import con_string
 class FormOptions:
     def __init__(self):
         self.get_form_options()
+        self.region = ""
+        self.city = ""
+        self.grade = ""
 
     def get_form_options(self):
         self.region = self._get_options(COLLAB_PG.region)

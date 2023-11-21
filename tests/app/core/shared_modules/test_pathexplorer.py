@@ -8,18 +8,11 @@ import pytest
 from app.core.shared_modules.pathexplorer import PathExplorer
 
 
-@pytest.mark.skip_this()
 def test_number_of_files():
-    test_directory = r"./tests/data_test/10_CV_allformat"
-    files = PathExplorer.get_all_paths_with_extension_name(test_directory)
-    nb_files = len(files)
-    expected_nb = 10
-    assert nb_files == expected_nb
-
     test_directory = r"./tests/data_test"
     files = PathExplorer.get_all_paths_with_extension_name(test_directory)
     nb_files = len(files)
-    expected_nb = 1
+    expected_nb = 28
     assert nb_files == expected_nb
 
 

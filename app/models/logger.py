@@ -1,9 +1,10 @@
 import logging
 
-from app.models import Base, engine
 from sqlalchemy import Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+
+from app.models import Base, engine
 
 
 class Logs(Base):

@@ -41,7 +41,7 @@ class Chunker:
         df_chunks = pd.DataFrame(columns=CHUNK_DF.get_attributes())
 
         # iterate through each CV
-        for index, row in tqdm(
+        for _, row in tqdm(
             df_documents.iterrows(),
             desc="Chunking document:",
             total=len(df_documents),

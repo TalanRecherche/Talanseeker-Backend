@@ -18,8 +18,9 @@ class CvStructurator:
     """
 
     def __init__(self):
-        """getting rid of strings that are too long (roles_profile and skills should
-        be short!)"""
+        """Getting rid of strings that are too long (roles_profile and skills should
+        be short!)
+        """
         self.max_string_len = 40
         """similarity threshold to get rid of a string (e.g. data science vs data
          scientist)"""

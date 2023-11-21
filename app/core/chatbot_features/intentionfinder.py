@@ -1,5 +1,6 @@
 """This module is used to process the user query
-and extract the intention of the user."""
+and extract the intention of the user.
+"""
 import logging
 
 import pandas as pd

@@ -29,7 +29,8 @@ class ScorerOverall:
         embedded_semantic_query: list[float],
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Scores all profiles and returns their scored dataframe (chunk and
-        profiles)"""
+        profiles)
+        """
         # get scoring from keywords (using structured profile)
         df_profiles_scored = self.scorer_profiles.score_by_keywords(
             df_profiles,

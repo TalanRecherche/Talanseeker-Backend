@@ -116,7 +116,8 @@ class LLMParser:
 
         Parameters
         ----------
-        chunk_row :  (pd.Series)
+        chunk_row :
+            (pd.Series)
 
         Returns
         -------
@@ -155,7 +156,8 @@ class LLMParser:
 
         Parameters
         ----------
-        JSON_string : str
+        JSON_string :
+            str
 
         Returns
         -------
@@ -224,11 +226,13 @@ class LLMParser:
 
         Parameters
         ----------
-        string : str
+        string :
+            str
 
         Returns
         -------
-        string : str
+        string :
+            str
         """
         # normalize string
         string = string.strip()

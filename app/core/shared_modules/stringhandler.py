@@ -35,7 +35,8 @@ class StringHandler:
     @staticmethod
     def remove_similar_strings(strings: list[str], threshold=0.8) -> list[str]:
         """Fuzzy string removal. Remove similar strings from a list based on a
-        similarity threshold."""
+        similarity threshold.
+        """
         unique_strings = []
         for s in strings:
             if not any(
@@ -76,7 +77,7 @@ class StringHandler:
 
     @staticmethod
     def string_to_list_with_separator(input_string: str, separator: str = ","):
-        """Converts a text separated by the separator into a list of unique values.
+        """Convert a text separated by the separator into a list of unique values.
 
         Args:
         ----

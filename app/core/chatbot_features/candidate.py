@@ -1,4 +1,4 @@
-"""Created on 14.09.2023
+"""Created on 14.09.2023.
 
 @author: damienj
 """
@@ -10,6 +10,8 @@ from app.core.shared_modules.listhandler import ListHandler
 
 
 class Candidates:
+    """List of candidates."""
+
     def __init__(
         self,
         pg_chunks: pd.DataFrame,
@@ -18,7 +20,7 @@ class Candidates:
         pg_profiles: pd.DataFrame,
     ) -> None:
         self.list_candidates = []
-        for idx, row in pg_collabs.iterrows():
+        for _, row in pg_collabs.iterrows():
             # filter out rows of the current candidate
             current_collab_id = row[COLLAB_PG.collab_id]
             rows_pg_chunks = pg_chunks[
@@ -43,6 +45,8 @@ class Candidates:
 
 
 class Candidate:
+    """Candidate object."""
+
     def __init__(
         self,
         row_pg_chunks: pd.DataFrame,
@@ -113,13 +117,16 @@ class Candidate:
         self.cv_path = self.pg_cvs[CV_PG.file_full_name].tolist()
         self.cv_extension = ["." + filename.split(".")[-1] for filename in self.cv_path]
 
-    def get_value_or_default(self, row, column, default_value="", value_is_list=False):
-        """Get the value from the row for the given column, or return the default value
-        if it's null.
+    def get_value_or_default(
+        self, row, column, default_value="", value_is_list=False
+    ) -> str:
+        """Get the value from the row for the given column,
+        return the default value if it's null.
 
         :param row: The row from the DataFrame.
         :param column: The column name to get the value from.
         :param default_value: The default value to return if the value is null.
+        :param value_is_list: Boolean to indicate if the value is a list.
         :return: The value from the row for the given column, or the default value
         if it's null.
         """

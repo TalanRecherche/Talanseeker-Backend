@@ -27,7 +27,7 @@ class TokenHandler:
         engine="gpt-35-turbo",
     ) -> int:
         curr_len = 0
-        for key in hashmap.keys():
+        for key in hashmap:
             string = hashmap[key]
             curr_len += TokenHandler.count_tokens_from_string(
                 string,

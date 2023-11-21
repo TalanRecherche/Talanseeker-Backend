@@ -11,7 +11,7 @@ import os
 # PathExplorer
 # =============================================================================
 class PathExplorer:
-    """This class handles path and file/extension list by exploring folders.
+    """Handles path and file/extension list by exploring folders.
     It also handles path/directory definitions and either files exists
     """
 

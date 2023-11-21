@@ -14,7 +14,7 @@ from app.core.shared_modules.pathexplorer import PathExplorer
 
 
 class FileMassExtractor:
-    """This class takes case of reading entire directories.
+    """Read entire directories.
 
     read_all_documents(self, directory: str) -> list[dict]: To read documents without
     saving read_dump_and_copy_all_files(self, directory: str): To read documents
@@ -37,7 +37,7 @@ class FileMassExtractor:
         read_only_extensions=None,
         ignore_extensions=None,
     ) -> pd.DataFrame | None:
-        """Finds files in path or directory
+        """Find files in path or directory
         Filter (un)wanted extensions
         Sequentially loads every document using FileReader.
         Push to text_df
@@ -53,12 +53,14 @@ class FileMassExtractor:
             Enables tracking the name of the user (collab_id) which is assigned to each
             file
 
-        read_only_extensions : list, optional (type: '.txt', '.docx' etc.)
-        A list of file extensions to include in the filtered list. If provided,
+        read_only_extensions :
+            list, optional (type: '.txt', '.docx' etc.)
+            A list of file extensions to include in the filtered list. If provided,
             only files with these extensions will be included.
 
-        ignore_extensions : list, optional (type: '.txt', '.docx' etc.)
-        A list of file extensions to exclude from the filtered list. If
+        ignore_extensions :
+            list, optional (type: '.txt', '.docx' etc.)
+            A list of file extensions to exclude from the filtered list. If
             provided, files with these extensions will be excluded.
 
         Returns

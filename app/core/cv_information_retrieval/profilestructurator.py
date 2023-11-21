@@ -13,6 +13,8 @@ from app.core.shared_modules.stringhandler import StringHandler
 
 
 class ProfileStructurator:
+    """Consolidate all the CVs of a profile into a single row dataframe"""
+
     def __init__(self):
         self.similarity_threshold = 0.8
         # forbidden names/surname
@@ -78,18 +80,11 @@ class ProfileStructurator:
     # =============================================================================
 
     def _get_unique_profiles(self, df_consolidated_cvs: pd.DataFrame) -> dict:
-        """Identifies unique profiles and assigns cv_id to them.
+        """Identify unique profiles and assigns cv_id to them.
         returns a hashmap mapping profile_id to list[cv_ids]
 
-        Parameters
-        ----------
-        df_consolidated_cvs : pd.DataFrame
-
-        Returns
-        -------
-        dict
-            {profile_id to list[cv_ids]}
-
+        :param df_consolidated_cvs: one row per CV dataframe with parsed information.
+        :return: {profile_id to list[cv_ids]}
         """
         grouped = df_consolidated_cvs.groupby(STRUCTCV_DF.collab_id)[
             STRUCTCV_DF.cv_id

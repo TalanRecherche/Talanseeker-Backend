@@ -18,7 +18,7 @@ from app.core.shared_modules.stringhandler import StringHandler
 # FileReader (inherits from PathExplorer)
 # =============================================================================
 class FileReader:
-    """This class takes care of extracting text from a single document.
+    """Extract text from a single document.
     Readers are in specific classes (one class per extension, add to self.loader_router
     and imports)
     """
@@ -36,19 +36,12 @@ class FileReader:
     # =============================================================================
     # user functions
     # =============================================================================
-    def read_single_document(self, file_path) -> dict | None:
-        """Reads a single documents.
+    def read_single_document(self, file_path: str) -> dict | None:
+        """Read a single documents.
         Uses the execution to send to the appropriate text extractor
 
-        returns a hashmap!
-
-        Parameters
-        ----------
-        file_path : file path
-
-        Returns
-        -------
-        hashmap : keys are in texts_df class
+        :param file_path: file path
+        :return: hashmap with file information and text
         """
         if PathExplorer.assert_file_exists(file_path) is False:
             return None

@@ -11,7 +11,7 @@ from app.settings import Settings
 
 @pytest.fixture(scope="module")
 def setup_data():
-    data_path = "tests/data_test/queryrouter_json/testset.JSON"
+    data_path = "tests/data_test/testset.JSON"
     with open(data_path, encoding="utf-8") as file:
         data = json.load(file)
 

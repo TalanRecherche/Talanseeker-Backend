@@ -31,7 +31,7 @@ import pandera as pa
 
 
 class ParentPandasModel:
-    """This is a parent class for all the models that are based on pandas"""
+    """Parent class for all the models that are based on pandas"""
 
     # this will be overwritten by the child class
     schema = pa.DataFrameSchema({})
@@ -85,14 +85,14 @@ class ParentPandasModel:
             :return: A pandas data type
             """
             data_type = str(data_type)
-            if data_type == "str":
-                return "object"
-            elif data_type == "int64":
-                return "int64"
-            elif data_type == "float":
-                return "float64"
-            elif data_type == "bool":
-                return "boolean"
+            map_data_type = {
+                "str": "object",
+                "int64": "int64",
+                "float": "float64",
+                "bool": "boolean",
+            }
+            if data_type in map_data_type:
+                return map_data_type[data_type]
             else:
                 return "object"
 

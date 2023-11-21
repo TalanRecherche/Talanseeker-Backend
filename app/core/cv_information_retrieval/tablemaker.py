@@ -52,7 +52,7 @@ class TableMaker:
     # internal functions
     # =============================================================================
     def _make_pg_profiles(self, df_profiles: pd.DataFrame) -> pd.DataFrame:
-        """Drops irrelevant columns to prepare pg_profiles"""
+        """Drop irrelevant columns to prepare pg_profiles"""
         # reorder columns
         pg_profiles = df_profiles[PROFILE_PG.get_attributes()]
         return pg_profiles

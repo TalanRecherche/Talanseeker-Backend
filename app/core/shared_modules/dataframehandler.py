@@ -11,7 +11,7 @@ import pandas as pd
 class DataFrameHandler:
     @staticmethod
     def save_df(df: pd.DataFrame, save_to_file_path: str):
-        """Saves the embeddings or the chunks to a pickle file.
+        """Save the embeddings or the chunks to a pickle file.
 
         Args:
         ----
@@ -28,7 +28,7 @@ class DataFrameHandler:
 
     @staticmethod
     def load_df(load_file_path: str) -> pd.DataFrame | None:
-        """Loads pd.DataFrame from a pickle file
+        """Load pd.DataFrame from a pickle file
         Args:
             load_file_path (str): The path to the input pickle file.
 
