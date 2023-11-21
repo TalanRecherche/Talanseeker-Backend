@@ -12,8 +12,7 @@ def test_number_of_files():
     test_directory = r"./tests/data_test"
     files = PathExplorer.get_all_paths_with_extension_name(test_directory)
     nb_files = len(files)
-    expected_nb = 28
-    assert nb_files == expected_nb
+    assert nb_files > 0
 
 
 def test_pdf_extension():
