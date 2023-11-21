@@ -6,9 +6,9 @@
 import pytest
 
 from app.core.cv_information_retrieval.tablemaker import TableMaker
-from app.core.models.PG_pandasmodels import CHUNK_PG, CV_PG, PROFILE_PG
+from app.core.models.pg_pandasmodels import ChunkPg, CvPg, ProfilePg
 from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 env = Settings()
 
@@ -26,17 +26,17 @@ def setup_data():
 
 def test_profile(setup_data):
     pg_profiles, _, _ = setup_data
-    assert PROFILE_PG.validate_dataframe(pg_profiles)
+    assert ProfilePg.validate_dataframe(pg_profiles)
 
 
 def test_chunks(setup_data):
     _, pg_chunks, _ = setup_data
-    assert CHUNK_PG.validate_dataframe(pg_chunks)
+    assert ChunkPg.validate_dataframe(pg_chunks)
 
 
 def test_cvs(setup_data):
     _, _, pg_cvs = setup_data
-    assert CV_PG.validate_dataframe(pg_cvs)
+    assert CvPg.validate_dataframe(pg_cvs)
 
 
 if __name__ == "__main__":

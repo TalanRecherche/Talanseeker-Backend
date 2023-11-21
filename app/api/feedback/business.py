@@ -6,7 +6,7 @@ from app.schema.feedback import FeedbackRequest
 
 class FeedbackBusiness:
     @staticmethod
-    def add_feedback(request=FeedbackRequest):
+    def add_feedback(request: FeedbackRequest = FeedbackRequest) -> JSONResponse:
         feedback = FeedbacksModel(
             query_id=request.query_id,
             collab_id=request.collab_id,
@@ -17,7 +17,7 @@ class FeedbackBusiness:
         return JSONResponse(status_code=200, content="Success")
 
     @staticmethod
-    def patch_feedback(request=FeedbackRequest):
+    def patch_feedback(request: FeedbackRequest = FeedbackRequest) -> JSONResponse:
         feedback = FeedbacksModel(
             query_id=request.query_id,
             collab_id=request.collab_id,

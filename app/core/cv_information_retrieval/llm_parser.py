@@ -12,10 +12,10 @@ import pandas as pd
 from tqdm import tqdm
 from unidecode import unidecode
 
-from app.core.models.ETL_pandasmodels import CHUNK_DF, PARSED_DF
-from app.core.shared_modules.GPTbackend import GPTBackend
+from app.core.models.etl_pandasmodels import ChunkDF, ParsedDF
+from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class LLMParser:
@@ -26,14 +26,14 @@ class LLMParser:
     This information is appended to a new dataframe one row per chunk
     """
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # set up openai environment
         # setup backend llm
-        self.engine = settings.etl_settings.etl_llm_model
-        self.BackEnd = GPTBackend(llm_model=self.engine, max_token_in_response=300)
+        self.engine = settings.ETL_settings.ETL_llm_model
+        self.BackEnd = GptBackend(llm_model=self.engine, max_token_in_response=300)
         # prompting and query formatting for the backend. modify this at your own risk.
-        self.system_template_string = settings.etl_settings.etl_system_template
-        self.query_template_string = settings.etl_settings.etl_query_template
+        self.system_template_string = settings.ETL_settings.ETL_system_template
+        self.query_template_string = settings.ETL_settings.ETL_query_template
 
         logging.debug("LLMParser init success")
 
@@ -73,20 +73,21 @@ class LLMParser:
             same dataframe with additional columns from the structuration
         """
         # assert if input dataframe is of correct format (columns)
-        if not CHUNK_DF.validate_dataframe(df_chunks):
+        if not ChunkDF.validate_dataframe(df_chunks):
             return None
 
         all_chunks_hashmap = []
-        logging.debug(f"Parsing {len(df_chunks)} chunks...")
+        log_string = f"parsing {len(df_chunks)} chunks"
+        logging.debug(log_string)
 
         # iter over rows (chunks)
         for _, row in tqdm(df_chunks.iterrows(), total=len(df_chunks), desc="Parsing:"):
             # get llm response (parsing)
             llm_response = self._read_single_chunk(row)
             # prepare string to JSON format
-            JSON_string = self._prepare_JSON_string(llm_response)
+            json_string = self._prepare_json_string(llm_response)
             # push llm response to hashmap
-            response_hashmap = self._push_response_to_hashmap(JSON_string)
+            response_hashmap = self._push_response_to_hashmap(json_string)
             # clean llm response
             response_hashmap = self._clean_response(response_hashmap)
             # if response is not empty: add row fields and place into output hashmap
@@ -104,7 +105,7 @@ class LLMParser:
             return None
 
         # reorder columns
-        df_parsed = df_parsed[PARSED_DF.get_attributes()]
+        df_parsed = df_parsed[ParsedDF.get_attributes()]
         logging.info("done")
         return df_parsed
 
@@ -116,7 +117,8 @@ class LLMParser:
 
         Parameters
         ----------
-        chunk_row :  (pd.Series)
+        chunk_row :
+            (pd.Series)
 
         Returns
         -------
@@ -128,26 +130,27 @@ class LLMParser:
         llm_response = self.BackEnd.send_receive_message(query, system_function)
         return llm_response
 
-    def _prepare_JSON_string(self, llm_response: str) -> str:
+    def _prepare_json_string(self, llm_response: str) -> str:
         """Clean the llm response string into JSONable string"""
         # keep only string between brackets
         try:
             # get rid of everything that is not between double brackets
-            JSON_string = llm_response.split("{", 1)[1].split("}")[0]
-            JSON_string = "{\n" + JSON_string + "\n}"
+            json_string = llm_response.split("{", 1)[1].split("}")[0]
+            json_string = "{\n" + json_string + "\n}"
             # replace single quote to double quote for JSON format
-            JSON_string = JSON_string.replace("'", '"')
+            json_string = json_string.replace("'", '"')
             # Replace double quotes within string values with escaped double quotes
-            JSON_string = re.sub(r'(?<=[^])"(?=[^:,}]s])', r'\\"', JSON_string)
+            json_string = re.sub(r'(?<=[^])"(?=[^:,}]s])', r'\\"', json_string)
             # convert to raw string
-            JSON_string = rf"{JSON_string}"
-            return JSON_string
+            json_string = rf"{json_string}"
+            return json_string
 
         except Exception as e:
-            logging.error(f"_prepare_JSON_string: failed {e}")
+            log_string = f"_prepare_JSON_string: failed {e}"
+            logging.error(log_string)
             return ""
 
-    def _push_response_to_hashmap(self, JSON_string: str) -> dict:
+    def _push_response_to_hashmap(self, json_string: str) -> dict:
         """Place the llm response string into a hashmap
         this will enable placing back the llm response into the original dataframe as
         new columns
@@ -155,7 +158,8 @@ class LLMParser:
 
         Parameters
         ----------
-        JSON_string : str
+        json_string :
+            str
 
         Returns
         -------
@@ -164,20 +168,16 @@ class LLMParser:
         """
         try:
             # parse JSON to dict using JSON load
-            hashmap_response = json.loads(JSON_string)
+            hashmap_response = json.loads(json_string)
         except Exception as e:
-            logging.warning(
-                f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-                f"Trying with ast.",
-            )
+            log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
+            logging.warning(log_string)
             try:
                 # if JSON load failed, we try manually
-                hashmap_response = ast.literal_eval(JSON_string)
+                hashmap_response = ast.literal_eval(json_string)
             except Exception as e:
-                logging.warning(
-                    f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-                    f"ast parsing failed",
-                )
+                log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
+                logging.warning(log_string)
                 # if everything fails we send back an empty dict
                 hashmap_response = {}
 
@@ -188,11 +188,11 @@ class LLMParser:
             return {}
 
         clean_hashmap = {}
-        keys = PARSED_DF.parsed_keys_
+        keys = ParsedDF.parsed_keys_
         # place response hashmap to output final hashmap
-        for idx, key in enumerate(keys):
+        for _, key in enumerate(keys):
             # non-years fields are list[str]
-            if key != PARSED_DF.years:
+            if key != ParsedDF.years:
                 try:
                     parsed_string = str(response_hashmap.get(key))
                     parsed_string = self._clean_string(parsed_string)
@@ -200,18 +200,20 @@ class LLMParser:
                     clean_hashmap[key] = parsed_string
                 except Exception as e:
                     clean_hashmap[key] = []
-                    logging.warning(f"_clean_response: nothing parsed {e}")
+                    log_string = f"_clean_response: {key} not caught {e}"
+                    logging.warning(log_string)
             else:
                 # year field is int
                 try:
                     # attempt to grab the max integer from the list
                     found_integers = [
-                        int(elem) for elem in response_hashmap.get(PARSED_DF.years)
+                        int(elem) for elem in response_hashmap.get(ParsedDF.years)
                     ]
-                    clean_hashmap[PARSED_DF.years] = max(found_integers)
+                    clean_hashmap[ParsedDF.years] = max(found_integers)
                 except Exception as e:
-                    clean_hashmap[PARSED_DF.years] = 0
-                    logging.warning(f"_clean_response: .years not caught {e}")
+                    clean_hashmap[ParsedDF.years] = 0
+                    log_string = f"_clean_response: .years not caught {e}"
+                    logging.warning(log_string)
 
         if response_hashmap:
             return clean_hashmap
@@ -224,11 +226,13 @@ class LLMParser:
 
         Parameters
         ----------
-        string : str
+        string :
+            str
 
         Returns
         -------
-        string : str
+        string :
+            str
         """
         # normalize string
         string = string.strip()
@@ -259,8 +263,8 @@ class LLMParser:
     def _make_query(self, chunk: pd.Series) -> str:
         """Generate the query from the template and cv content/metadata"""
         # content of the query
-        cv_text = chunk[CHUNK_DF.chunk_text]
-        cv_source = chunk[CHUNK_DF.file_full_name]
+        cv_text = chunk[ChunkDF.chunk_text]
+        cv_source = chunk[ChunkDF.file_full_name]
 
         query_template = self.query_template_string
         cv_text = cv_text.replace("\n\n\n", "\n\n")
@@ -276,7 +280,7 @@ class LLMParser:
 
 if __name__ == "__main__":
     settings = Settings()
-    directory = r"tests/data_test/CV_pptx"
+    directory = r"./tests/data_test/PeterTille.docx"
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
 
@@ -301,4 +305,4 @@ if __name__ == "__main__":
     parser = LLMParser(settings)
     parsed_chunks = parser.parse_all_chunks(df_chunks)
 
-    print(parsed_chunks)
+    print(parsed_chunks)  # noqa: T201

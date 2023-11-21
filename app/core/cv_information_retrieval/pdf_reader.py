@@ -5,7 +5,7 @@
 """
 from PyPDF2 import PdfReader
 
-from app.core.cv_information_retrieval.ABCreader import ABCReader
+from app.core.cv_information_retrieval.abc_reader import ABCReader
 
 
 class PDFReader(ABCReader):

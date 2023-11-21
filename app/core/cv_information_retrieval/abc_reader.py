@@ -6,10 +6,10 @@ from abc import ABC, abstractmethod
 
 class ABCReader(ABC):
     """Abstract class for file readers:
-    DOCXreader.py
-    PDFreader.py
-    PPTXreader.py
-    TXTreader.py
+    docx_reader.py
+    pdf_reader.py
+    pptx_reader.py
+    txt_reader.py
     """
 
     @staticmethod

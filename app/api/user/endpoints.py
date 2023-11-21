@@ -9,12 +9,12 @@ router = APIRouter(prefix="/user")
 
 
 @router.get("/")
-def get_all_users(db: Session = Depends(get_db)):
+def get_all_users(db: Session = Depends(get_db)) -> list[User]:
     return db.query(User).all()
 
 
 @router.get("/{user_id}")
-def get_user_by_email(user_id: int, db: Session = Depends(get_db)):
+def get_user_by_email(user_id: int, db: Session = Depends(get_db)) -> User:
     user = db.query(User).filter(User.id == user_id).first()
     if user:
         return user
@@ -22,7 +22,7 @@ def get_user_by_email(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=UserResponse)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User:
     db_user = User(
         email=user.email,
         pwd=user.pwd,
@@ -35,7 +35,9 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.patch("/{user_id}")
-def update_user_by_email(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
+def update_user_by_email(
+    user_id: int, user: UserUpdate, db: Session = Depends(get_db)
+) -> dict[str, str]:
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -45,7 +47,7 @@ def update_user_by_email(user_id: int, user: UserUpdate, db: Session = Depends(g
 
 
 @router.delete("/{user_id}")
-def delete_user_by_email(user_id: int, db: Session = Depends(get_db)):
+def delete_user_by_email(user_id: int, db: Session = Depends(get_db)) -> dict[str, str]:
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")

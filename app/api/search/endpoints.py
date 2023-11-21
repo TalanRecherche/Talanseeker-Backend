@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
+from app.schema.search import SearchRequest, SearchResponse
+
 from .business import search_business
-from ...schema.search import SearchRequest, SearchResponse
 
 router = APIRouter(prefix="/search")
 

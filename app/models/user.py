@@ -1,3 +1,8 @@
+"""Created on 21/11/2023
+
+@author: Youness
+
+"""
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 

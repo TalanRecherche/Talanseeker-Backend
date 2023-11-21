@@ -9,10 +9,10 @@ import time
 import openai
 
 
-class LLMBackend:
+class LlmBackend:
     """back end for simple queries with the llm. Use only: _send_receive_message"""
 
-    def __init__(self, llm_model, max_token_in_response: int = 300):
+    def __init__(self, llm_model: str, max_token_in_response: int = 300) -> None:
         # get llm chatbot engine
         self.engine = llm_model
 

@@ -11,7 +11,7 @@ import os
 # PathExplorer
 # =============================================================================
 class PathExplorer:
-    """This class handles path and file/extension list by exploring folders.
+    """Handles path and file/extension list by exploring folders.
     It also handles path/directory definitions and either files exists
     """
 
@@ -172,17 +172,21 @@ class PathExplorer:
             return False
 
     @staticmethod
-    def check_path_type(path: str) -> str:
+    def check_path_type(path: str) -> str | None:
         """Check if the path is a directory or a file."""
         # if the path points towards a file we check if it exits
         if os.path.isfile(path):
             if PathExplorer.assert_file_exists(path):
                 return "File"
+            else:
+                return "Invalid path"
 
         # if path is a directory we check if it has the correct format './' '../'
         elif os.path.isdir(path):
             if PathExplorer.assert_directory(path):
                 return "Directory"
+            else:
+                return "Invalid path"
 
         else:
             return "Invalid path"
@@ -191,4 +195,4 @@ class PathExplorer:
 if __name__ == "__main__":
     directory = r"./_data_raw/"
     files = PathExplorer.get_all_paths_with_extension_name(directory)
-    print(files)
+    print(files)  # noqa: T201

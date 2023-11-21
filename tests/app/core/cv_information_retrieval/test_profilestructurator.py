@@ -6,7 +6,7 @@
 import pytest
 
 from app.core.cv_information_retrieval.profilestructurator import ProfileStructurator
-from app.core.models.ETL_pandasmodels import STRUCTPROFILE_DF
+from app.core.models.etl_pandasmodels import StructProfileDF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 
 
@@ -21,7 +21,7 @@ def setup_data():
 
 def test_dataframe_type(setup_data):
     profile_struct = setup_data
-    assert STRUCTPROFILE_DF.validate_dataframe(profile_struct)
+    assert StructProfileDF.validate_dataframe(profile_struct)
 
 
 def test_dataframe_length(setup_data):

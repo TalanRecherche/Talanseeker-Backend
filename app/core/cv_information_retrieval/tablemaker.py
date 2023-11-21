@@ -17,14 +17,14 @@ import logging
 
 import pandas as pd
 
-from app.core.models.ETL_pandasmodels import EMBEDDING_DF, STRUCTPROFILE_DF
-from app.core.models.PG_pandasmodels import CHUNK_PG, CV_PG, PROFILE_PG
+from app.core.models.etl_pandasmodels import EmbeddingDF, StructProfileDF
+from app.core.models.pg_pandasmodels import ChunkPg, CvPg, ProfilePg
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
 
 class TableMaker:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     # =============================================================================
@@ -36,9 +36,9 @@ class TableMaker:
         df_embeddings: pd.DataFrame,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
         # assert if input dataframe is of correct format (columns)
-        if not STRUCTPROFILE_DF.validate_dataframe(df_profiles):
+        if not StructProfileDF.validate_dataframe(df_profiles):
             return [None] * 3
-        if not EMBEDDING_DF.validate_dataframe(df_embeddings):
+        if not EmbeddingDF.validate_dataframe(df_embeddings):
             return [None] * 3
 
         pg_profiles = self._make_pg_profiles(df_profiles)
@@ -52,9 +52,9 @@ class TableMaker:
     # internal functions
     # =============================================================================
     def _make_pg_profiles(self, df_profiles: pd.DataFrame) -> pd.DataFrame:
-        """Drops irrelevant columns to prepare pg_profiles"""
+        """Drop irrelevant columns to prepare pg_profiles"""
         # reorder columns
-        pg_profiles = df_profiles[PROFILE_PG.get_attributes()]
+        pg_profiles = df_profiles[ProfilePg.get_attributes()]
         return pg_profiles
 
     def _make_pg_cvs(
@@ -64,22 +64,22 @@ class TableMaker:
     ) -> pd.DataFrame | None:
         # prepare output container
         # fill in using unique chunks from embeddings
-        pg_cvs = df_embeddings.copy().drop_duplicates(subset=CV_PG.file_full_name)
+        pg_cvs = df_embeddings.copy().drop_duplicates(subset=CvPg.file_full_name)
         # add empty profile_empty
-        pg_cvs[CV_PG.collab_id] = ""
+        pg_cvs[CvPg.collab_id] = ""
         for idx in range(len(df_profiles)):
-            cv_ids = df_profiles.iloc[idx][STRUCTPROFILE_DF.cv_id]
+            cv_ids = df_profiles.iloc[idx][StructProfileDF.cv_id]
             for cv_id in cv_ids:
-                pg_cvs_idx = pg_cvs[(pg_cvs[CV_PG.cv_id] == cv_id)].index.values
+                pg_cvs_idx = pg_cvs[(pg_cvs[CvPg.cv_id] == cv_id)].index.values
                 if pg_cvs_idx.size > 0:
-                    collab_id = df_profiles.iloc[idx][STRUCTPROFILE_DF.collab_id]
-                    pg_cvs.loc[pg_cvs_idx[0], CV_PG.collab_id] = collab_id
+                    collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
+                    pg_cvs.loc[pg_cvs_idx[0], CvPg.collab_id] = collab_id
 
         if pg_cvs.empty:
             logging.warning("returns empty")
             return None
         # reorder columns
-        pg_cvs = pg_cvs[CV_PG.get_attributes()]
+        pg_cvs = pg_cvs[CvPg.get_attributes()]
         return pg_cvs
 
     def _make_pg_chunks(
@@ -88,40 +88,37 @@ class TableMaker:
         df_embeddings: pd.DataFrame,
     ) -> pd.DataFrame | None:
         # prepare output container
-        pg_chunks = pd.DataFrame(columns=CHUNK_PG.get_attributes())
+        pg_chunks = pd.DataFrame(columns=ChunkPg.get_attributes())
         # get values from embeddings_df
         merge_cols = [
             col
-            for col in CHUNK_PG.get_attributes()
-            if col in EMBEDDING_DF.get_attributes()
+            for col in ChunkPg.get_attributes()
+            if col in EmbeddingDF.get_attributes()
         ]
         pg_chunks = pg_chunks.merge(df_embeddings, on=merge_cols, how="outer")
 
         for idx in range(len(df_profiles)):
-            cv_ids = df_profiles.iloc[idx][STRUCTPROFILE_DF.cv_id]
+            cv_ids = df_profiles.iloc[idx][StructProfileDF.cv_id]
             for cv_id in cv_ids:
-                pg_cvs_idx = pg_chunks[
-                    (pg_chunks[CHUNK_PG.cv_id] == cv_id)
-                ].index.values
+                pg_cvs_idx = pg_chunks[(pg_chunks[ChunkPg.cv_id] == cv_id)].index.values
                 if pg_cvs_idx.size > 0:
-                    collab_id = df_profiles.iloc[idx][STRUCTPROFILE_DF.collab_id]
-                    pg_chunks.loc[pg_cvs_idx, CHUNK_PG.collab_id] = collab_id
+                    collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
+                    pg_chunks.loc[pg_cvs_idx, ChunkPg.collab_id] = collab_id
 
         if pg_chunks.empty:
             logging.warning("returns empty")
             return None
 
         # reorder columns
-        pg_chunks = pg_chunks[CHUNK_PG.get_attributes()]
+        pg_chunks = pg_chunks[ChunkPg.get_attributes()]
         return pg_chunks
 
 
 if __name__ == "__main__":
-    from app.settings import Settings
+    from app.settings.settings import Settings
 
     env = Settings()
     data_path = r"data_dev/data_1"
-    # data_path = r'data_dev/data_1_1cv'
 
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
@@ -145,7 +142,7 @@ if __name__ == "__main__":
         read_only_extensions=[],
         ignore_extensions=[],
     )
-    print("1", df_text["collab_id"])
+    print("1", df_text["collab_id"])  # noqa: T201
     # =============================================================================
     #     # make the chunks
     # =============================================================================
@@ -154,7 +151,7 @@ if __name__ == "__main__":
     chunker = Chunker()
     # make chunks, One row per chunks
     df_chunks = chunker.chunk_documents(df_text)
-    print("2", df_chunks["collab_id"])
+    print("2", df_chunks["collab_id"])  # noqa: T201
     # =============================================================================
     #     # compute embeddings
     # =============================================================================
@@ -166,11 +163,11 @@ if __name__ == "__main__":
         df_embeddings,
         save_to_file_path=data_path + r"\df_embeddings.pkl",
     )
-    print("3", df_embeddings["collab_id"])
+    print("3", df_embeddings["collab_id"])  # noqa: T201
     # =============================================================================
     #     # parse the chunks
     # =============================================================================
-    from app.core.cv_information_retrieval.LLMparser import LLMParser
+    from app.core.cv_information_retrieval.llm_parser import LLMParser
 
     parser = LLMParser(env)
     parsed_chunks = parser.parse_all_chunks(df_chunks)
@@ -178,16 +175,16 @@ if __name__ == "__main__":
         parsed_chunks,
         save_to_file_path=data_path + r"\df_parsed_chunks.pkl",
     )
-    print("4", parsed_chunks["collab_id"])
+    print("4", parsed_chunks["collab_id"])  # noqa: T201
     # =============================================================================
     #     # consolidate CVs
     # =============================================================================
     parsed_chunks = DataFrameHandler.load_df(data_path + r"\df_parsed_chunks.pkl")
-    from app.core.cv_information_retrieval.CVstructurator import CvStructurator
+    from app.core.cv_information_retrieval.cv_structurator import CvStructurator
 
-    cvStructurator = CvStructurator()
-    df_struct_cvs = cvStructurator.consolidate_cvs(parsed_chunks)
-    print("5", df_struct_cvs["collab_id"])
+    cv_structurator = CvStructurator()
+    df_struct_cvs = cv_structurator.consolidate_cvs(parsed_chunks)
+    print("5", df_struct_cvs["collab_id"])  # noqa: T201
     # =============================================================================
     #     # consolidate profiles
     # =============================================================================
@@ -197,7 +194,7 @@ if __name__ == "__main__":
 
     structure = ProfileStructurator()
     df_profiles = structure.consolidate_profiles(df_struct_cvs)
-    print("6", df_profiles["collab_id"])
+    print("6", df_profiles["collab_id"])  # noqa: T201
     # =============================================================================
     #     # make pg tables
     # =============================================================================

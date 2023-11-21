@@ -7,16 +7,16 @@ import numpy as np
 import pandas as pd
 from cdifflib import CSequenceMatcher
 
-from app.core.models.PG_pandasmodels import CHUNK_PG, PROFILE_PG
+from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
 from app.core.models.scoredprofiles_pandasmodels import (
-    SCORED_CHUNKS_DF,
-    SCORED_PROFILES_DF,
+    ScoredChunksDF,
+    ScoredProfilesDF,
 )
 from app.core.shared_modules.listhandler import ListHandler
 
 
 class ScorerProfiles:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     # =============================================================================
@@ -30,7 +30,7 @@ class ScorerProfiles:
         """Keyword scoring using the profile dataframe"""
         scored_df = df_profiles
         # add a keyword_score column by scoring profiles one by one
-        scored_df[SCORED_PROFILES_DF.keywords_score] = scored_df.apply(
+        scored_df[ScoredProfilesDF.keywords_score] = scored_df.apply(
             self._score_by_keywords_single_profile,
             axis=1,
             args=(keywords_query,),
@@ -49,7 +49,7 @@ class ScorerProfiles:
         embedded_query_norm = embedded_query_np / np.linalg.norm(embedded_query_np)
 
         # Extract the chunk embeddings as a NumPy array
-        chunk_embeddings = np.stack(df_chunks[CHUNK_PG.chunk_embeddings].values)
+        chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
         # normalise
         chunk_embeddings_norm = chunk_embeddings / np.linalg.norm(
             chunk_embeddings,
@@ -62,7 +62,7 @@ class ScorerProfiles:
         cosine_similarity = dot_product
 
         # Assign the computed cosine similarity to the DataFrame
-        df_chunks[SCORED_CHUNKS_DF.semantic_score] = cosine_similarity
+        df_chunks[ScoredChunksDF.semantic_score] = cosine_similarity
         return df_chunks
 
     def assign_scores_to_profiles(
@@ -73,8 +73,8 @@ class ScorerProfiles:
         """Assigning chunks score and keywords (best) to profile table."""
         # Merge the best similarity score from scored_chunks to scored_keywords
         best_similarity = (
-            scored_chunks.groupby(SCORED_CHUNKS_DF.collab_id)[
-                SCORED_CHUNKS_DF.semantic_score
+            scored_chunks.groupby(ScoredChunksDF.collab_id)[
+                ScoredChunksDF.semantic_score
             ]
             .max()
             .reset_index()
@@ -82,32 +82,32 @@ class ScorerProfiles:
         df_profiles_scored = pd.merge(
             scored_keywords,
             best_similarity,
-            on=SCORED_CHUNKS_DF.collab_id,
+            on=ScoredChunksDF.collab_id,
             how="left",
         )
 
         # Rename the merged column to the correct name
         df_profiles_scored.rename(
             columns={
-                SCORED_CHUNKS_DF.semantic_score: SCORED_PROFILES_DF.semantic_score,
+                ScoredChunksDF.semantic_score: ScoredProfilesDF.semantic_score,
             },
             inplace=True,
         )
 
         # Normalize 0-1
         df_profiles_scored[
-            SCORED_PROFILES_DF.keywords_score_normalized
+            ScoredProfilesDF.keywords_score_normalized
         ] = self._normalize_column(
             df_profiles_scored,
-            SCORED_PROFILES_DF.keywords_score,
+            ScoredProfilesDF.keywords_score,
         )
 
         # Normalize 0-1
         df_profiles_scored[
-            SCORED_PROFILES_DF.semantic_score_normalized
+            ScoredProfilesDF.semantic_score_normalized
         ] = self._normalize_column(
             df_profiles_scored,
-            SCORED_PROFILES_DF.semantic_score,
+            ScoredProfilesDF.semantic_score,
         )
 
         return df_profiles_scored
@@ -121,12 +121,12 @@ class ScorerProfiles:
         threshold = 0.8
         # prepare data to check
         fields_to_check = [
-            PROFILE_PG.diplomas_certifications,
-            PROFILE_PG.roles,
-            PROFILE_PG.sectors,
-            PROFILE_PG.companies,
-            PROFILE_PG.soft_skills,
-            PROFILE_PG.technical_skills,
+            ProfilePg.diplomas_certifications,
+            ProfilePg.roles,
+            ProfilePg.sectors,
+            ProfilePg.companies,
+            ProfilePg.soft_skills,
+            ProfilePg.technical_skills,
         ]
         # place data in a list
         relevant_data = row[fields_to_check].values.tolist()

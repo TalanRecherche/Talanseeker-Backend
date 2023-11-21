@@ -5,7 +5,7 @@
 """
 import pytest
 
-from app.core.cv_information_retrieval.PPTXreader import PPTXReader
+from app.core.cv_information_retrieval.pptx_reader import PPTXReader
 
 
 def test_read_text():

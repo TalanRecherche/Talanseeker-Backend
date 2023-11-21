@@ -6,16 +6,16 @@ from tempfile import TemporaryDirectory
 from fastapi import HTTPException, Response, UploadFile
 
 from app.core import azure_blob_manager, azure_pg_manager
-from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.pg_pandasmodels import CollabPg
 from app.core.shared_modules.stringhandler import StringHandler
-from app.models.collabs import PG_Collabs
-from app.models.cvs import PG_CVs
+from app.models.collabs import PgCollabs
+from app.models.cvs import PgCvs
 from app.schema.cv_manager import CVDownloadRequest, CVDownloadResponse, CVUploadRequest
 
 
 class CVManagerBusiness:
     @staticmethod
-    def etl_business(request: CVUploadRequest, file: UploadFile):
+    def etl_business(request: CVUploadRequest, file: UploadFile) -> dict:
         cv_names = {}
         with TemporaryDirectory() as temp_dir:
             new_name = f"{CVManagerBusiness.get_time_stamp()} {file.filename}"
@@ -32,7 +32,8 @@ class CVManagerBusiness:
                 if isinstance(binary_data, bytes):
                     with open(os.path.join(temp_dir, new_name), "wb") as writer:
                         writer.write(binary_data)
-                logging.info(f"Collab {request.f_name} {request.l_name} is uploaded")
+                log_string = f"Collab {request.f_name} {request.l_name} is uploaded"
+                logging.info(log_string)
                 CVManagerBusiness.start_etl(temp_dir, cv_names)
             else:
                 raise HTTPException(status_code=412, detail="Collaborateur introuvable")
@@ -43,8 +44,8 @@ class CVManagerBusiness:
         }
 
     @staticmethod
-    def download_cv(request: CVDownloadRequest) -> Response:
-        file_name = PG_CVs().get_cv_name_by_id(request.cv_id)
+    def download_cv(request: CVDownloadRequest) -> Response | None:
+        file_name = PgCvs().get_cv_name_by_id(request.cv_id)
         if not file_name:
             raise HTTPException(status_code=400, detail="CV Introuvable")
         file_name = file_name[0]  # get cv_name. the format is ($cv_name)
@@ -55,7 +56,7 @@ class CVManagerBusiness:
                 content=file,
                 media_type="application/octet-stream",
             )
-        elif request.type == "link":
+        if request.type == "link":
             return Response(
                 status_code=200,
                 content=str(
@@ -66,22 +67,23 @@ class CVManagerBusiness:
                     ),
                 ),
             )
+        return None
 
     @staticmethod
-    def get_time_stamp():
+    def get_time_stamp() -> str:
         return datetime.datetime.now().strftime("%Y-%m-%d %H_%M_%S")
 
     @staticmethod
     def check_collab_exist(collab_id: str) -> bool:
-        return azure_pg_manager.check_existance(
-            PG_Collabs.__tablename__,
-            COLLAB_PG.collab_id,
+        return azure_pg_manager.check_existence(
+            PgCollabs.__tablename__,
+            CollabPg.collab_id,
             collab_id,
         )
 
     @staticmethod
-    def start_etl(data_path, collab_ids):
-        from app.settings import Settings
+    def start_etl(data_path: str, collab_ids: dict) -> None:
+        from app.settings.settings import Settings
 
         settings = Settings()
         # =============================================================================
@@ -119,14 +121,14 @@ class CVManagerBusiness:
         # =============================================================================
         # # parse the chunks
         # =============================================================================
-        from app.core.cv_information_retrieval.LLMparser import LLMParser
+        from app.core.cv_information_retrieval.llm_parser import LLMParser
 
         parser = LLMParser(settings=settings)
         parsed_chunks = parser.parse_all_chunks(df_chunks)
         # =============================================================================
         # # consolidate CVs
         # =============================================================================
-        from app.core.cv_information_retrieval.CVstructurator import CvStructurator
+        from app.core.cv_information_retrieval.cv_structurator import CvStructurator
 
         cv_structurator = CvStructurator()
         df_struct_cvs = cv_structurator.consolidate_cvs(parsed_chunks)

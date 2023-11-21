@@ -4,7 +4,7 @@ Features:
 import pytest
 
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.settings import Settings
+from app.settings.settings import Settings
 
 settings = Settings()
 embedder = EmbedderBackend(settings)

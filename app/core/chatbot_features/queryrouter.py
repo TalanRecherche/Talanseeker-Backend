@@ -1,13 +1,13 @@
 """Created by agarc at 11/10/2023
 Features:
 """
-from app.core.shared_modules.GPTbackend import GPTBackend
+from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class QueryRouter:
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # engine
         self.engine = settings.query_router_settings.query_router_llm_model
         # get query and system template
@@ -25,7 +25,7 @@ class QueryRouter:
         self.current_nb_tokens = 0
 
         # initialize the backend llm
-        self.llm_backend = GPTBackend(
+        self.llm_backend = GptBackend(
             self.engine,
             max_token_in_response=max_tokens_in_response,
         )
@@ -65,7 +65,6 @@ class QueryRouter:
             return is_good_query
         # if the response is not satisfactory we try another time.
         else:
-            print("query needs correcting")
             # the new query will include the mention that the chatbot made an error
             new_query_string = self._make_newquery_string(user_query, llm_response)
             # get a new response from the chatbot
@@ -82,7 +81,7 @@ class QueryRouter:
     #####################################################
     #   ## internal functions
     #####################################################
-    def _parse_llm_response(self, llm_response) -> bool:
+    def _parse_llm_response(self, llm_response: str) -> bool:
         # normalize string
         llm_response = StringHandler.normalize_string(
             llm_response,
@@ -104,7 +103,7 @@ class QueryRouter:
         # return False is llm_response is far from yes
         return False
 
-    def _check_llm_response(self, llm_response) -> bool:
+    def _check_llm_response(self, llm_response: str) -> bool:
         # normalize string
         llm_response = StringHandler.normalize_string(
             llm_response,
@@ -165,7 +164,7 @@ class QueryRouter:
 if __name__ == "__main__":
     import json
 
-    def load_queries_from_json(json_file):
+    def load_queries_from_json(json_file: json) -> dict:
         with open(json_file, encoding="utf-8") as file:
             data = json.load(file)
 
@@ -182,6 +181,6 @@ if __name__ == "__main__":
 
     for query, label in queries.items():
         response = router.get_router_response(query)
-        print("---")
-        print(query)
-        print("réponse:", response, "label:", label)
+        print("---")  # noqa: T201
+        print(query)  # noqa: T201
+        print("réponse:", response, "label:", label)  # noqa: T201

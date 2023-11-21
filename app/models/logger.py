@@ -1,9 +1,10 @@
 import logging
 
-from app.models import Base, engine
 from sqlalchemy import Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+
+from app.models import Base, engine
 
 
 class Logs(Base):
@@ -16,11 +17,12 @@ class Logs(Base):
     request_args = Column(Text)
     request_kwargs = Column(Text)
 
-    def log(self):
+    def log(self) -> None:
         try:
             logging.debug("Adding logs")
             with Session(engine) as session:
                 session.add(self)
                 session.commit()
         except Exception as e:
-            logging.error(f"Logs not working {e}")
+            log_string = f"An error occurred while adding logs: {e}"
+            logging.error(log_string)
