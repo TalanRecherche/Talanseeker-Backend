@@ -258,7 +258,7 @@ if __name__ == "__main__":
 
     # parse the chunks
     from app.core.cv_information_retrieval.llm_parser import LLMParser
-    from app.settings import Settings
+    from app.settings.settings import Settings
 
     parser = LLMParser(Settings())
     parsed_chunks = parser.parse_all_chunks(df_chunks)

@@ -83,7 +83,7 @@ class CVManagerBusiness:
 
     @staticmethod
     def start_etl(data_path: str, collab_ids: dict) -> None:
-        from app.settings import Settings
+        from app.settings.settings import Settings
 
         settings = Settings()
         # =============================================================================

@@ -8,7 +8,7 @@ import pytest
 from app.core.cv_information_retrieval.tablemaker import TableMaker
 from app.core.models.pg_pandasmodels import ChunkPg, CvPg, ProfilePg
 from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 env = Settings()
 

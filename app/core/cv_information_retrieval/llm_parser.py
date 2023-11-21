@@ -15,7 +15,7 @@ from unidecode import unidecode
 from app.core.models.etl_pandasmodels import ChunkDF, ParsedDF
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class LLMParser:
@@ -92,7 +92,7 @@ class LLMParser:
             response_hashmap = self._clean_response(response_hashmap)
             # if response is not empty: add row fields and place into output hashmap
             if response_hashmap:
-                for keys in row:
+                for keys in row.keys():
                     # add rows fiels to final hashmap
                     response_hashmap[keys] = row[keys]
                 # place response hashmap to final hashmap list
@@ -280,7 +280,7 @@ class LLMParser:
 
 if __name__ == "__main__":
     settings = Settings()
-    directory = r"tests/data_test/CV_pptx"
+    directory = r"./tests/data_test/PeterTille.docx"
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
 

@@ -115,7 +115,7 @@ class TableMaker:
 
 
 if __name__ == "__main__":
-    from app.settings import Settings
+    from app.settings.settings import Settings
 
     env = Settings()
     data_path = r"data_dev/data_1"

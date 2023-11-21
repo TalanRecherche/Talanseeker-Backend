@@ -19,7 +19,7 @@ from app.core.models.scoredprofiles_pandasmodels import (
 )
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.tokenshandler import TokenHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:

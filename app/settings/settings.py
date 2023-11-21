@@ -4,7 +4,7 @@ import os
 import openai
 from dotenv import load_dotenv
 
-from app.core.shared_modules.load_llm_settings import load_llm_settings
+from app.settings.load_llm_settings import load_llm_settings
 
 
 # =============================================================================
@@ -268,3 +268,7 @@ class Settings:
     def query_router_settings(self) -> QueryRouterSettings:
         """Query router settings."""
         return QueryRouterSettings()
+
+
+# run once to load env variables.
+env = Settings()

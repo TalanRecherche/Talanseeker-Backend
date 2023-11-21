@@ -10,7 +10,7 @@ from app.core.models.query_pandasmodels import QueryKeywords, QueryStruct
 from app.core.shared_modules.embedderbackend import EmbedderBackend
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class QueryTransformer:

@@ -1,13 +1,21 @@
 """Created by agarc at 23/10/2023
 Features:
 """
+import fnmatch
 import logging
 import os
 
 import yaml
 
 
-def load_llm_settings(llm_settings_file: str = "app/llm_settings.YAML") -> dict:
+def load_llm_settings() -> dict:
+    # find the YAML file
+    filename = "llm_settings.YAML"
+    llm_settings_file = None
+    for root, _, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
+        for file in fnmatch.filter(files, filename):
+            llm_settings_file = os.path.join(root, file)
+
     """Load llm settings YAML file and push the data to environment variable."""
     if os.path.exists(llm_settings_file):
         with open(llm_settings_file, encoding="utf-8") as file:

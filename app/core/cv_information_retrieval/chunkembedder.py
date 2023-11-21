@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from app.core.models.etl_pandasmodels import ChunkDF, EmbeddingDF
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class ChunkEmbedder:
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     df_chunks = chunker.chunk_documents(text_df)
 
     # make embeddings
-    from app.settings import Settings
+    from app.settings.settings import Settings
 
     embedder = ChunkEmbedder(Settings())
     df_embeddings = embedder.embed_chunk_dataframe(df_chunks)

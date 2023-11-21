@@ -11,7 +11,7 @@ from app.core.cv_information_retrieval.filemassextractor import FileMassExtracto
 from app.core.cv_information_retrieval.llm_parser import LLMParser
 from app.core.models.etl_pandasmodels import ParsedDF
 from app.core.shared_modules.pathexplorer import PathExplorer
-from app.settings import Settings
+from app.settings.settings import Settings
 
 settings = Settings()
 

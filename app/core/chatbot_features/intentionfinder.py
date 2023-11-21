@@ -8,7 +8,7 @@ from langchain.llms import AzureOpenAI
 
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class IntentionFinder:

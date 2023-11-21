@@ -10,7 +10,7 @@ import time
 import openai
 from langchain.embeddings.openai import OpenAIEmbeddings
 
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class EmbedderBackend:

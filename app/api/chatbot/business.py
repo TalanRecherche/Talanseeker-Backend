@@ -15,7 +15,7 @@ from app.schema.chatbot import (
     SkillsTable,
 )
 from app.schema.search import CvsInformation
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(

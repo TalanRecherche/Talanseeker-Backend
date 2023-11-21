@@ -7,7 +7,7 @@ r"""Created on Tue Aug 22 14:59:58 2023
 import pytest
 
 from app.core.shared_modules.gpt_backend import GptBackend
-from app.settings import Settings
+from app.settings.settings import Settings
 
 settings = Settings()
 LLM_MODEL = settings.chatbot_settings.chatbot_LLM_model

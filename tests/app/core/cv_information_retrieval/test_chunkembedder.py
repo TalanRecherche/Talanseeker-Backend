@@ -11,7 +11,7 @@ from app.core.cv_information_retrieval.chunker import Chunker
 from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
 from app.core.models.etl_pandasmodels import EmbeddingDF
 from app.core.shared_modules.pathexplorer import PathExplorer
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 @pytest.fixture(scope="module")

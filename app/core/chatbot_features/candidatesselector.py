@@ -17,7 +17,7 @@ from app.core.models.scoredprofiles_pandasmodels import (
     ScoredChunksDF,
     ScoredProfilesDF,
 )
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class CandidatesSelector:

@@ -2,7 +2,7 @@ import logging
 
 from azure.storage.blob import BlobServiceClient
 
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class AzureBlobManager:

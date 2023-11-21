@@ -6,7 +6,7 @@ import json
 import pytest
 
 from app.core.chatbot_features.queryrouter import QueryRouter
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 @pytest.fixture(scope="module")

@@ -61,7 +61,8 @@ ignore = [
     "FIX", # force issue resolving (in todos)
     "TD003", #force issue link in todos
     "COM812",
-    "ISC001"
+    "ISC001",
+    "SIM118" # this prevents the use of keys() in dictionaries. But it forgets pd.Series have keys()...
 ]
 
 

@@ -8,7 +8,7 @@ import pytest
 
 from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 settings = Settings()
 

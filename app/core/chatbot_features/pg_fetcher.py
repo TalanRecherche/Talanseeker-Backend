@@ -15,7 +15,7 @@ from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.exceptions.exceptions import InvalidColumnsError
 from app.models import con_string
 from app.schema.chatbot import ChatbotRequest, Filters
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class PGfetcher:

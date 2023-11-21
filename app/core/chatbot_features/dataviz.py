@@ -6,7 +6,7 @@ import pandas as pd
 from app.core.chatbot_features.candidate import Candidate, Candidates
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class DataViz:
