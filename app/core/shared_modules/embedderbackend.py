@@ -10,9 +10,11 @@ import time
 import openai
 from langchain.embeddings.openai import OpenAIEmbeddings
 
+from app.settings import Settings
+
 
 class EmbedderBackend:
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # embeddings setup
         self.embedding_model = settings.embedder_settings.embedder_model
         self.embedding_function = OpenAIEmbeddings(

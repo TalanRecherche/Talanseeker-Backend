@@ -3,7 +3,7 @@ from sqlalchemy import Column, String
 from app.models import Base
 
 
-class PG_Chunks(Base):
+class PgChunks(Base):
     __tablename__ = "chunks"
 
     chunk_id = Column(String, primary_key=True)

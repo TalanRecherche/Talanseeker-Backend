@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.exceptions.config import ExceptionConfig
-from app.exceptions.exceptions import InvalidColumnsError, UserIntegrityException
+from app.exceptions.exceptions import InvalidColumnsError, UserIntegrityError
 from app.schema.exceptions import ErrorResponse
 
 config = ExceptionConfig()
@@ -12,7 +12,7 @@ config = ExceptionConfig()
 async def invalid_columns_error_exception_handler(
     request: Request,
     exc: InvalidColumnsError,
-):
+) -> JSONResponse:
     conf = config.invalid_columns_error
     return JSONResponse(
         status_code=conf.status_code,
@@ -23,7 +23,7 @@ async def invalid_columns_error_exception_handler(
 async def request_validation_error_exception_handler(
     request: Request,
     exc: InvalidColumnsError,
-):
+) -> JSONResponse:
     conf = config.request_validation_error
     return JSONResponse(
         status_code=conf.status_code,
@@ -31,7 +31,9 @@ async def request_validation_error_exception_handler(
     )
 
 
-async def user_integrity_exception_handler(request: Request, exc: InvalidColumnsError):
+async def user_integrity_exception_handler(
+    request: Request, exc: InvalidColumnsError
+) -> JSONResponse:
     conf = config.user_integrity_exception
     return JSONResponse(
         status_code=conf.status_code,
@@ -48,4 +50,4 @@ def exception_handler(app: FastAPI) -> None:
         RequestValidationError,
         request_validation_error_exception_handler,
     )
-    app.add_exception_handler(UserIntegrityException, user_integrity_exception_handler)
+    app.add_exception_handler(UserIntegrityError, user_integrity_exception_handler)

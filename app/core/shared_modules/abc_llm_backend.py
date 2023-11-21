@@ -5,7 +5,7 @@ Features:
 from abc import ABC, abstractmethod
 
 
-class ABCLLMBackend(ABC):
+class AbcLlmBackend(ABC):
     """Abstract class for backends."""
 
     @abstractmethod

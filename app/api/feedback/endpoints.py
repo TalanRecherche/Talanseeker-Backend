@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
 from app.schema.feedback import FeedbackRequest
 
@@ -9,12 +9,12 @@ router = APIRouter(prefix="/feedback")
 
 
 @router.post("")
-def post_feedback(request: FeedbackRequest):
+def post_feedback(request: FeedbackRequest) -> Response:
     response = business.add_feedback(request)
     return response
 
 
 @router.patch("")
-def patch_feedback(request: FeedbackRequest):
+def patch_feedback(request: FeedbackRequest) -> Response:
     response = business.patch_feedback(request)
     return response

@@ -9,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from app.core.cv_information_retrieval.filereader import FileReader
-from app.core.models.ETL_pandasmodels import TEXT_DF
+from app.core.models.etl_pandasmodels import TextDF
 from app.core.shared_modules.pathexplorer import PathExplorer
 
 
@@ -23,7 +23,7 @@ class FileMassExtractor:
     Uses an instance of FileReader to read single documents
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # This instance handles the text and metadata extraction
         self.file_reader = FileReader()
 
@@ -34,8 +34,8 @@ class FileMassExtractor:
         self,
         path: str,
         collab_ids: dict,
-        read_only_extensions=None,
-        ignore_extensions=None,
+        read_only_extensions: list[str] = None,
+        ignore_extensions: list[str] = None,
     ) -> pd.DataFrame | None:
         """Find files in path or directory
         Filter (un)wanted extensions
@@ -83,7 +83,7 @@ class FileMassExtractor:
             return None
 
         # prepare output df
-        df_text = TEXT_DF.generate_dataframe()
+        df_text = TextDF.generate_dataframe()
         # filter only files with extension provided:
         file_paths = self._filter_extensions(
             file_paths,
@@ -108,8 +108,8 @@ class FileMassExtractor:
 
         # assign collab_id to each document
         print(collab_ids)
-        print(df_text[TEXT_DF.file_full_name])
-        df_text[TEXT_DF.collab_id] = df_text[TEXT_DF.file_full_name].map(collab_ids)
+        print(df_text[TextDF.file_full_name])
+        df_text[TextDF.collab_id] = df_text[TextDF.file_full_name].map(collab_ids)
 
         logging.info("done")
         return df_text
@@ -120,8 +120,8 @@ class FileMassExtractor:
     def _filter_extensions(
         self,
         file_paths: list[str],
-        read_only_extensions=None,
-        ignore_extensions=None,
+        read_only_extensions: list[str] = None,
+        ignore_extensions: list[str] = None,
     ) -> list[str]:
         """Filter file paths based on their extensions.
 

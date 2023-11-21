@@ -5,8 +5,8 @@
 """
 import pytest
 
-from app.core.cv_information_retrieval.CVstructurator import CvStructurator
-from app.core.models.ETL_pandasmodels import STRUCTCV_DF
+from app.core.cv_information_retrieval.cv_structurator import CvStructurator
+from app.core.models.etl_pandasmodels import StructCvDF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 
 
@@ -21,7 +21,7 @@ def setup_data():
 
 def test_dataframe_type(setup_data):
     cvs_struct = setup_data
-    assert STRUCTCV_DF.validate_dataframe(cvs_struct)
+    assert StructCvDF.validate_dataframe(cvs_struct)
 
 
 def test_dataframe_length(setup_data):

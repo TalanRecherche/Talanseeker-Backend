@@ -9,7 +9,7 @@ from pandera import Column
 from app.core.models.parent_pandasmodels import ParentPandasModel
 
 
-class QUERY_STRUCT(ParentPandasModel):
+class QueryStruct(ParentPandasModel):
     """information parsed from the user_query using GuessIntention."""
 
     # keys of the dataframe
@@ -42,8 +42,8 @@ class QUERY_STRUCT(ParentPandasModel):
     )
 
 
-class QUERY_KEYWORDS(ParentPandasModel):
-    """columns from QUERY_STRUCT used for scoring"""
+class QueryKeywords(ParentPandasModel):
+    """columns from QueryStruct used for scoring"""
 
     # keys of the dataframe
     diplomas_certifications = "diplomas_certifications"

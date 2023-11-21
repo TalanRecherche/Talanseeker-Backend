@@ -8,8 +8,8 @@ import pytest
 
 from app.core.cv_information_retrieval.chunker import Chunker
 from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-from app.core.cv_information_retrieval.LLMparser import LLMParser
-from app.core.models.ETL_pandasmodels import PARSED_DF
+from app.core.cv_information_retrieval.llm_parser import LLMParser
+from app.core.models.etl_pandasmodels import ParsedDF
 from app.core.shared_modules.pathexplorer import PathExplorer
 from app.settings import Settings
 
@@ -42,7 +42,7 @@ def setup_data():
 )
 def test_dataframe_type(setup_data):
     parsed_chunks = setup_data
-    assert PARSED_DF.validate_dataframe(parsed_chunks)
+    assert ParsedDF.validate_dataframe(parsed_chunks)
 
 
 @pytest.mark.skip_this(

@@ -7,10 +7,10 @@ import os
 import pytest
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
-from app.core.models.PG_pandasmodels import COLLAB_PG, CV_PG
+from app.core.models.pg_pandasmodels import CollabPg, CvPg
 from app.core.models.scoredprofiles_pandasmodels import (
-    SCORED_CHUNKS_DF,
-    SCORED_PROFILES_DF,
+    ScoredChunksDF,
+    ScoredProfilesDF,
 )
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.settings import Settings
@@ -47,25 +47,25 @@ def setup_data():
 @pytest.mark.skip_this()
 def test_candidates_chunks_format(setup_data):
     candidates_chunks, _, _, _ = setup_data
-    assert SCORED_CHUNKS_DF.validate_dataframe(candidates_chunks)
+    assert ScoredChunksDF.validate_dataframe(candidates_chunks)
 
 
 @pytest.mark.skip_this()
 def test_candidates_collabs_format(setup_data):
     _, candidates_collabs, _, _ = setup_data
-    assert COLLAB_PG.validate_dataframe(candidates_collabs)
+    assert CollabPg.validate_dataframe(candidates_collabs)
 
 
 @pytest.mark.skip_this()
 def test_candidates_cvs_format(setup_data):
     _, _, candidates_cvs, _ = setup_data
-    assert CV_PG.validate_dataframe(candidates_cvs)
+    assert CvPg.validate_dataframe(candidates_cvs)
 
 
 @pytest.mark.skip_this()
 def test_candidates_profiles_format(setup_data):
     _, _, _, candidates_profiles = setup_data
-    assert SCORED_PROFILES_DF.validate_dataframe(candidates_profiles)
+    assert ScoredProfilesDF.validate_dataframe(candidates_profiles)
 
 
 if __name__ == "__main__":

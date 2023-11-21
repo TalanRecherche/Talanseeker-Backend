@@ -10,7 +10,7 @@ import pandas as pd
 
 class DataFrameHandler:
     @staticmethod
-    def save_df(df: pd.DataFrame, save_to_file_path: str):
+    def save_df(df: pd.DataFrame, save_to_file_path: str) -> None:
         """Save the embeddings or the chunks to a pickle file.
 
         Args:

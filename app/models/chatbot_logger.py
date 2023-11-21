@@ -17,7 +17,7 @@ class ChatbotLogs(Base):
     response = Column(Text)
     candidates = Column(Text)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.request_issuer} {self.request} {self.response}"
 
     def log(self) -> int:

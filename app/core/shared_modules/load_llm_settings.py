@@ -7,7 +7,7 @@ import os
 import yaml
 
 
-def load_llm_settings(llm_settings_file="app/llm_settings.YAML"):
+def load_llm_settings(llm_settings_file: str = "app/llm_settings.YAML") -> dict:
     """Load llm settings YAML file and push the data to environment variable."""
     if os.path.exists(llm_settings_file):
         with open(llm_settings_file, encoding="utf-8") as file:

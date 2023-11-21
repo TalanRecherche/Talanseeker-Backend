@@ -4,7 +4,7 @@ from itertools import islice
 import pandas as pd
 
 from app.core.chatbot_features.candidate import Candidate, Candidates
-from app.core.shared_modules.GPTbackend import GPTBackend
+from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import Settings
 
@@ -12,18 +12,18 @@ from app.settings import Settings
 class DataViz:
     """class that creates the radarplot of skills based on the profile_pg"""
 
-    def __init__(self, settings, candidate: Candidate) -> None:
+    def __init__(self, settings: Settings, candidate: Candidate) -> None:
         self.settings = settings
         self.candidate = candidate
 
         self.df_competences = None
         self.n_top_skills = 6
 
-        self.engine = self.settings.chatbot_ui_settings.dataviz_llm_model
+        self.engine = self.settings.chatbot_ui_settings.dataviz_LLM_model
         self.max_token_in_response = 300
-        self.llm_backend = GPTBackend(self.engine, self.max_token_in_response)
+        self.llm_backend = GptBackend(self.engine, self.max_token_in_response)
 
-    def get_df_competence(self):
+    def get_df_competence(self) -> pd.DataFrame:
         """Compute score for each skills before plot."""
         # 1 on regroupe les compétences
         clusters_dict = self._cluster_skills_to_dict(self.candidate.skills)
@@ -34,7 +34,7 @@ class DataViz:
         self.df_competences = self._merge_duplicate_clusters(self.df_competences)
         return self.df_competences
 
-    def _cluster_skills_to_dict(self, skills_list):
+    def _cluster_skills_to_dict(self, skills_list: list[str]) -> dict:
         skill_tokens = {skill: set(skill.split()) for skill in skills_list}
         clusters = defaultdict(set)
 
@@ -54,7 +54,7 @@ class DataViz:
 
         return sorted_clustered_skills_dict
 
-    def _get_from_llm_cluster_id(self, clusters_dict):
+    def _get_from_llm_cluster_id(self, clusters_dict: dict) -> pd.DataFrame:
         list_comp = []
 
         # get prompt template

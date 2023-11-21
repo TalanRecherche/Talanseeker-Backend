@@ -7,7 +7,7 @@ import logging
 
 import pandas as pd
 
-from app.core.models.ETL_pandasmodels import STRUCTCV_DF, STRUCTPROFILE_DF
+from app.core.models.etl_pandasmodels import StructCvDF, StructProfileDF
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
 
@@ -15,7 +15,7 @@ from app.core.shared_modules.stringhandler import StringHandler
 class ProfileStructurator:
     """Consolidate all the CVs of a profile into a single row dataframe"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.similarity_threshold = 0.8
         # forbidden names/surname
         self.forbidden_names = ["talan"]
@@ -40,12 +40,12 @@ class ProfileStructurator:
         None.
         """
         # assert if input dataframe is of correct format (columns)
-        if not STRUCTCV_DF.validate_dataframe(df_consolidated_cvs):
+        if not StructCvDF.validate_dataframe(df_consolidated_cvs):
             return None
 
         # assign collab_ids to consolidated cvs
         # prepare output dataframe
-        df_consolidated_profiles = STRUCTPROFILE_DF.generate_dataframe()
+        df_consolidated_profiles = StructProfileDF.generate_dataframe()
 
         # get unique profiles
         hashmap_collabid_cvsid = self._get_unique_profiles(df_consolidated_cvs)
@@ -55,13 +55,13 @@ class ProfileStructurator:
         for collab_id, cv_ids in hashmap_collabid_cvsid.items():
             # filter chunks to current profile
             df_filtered_cvs = df_consolidated_cvs[
-                df_consolidated_cvs[STRUCTPROFILE_DF.cv_id].isin(cv_ids)
+                df_consolidated_cvs[StructProfileDF.cv_id].isin(cv_ids)
             ]
             # consolidate all rows into a single profile row
             df_single_profile = self._consolidate_single_profile(df_filtered_cvs)
             # push to new pandas df
             if not df_single_profile.empty:
-                df_single_profile[STRUCTPROFILE_DF.collab_id] = collab_id
+                df_single_profile[StructProfileDF.collab_id] = collab_id
                 df_consolidated_profiles = pd.concat(
                     [df_consolidated_profiles, df_single_profile],
                     axis=0,
@@ -86,8 +86,8 @@ class ProfileStructurator:
         :param df_consolidated_cvs: one row per CV dataframe with parsed information.
         :return: {profile_id to list[cv_ids]}
         """
-        grouped = df_consolidated_cvs.groupby(STRUCTCV_DF.collab_id)[
-            STRUCTCV_DF.cv_id
+        grouped = df_consolidated_cvs.groupby(StructCvDF.collab_id)[
+            StructCvDF.cv_id
         ].apply(list)
         hashmap_collabid_cvsid = {key: value for key, value in grouped.items()}
         return hashmap_collabid_cvsid
@@ -113,17 +113,17 @@ class ProfileStructurator:
         hashmap_consolidated_profile = {}
 
         # I. static columns are not transformed we just take a single value
-        for column in STRUCTCV_DF.static_columns_:
+        for column in StructCvDF.static_columns_:
             static_value = self._merge_static_columns(column, df_filtered_cvs)
             hashmap_consolidated_profile[column] = static_value
 
         # II. for numeric, we take the maximum values (years of experiences)
-        for column in STRUCTCV_DF.numerical_columns_:
+        for column in StructCvDF.numerical_columns_:
             numerical_value = self._merge_numerical_columns(column, df_filtered_cvs)
             hashmap_consolidated_profile[column] = numerical_value
 
         # III. for string (eg roles_profile sector etc.), things are more complicated
-        for column in STRUCTCV_DF.string_columns_:
+        for column in StructCvDF.string_columns_:
             string_values = self._merge_string_columns(column, df_filtered_cvs)
             hashmap_consolidated_profile[column] = string_values
 
@@ -131,7 +131,9 @@ class ProfileStructurator:
         df_consolidated_profile = pd.DataFrame([hashmap_consolidated_profile])
         return df_consolidated_profile
 
-    def _merge_string_columns(self, column, df_filtered_cvs) -> list[str]:
+    def _merge_string_columns(
+        self, column: str, df_filtered_cvs: pd.DataFrame
+    ) -> list[str]:
         try:
             string_values = ListHandler.flatten_list(df_filtered_cvs[column].to_list())
             # unique strings
@@ -149,7 +151,9 @@ class ProfileStructurator:
             )
         return string_values
 
-    def _merge_numerical_columns(self, column, df_filtered_cvs) -> int:
+    def _merge_numerical_columns(
+        self, column: str, df_filtered_cvs: pd.DataFrame
+    ) -> int:
         # try is here because sometime the integer is impossible to get
         try:
             numerical_extract = max(df_filtered_cvs[column].dropna())
@@ -161,7 +165,7 @@ class ProfileStructurator:
             )
         return numerical_value
 
-    def _merge_static_columns(self, column, df_filtered_cvs) -> list:
+    def _merge_static_columns(self, column: str, df_filtered_cvs: pd.DataFrame) -> list:
         try:
             static_value = list(df_filtered_cvs[column])
         except Exception as e:
@@ -191,14 +195,14 @@ if __name__ == "__main__":
     df_chunks = chunker.chunk_documents(text_df)
 
     # parse the chunks
-    from app.core.cv_information_retrieval.LLMparser import LLMParser
+    from app.core.cv_information_retrieval.llm_parser import LLMParser
     from app.settings import Settings
 
     parser = LLMParser(Settings())
     parsed_chunks = parser.parse_all_chunks(df_chunks)
 
     # consolidate cvs
-    from app.core.cv_information_retrieval.CVstructurator import CvStructurator
+    from app.core.cv_information_retrieval.cv_structurator import CvStructurator
 
     structure = CvStructurator()
     cvs_struct = structure.consolidate_cvs(parsed_chunks)

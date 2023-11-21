@@ -8,8 +8,8 @@ class TokenHandler:
     @staticmethod
     def count_tokens_from_string(
         string: str,
-        encoding_name="cl100k_base",
-        engine="gpt-35-turbo",
+        encoding_name: str = "cl100k_base",
+        engine: str = "gpt-35-turbo",
     ) -> int:
         # compute number of tokens tokens
         if not isinstance(string, str):
@@ -22,9 +22,9 @@ class TokenHandler:
 
     @staticmethod
     def count_tokens_from_hashmap(
-        hashmap,
-        encoding_name="cl100k_base",
-        engine="gpt-35-turbo",
+        hashmap: dict,
+        encoding_name: str = "cl100k_base",
+        engine: str = "gpt-35-turbo",
     ) -> int:
         curr_len = 0
         for key in hashmap:

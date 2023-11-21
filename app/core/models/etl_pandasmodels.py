@@ -11,7 +11,7 @@ from app.core.models.parent_pandasmodels import ParentPandasModel
 """ This file contains columns of all dataframes used in the pipeline"""
 
 
-class TEXT_DF(ParentPandasModel):
+class TextDF(ParentPandasModel):
     """columns FileMassExtractor df"""
 
     # unique identifier for the cv
@@ -36,7 +36,7 @@ class TEXT_DF(ParentPandasModel):
     )
 
 
-class CHUNK_DF(ParentPandasModel):
+class ChunkDF(ParentPandasModel):
     """columns Chunker df"""
 
     chunk_id = "chunk_id"
@@ -62,7 +62,7 @@ class CHUNK_DF(ParentPandasModel):
     )
 
 
-class EMBEDDING_DF(ParentPandasModel):
+class EmbeddingDF(ParentPandasModel):
     """columns EmbedderBackend df"""
 
     chunk_id = "chunk_id"
@@ -90,7 +90,7 @@ class EMBEDDING_DF(ParentPandasModel):
     )
 
 
-class PARSED_DF(ParentPandasModel):
+class ParsedDF(ParentPandasModel):
     """columns LLMParser df"""
 
     chunk_id = "chunk_id"
@@ -141,7 +141,7 @@ class PARSED_DF(ParentPandasModel):
     )
 
 
-class STRUCTCV_DF(ParentPandasModel):
+class StructCvDF(ParentPandasModel):
     """columns ProfileStructurator df"""
 
     cv_id = "cv_id"
@@ -198,7 +198,7 @@ class STRUCTCV_DF(ParentPandasModel):
     )
 
 
-class STRUCTPROFILE_DF(ParentPandasModel):
+class StructProfileDF(ParentPandasModel):
     """columns ProfileStructurator df"""
 
     collab_id = "collab_id"

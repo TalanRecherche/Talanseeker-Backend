@@ -5,11 +5,11 @@
 """
 import logging
 
-from app.core.cv_information_retrieval.DOCXreader import DOCXReader
-from app.core.cv_information_retrieval.PDFreader import PDFReader
-from app.core.cv_information_retrieval.PPTXreader import PPTXReader
-from app.core.cv_information_retrieval.TXTreader import TXTReader
-from app.core.models.ETL_pandasmodels import TEXT_DF
+from app.core.cv_information_retrieval.docx_reader import DOCXReader
+from app.core.cv_information_retrieval.pdf_reader import PDFReader
+from app.core.cv_information_retrieval.pptx_reader import PPTXReader
+from app.core.cv_information_retrieval.txt_reader import TXTReader
+from app.core.models.etl_pandasmodels import TextDF
 from app.core.shared_modules.pathexplorer import PathExplorer
 from app.core.shared_modules.stringhandler import StringHandler
 
@@ -23,7 +23,7 @@ class FileReader:
     and imports)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # list of valid extensions for which a loader is ready.
         # TODO add functions to read .doc, .ppt
         self.loader_router = {
@@ -64,12 +64,12 @@ class FileReader:
                     StringHandler.normalize_string(meta_cv),
                 )
                 text_and_metadata = {
-                    TEXT_DF.file_path: file_path,
-                    TEXT_DF.file_name: file_name,
-                    TEXT_DF.file_extension: file_extension,
-                    TEXT_DF.file_full_name: file_name + file_extension,
-                    TEXT_DF.file_text: text,
-                    TEXT_DF.cv_id: cv_id,
+                    TextDF.file_path: file_path,
+                    TextDF.file_name: file_name,
+                    TextDF.file_extension: file_extension,
+                    TextDF.file_full_name: file_name + file_extension,
+                    TextDF.file_text: text,
+                    TextDF.cv_id: cv_id,
                 }
                 return text_and_metadata
             else:

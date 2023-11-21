@@ -27,13 +27,13 @@ class StringHandler:
         return string
 
     @staticmethod
-    def check_similarity_string(a, b, threshold=0.8) -> bool:
+    def check_similarity_string(a: str, b: str, threshold: float = 0.8) -> bool:
         """Check if two strings are similar based on a similarity threshold."""
         similarity = SequenceMatcher(None, a, b).ratio()
         return similarity >= threshold
 
     @staticmethod
-    def remove_similar_strings(strings: list[str], threshold=0.8) -> list[str]:
+    def remove_similar_strings(strings: list[str], threshold: float = 0.8) -> list[str]:
         """Fuzzy string removal. Remove similar strings from a list based on a
         similarity threshold.
         """
@@ -76,7 +76,9 @@ class StringHandler:
         return output_string
 
     @staticmethod
-    def string_to_list_with_separator(input_string: str, separator: str = ","):
+    def string_to_list_with_separator(
+        input_string: str, separator: str = ","
+    ) -> list[str]:
         """Convert a text separated by the separator into a list of unique values.
 
         Args:

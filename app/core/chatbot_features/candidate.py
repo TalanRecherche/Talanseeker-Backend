@@ -5,7 +5,7 @@
 
 import pandas as pd
 
-from app.core.models.PG_pandasmodels import CHUNK_PG, COLLAB_PG, CV_PG, PROFILE_PG
+from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.core.shared_modules.listhandler import ListHandler
 
 
@@ -22,16 +22,16 @@ class Candidates:
         self.list_candidates = []
         for _, row in pg_collabs.iterrows():
             # filter out rows of the current candidate
-            current_collab_id = row[COLLAB_PG.collab_id]
+            current_collab_id = row[CollabPg.collab_id]
             rows_pg_chunks = pg_chunks[
-                pg_chunks[CHUNK_PG.collab_id] == current_collab_id
+                pg_chunks[ChunkPg.collab_id] == current_collab_id
             ]
             rows_pg_collabs = pg_collabs[
-                pg_collabs[COLLAB_PG.collab_id] == current_collab_id
+                pg_collabs[CollabPg.collab_id] == current_collab_id
             ]
-            rows_pg_cvs = pg_cvs[pg_cvs[CV_PG.collab_id] == current_collab_id]
+            rows_pg_cvs = pg_cvs[pg_cvs[CvPg.collab_id] == current_collab_id]
             rows_pg_profiles = pg_profiles[
-                pg_profiles[PROFILE_PG.collab_id] == current_collab_id
+                pg_profiles[ProfilePg.collab_id] == current_collab_id
             ]
             # instantiate a candidate
             candidate = Candidate(
@@ -55,48 +55,48 @@ class Candidate:
         row_pg_profiles: pd.DataFrame,
     ) -> None:
         # from COLLAB table
-        self.name = self.get_value_or_default(row_pg_collabs, COLLAB_PG.name).title()
+        self.name = self.get_value_or_default(row_pg_collabs, CollabPg.name).title()
         self.surname = self.get_value_or_default(
             row_pg_collabs,
-            COLLAB_PG.surname,
+            CollabPg.surname,
         ).upper()
-        self.email = self.get_value_or_default(row_pg_collabs, COLLAB_PG.email).lower()
-        self.role = self.get_value_or_default(row_pg_collabs, COLLAB_PG.role).title()
+        self.email = self.get_value_or_default(row_pg_collabs, CollabPg.email).lower()
+        self.role = self.get_value_or_default(row_pg_collabs, CollabPg.role).title()
         self.sub_role = self.get_value_or_default(
             row_pg_collabs,
-            COLLAB_PG.sub_role,
+            CollabPg.sub_role,
         ).title()
-        self.grade = self.get_value_or_default(row_pg_collabs, COLLAB_PG.grade).title()
+        self.grade = self.get_value_or_default(row_pg_collabs, CollabPg.grade).title()
         self.region = self.get_value_or_default(
             row_pg_collabs,
-            COLLAB_PG.region,
+            CollabPg.region,
         ).title()
-        self.city = self.get_value_or_default(row_pg_collabs, COLLAB_PG.city).title()
+        self.city = self.get_value_or_default(row_pg_collabs, CollabPg.city).title()
         self.manager = self.get_value_or_default(
             row_pg_collabs,
-            COLLAB_PG.manager,
+            CollabPg.manager,
         ).title()
 
         # from PROFILE table
-        self.years_of_exp = self.get_value_or_default(row_pg_profiles, PROFILE_PG.years)
+        self.years_of_exp = self.get_value_or_default(row_pg_profiles, ProfilePg.years)
         self.roles_profile = ListHandler.capitalize_list(
             self.get_value_or_default(
                 row_pg_profiles,
-                PROFILE_PG.roles,
+                ProfilePg.roles,
                 value_is_list=True,
             ),
         )
         self.soft_skills = ListHandler.capitalize_list(
             self.get_value_or_default(
                 row_pg_profiles,
-                PROFILE_PG.soft_skills,
+                ProfilePg.soft_skills,
                 value_is_list=True,
             ),
         )
         self.technical_skills = ListHandler.capitalize_list(
             self.get_value_or_default(
                 row_pg_profiles,
-                PROFILE_PG.technical_skills,
+                ProfilePg.technical_skills,
                 value_is_list=True,
             ),
         )
@@ -104,7 +104,7 @@ class Candidate:
         self.diplomas_certifications = ListHandler.capitalize_list(
             self.get_value_or_default(
                 row_pg_profiles,
-                PROFILE_PG.diplomas_certifications,
+                ProfilePg.diplomas_certifications,
                 value_is_list=True,
             ),
         )
@@ -114,11 +114,15 @@ class Candidate:
         self.pg_cvs = row_pg_cvs
         self.pg_profiles = row_pg_profiles
 
-        self.cv_path = self.pg_cvs[CV_PG.file_full_name].tolist()
+        self.cv_path = self.pg_cvs[CvPg.file_full_name].tolist()
         self.cv_extension = ["." + filename.split(".")[-1] for filename in self.cv_path]
 
     def get_value_or_default(
-        self, row, column, default_value="", value_is_list=False
+        self,
+        row: pd.DataFrame,
+        column: pd.DataFrame,
+        default_value: str = "",
+        value_is_list: bool = False,
     ) -> str:
         """Get the value from the row for the given column,
         return the default value if it's null.

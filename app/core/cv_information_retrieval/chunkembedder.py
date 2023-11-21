@@ -9,8 +9,9 @@ import re
 import pandas as pd
 from tqdm import tqdm
 
-from app.core.models.ETL_pandasmodels import CHUNK_DF, EMBEDDING_DF
+from app.core.models.etl_pandasmodels import ChunkDF, EmbeddingDF
 from app.core.shared_modules.embedderbackend import EmbedderBackend
+from app.settings import Settings
 
 
 class ChunkEmbedder:
@@ -18,7 +19,7 @@ class ChunkEmbedder:
     Adds a new columns chunk_embeddings
     """
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # set up embedder backend
         self.embedder = EmbedderBackend(settings)
 
@@ -26,7 +27,7 @@ class ChunkEmbedder:
     #     user functions
     # =============================================================================
 
-    def embed_chunk_dataframe(self, df_chunks) -> pd.DataFrame | None:
+    def embed_chunk_dataframe(self, df_chunks: pd.DataFrame) -> pd.DataFrame | None:
         """Embeds an entire DataFrame by applying the _embed_single_chunk() function
         to each row.
 
@@ -40,7 +41,7 @@ class ChunkEmbedder:
             embeddings column.
         """
         # assert if input dataframe is of correct format (columns)
-        if not CHUNK_DF.validate_dataframe(df_chunks):
+        if not ChunkDF.validate_dataframe(df_chunks):
             return None
 
         logging.info(f"Embeddings {len(df_chunks)} chunks...")
@@ -83,14 +84,14 @@ class ChunkEmbedder:
 
         """
         # prepare the string
-        text_to_embed = df_chunk_row[CHUNK_DF.chunk_text]
+        text_to_embed = df_chunk_row[ChunkDF.chunk_text]
         prepared_string_to_embed = self._prep_string_to_embed(text_to_embed)
         # embed the string
         embedding = self.embedder.embed_string(prepared_string_to_embed)
         # Return a dictionary with previous data
         embedded_chunk_row = df_chunk_row.to_dict()
         # add an embeddings column
-        embedded_chunk_row[EMBEDDING_DF.chunk_embeddings] = embedding
+        embedded_chunk_row[EmbeddingDF.chunk_embeddings] = embedding
 
         return embedded_chunk_row
 

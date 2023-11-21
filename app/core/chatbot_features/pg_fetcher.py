@@ -6,11 +6,12 @@
 import ast
 import datetime
 import logging
+from datetime import date
 from typing import Optional
 
 import pandas as pd
 
-from app.core.models.PG_pandasmodels import CHUNK_PG, COLLAB_PG, CV_PG, PROFILE_PG
+from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.exceptions.exceptions import InvalidColumnsError
 from app.models import con_string
 from app.schema.chatbot import ChatbotRequest, Filters
@@ -20,7 +21,7 @@ from app.settings import Settings
 class PGfetcher:
     """Connects to postgres and fetches tables after filtering"""
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         self.settings = settings
 
     # =============================================================================
@@ -49,7 +50,7 @@ class PGfetcher:
         # fetch profiles
         df_profiles = self._fetch_profiles(filters=filters)
         # get all collab_ids in the profile table. Used to filter out candidates.
-        collab_ids = df_profiles[PROFILE_PG.collab_id].tolist()
+        collab_ids = df_profiles[ProfilePg.collab_id].tolist()
 
         # create string of collab_ids for the query
         collab_ids_string = self._make_collab_string(collab_ids)
@@ -79,14 +80,14 @@ class PGfetcher:
         if filters:
             regions = filters.region
             if regions:
-                query += f"and c.{COLLAB_PG.region} in {tuple(regions)} "
+                query += f"and c.{CollabPg.region} in {tuple(regions)} "
             cities = filters.city
             if cities:
                 cities = [elem.lower() for elem in cities]
-                query += f"and lower(c.{COLLAB_PG.city}) in {tuple(cities)} "
+                query += f"and lower(c.{CollabPg.city}) in {tuple(cities)} "
             grades = filters.grade
             if grades and len(grades) > 0:
-                query += f"and c.{COLLAB_PG.grade} in {tuple(grades)} "
+                query += f"and c.{CollabPg.grade} in {tuple(grades)} "
 
             date = filters.assigned_until
             availability_score = filters.availability_score
@@ -104,7 +105,7 @@ class PGfetcher:
             query = query.replace(",)", ")")
         return query
 
-    def _fetch_profiles(self, filters: Optional[Filters] = None):
+    def _fetch_profiles(self, filters: Optional[Filters] = None) -> pd.DataFrame:
         query = (
             "select p.* from profiles p left join collabs c on p.collab_id = "
             "c.collab_id where true"
@@ -114,11 +115,11 @@ class PGfetcher:
         logging.info(query)
         print(query)
         df_profiles_ = pd.read_sql(query, con_string)
-        if not PROFILE_PG.validate_dataframe(df_profiles_):
+        if not ProfilePg.validate_dataframe(df_profiles_):
             raise InvalidColumnsError("df_profiles is missing the required columns")
         return df_profiles_
 
-    def filter_collabs(self, filters: Optional[Filters] = None):
+    def filter_collabs(self, filters: Optional[Filters] = None) -> pd.DataFrame:
         """Fetch the entire profile table"""
         query = (
             'select c.surname as "Nom", c."name" as "Prénom", c.email as "Email", '
@@ -138,28 +139,28 @@ class PGfetcher:
             )
 
         df_profiles_.rename(
-            columns={COLLAB_PG.availability_score: "Disponibilité"},
+            columns={CollabPg.availability_score: "Disponibilité"},
             inplace=True,
         )
         return df_profiles_
 
     @staticmethod
-    def _adjust_availability_score(row: pd.Series, start_date) -> pd.Series:
+    def _adjust_availability_score(row: pd.Series, start_date: date) -> pd.Series:
         try:
             if (
-                row[COLLAB_PG.assigned_until] is None
+                row[CollabPg.assigned_until] is None
                 or datetime.datetime.strptime(
-                    row[COLLAB_PG.assigned_until],
+                    row[CollabPg.assigned_until],
                     "%Y-%m-%d",
                 ).date()
                 <= start_date
             ):
-                row[COLLAB_PG.availability_score] = 100
+                row[CollabPg.availability_score] = 100
         except Exception:
             logging.warning(f"Date not conform, skipping collab {row}")
         return row
 
-    def _fetch_chunks(self, collab_ids_string):
+    def _fetch_chunks(self, collab_ids_string: str) -> pd.DataFrame | None:
         try:
             """Create the SQL query using the formatted collab_ids_str"""
             query = f"select * from chunks where collab_id in ({collab_ids_string})"
@@ -167,10 +168,10 @@ class PGfetcher:
             # Execute the query and fetch the result as a DataFrame
             df_chunks = pd.read_sql(query, con_string)
             # convert chunk embeddings to array[float]
-            df_chunks[CHUNK_PG.chunk_embeddings] = df_chunks[
-                CHUNK_PG.chunk_embeddings
+            df_chunks[ChunkPg.chunk_embeddings] = df_chunks[
+                ChunkPg.chunk_embeddings
             ].apply(ast.literal_eval)
-            if not CHUNK_PG.validate_dataframe(df_chunks):
+            if not ChunkPg.validate_dataframe(df_chunks):
                 raise InvalidColumnsError("df_profiles is missing the required columns")
 
             return df_chunks
@@ -183,14 +184,14 @@ class PGfetcher:
             logging.error(f"An error occurred while executing the query: {e}")
             raise
 
-    def _fetch_cvs(self, collab_ids_string):
+    def _fetch_cvs(self, collab_ids_string: str) -> pd.DataFrame | None:
         try:
             """Create the SQL query using the formatted collab_ids_str"""
             query = f"select * from cvs where collab_id in ({collab_ids_string})"
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_cvs = pd.read_sql(query, con_string)
-            if not CV_PG.validate_dataframe(df_cvs):
+            if not CvPg.validate_dataframe(df_cvs):
                 raise InvalidColumnsError("df_cvs is missing the required columns")
             return df_cvs
 
@@ -202,14 +203,14 @@ class PGfetcher:
             logging.error(f"An error occurred while executing the query: {e}")
             raise
 
-    def _fetch_collabs(self, collab_ids_string):
+    def _fetch_collabs(self, collab_ids_string: str) -> pd.DataFrame | None:
         try:
             """Create the SQL query using the formatted collab_ids_str"""
             query = f"select * from collabs where collab_id in ({collab_ids_string})"
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_collabs = pd.read_sql(query, con_string)
-            if not COLLAB_PG.validate_dataframe(df_collabs):
+            if not CollabPg.validate_dataframe(df_collabs):
                 raise InvalidColumnsError("df_collabs is missing the required columns")
             return df_collabs
 
@@ -221,7 +222,7 @@ class PGfetcher:
             logging.error(f"An error occurred while executing the query: {e}")
             raise
 
-    def _make_collab_string(self, collab_ids):
+    def _make_collab_string(self, collab_ids: list[str]) -> str | None:
         try:
             """Wrap each collab_id in single quotes and join them with commas"""
             collab_ids_string = ",".join([f"'{id}'" for id in collab_ids])

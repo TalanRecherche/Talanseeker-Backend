@@ -8,13 +8,15 @@ import time
 
 import openai
 
-from app.core.shared_modules.ABCLLMbackend import ABCLLMBackend
+from app.core.shared_modules.abc_llm_backend import AbcLlmBackend
 
 
-class GPTBackend(ABCLLMBackend):
+class GptBackend(AbcLlmBackend):
     """backend for simple queries with the llm. Use only: send_receive_message"""
 
-    def __init__(self, llm_model="gpt-35-turbo", max_token_in_response: int = 300):
+    def __init__(
+        self, llm_model: str = "gpt-35-turbo", max_token_in_response: int = 300
+    ) -> None:
         if llm_model not in ["gpt-4", "gpt-4-32k", "gpt-35-turbo"]:
             error_message = "Invalid GPT llm_model"
             logging.error(error_message)

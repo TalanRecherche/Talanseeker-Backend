@@ -9,7 +9,7 @@ import pytest
 from app.core.cv_information_retrieval.chunkembedder import ChunkEmbedder
 from app.core.cv_information_retrieval.chunker import Chunker
 from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-from app.core.models.ETL_pandasmodels import EMBEDDING_DF
+from app.core.models.etl_pandasmodels import EmbeddingDF
 from app.core.shared_modules.pathexplorer import PathExplorer
 from app.settings import Settings
 
@@ -41,7 +41,7 @@ def setup_data():
 )
 def test_dataframe_type(setup_data):
     df_embeddings = setup_data
-    assert EMBEDDING_DF.validate_dataframe(df_embeddings)
+    assert EmbeddingDF.validate_dataframe(df_embeddings)
 
 
 @pytest.mark.skip_this(
@@ -58,7 +58,7 @@ def test_dataframe_length(setup_data):
 def test_chunk_text_format(setup_data):
     df_embeddings = setup_data
     assert (
-        df_embeddings[EMBEDDING_DF.chunk_text]
+        df_embeddings[EmbeddingDF.chunk_text]
         .apply(lambda x: isinstance(x, str) and len(x) > 0)
         .all()
     )
@@ -70,7 +70,7 @@ def test_chunk_text_format(setup_data):
 def test_chunk_embeddings_format(setup_data):
     df_embeddings = setup_data
     assert (
-        df_embeddings[EMBEDDING_DF.chunk_embeddings]
+        df_embeddings[EmbeddingDF.chunk_embeddings]
         .apply(lambda x: isinstance(x, list) and len(x) == 1536)
         .all()
     )

@@ -11,14 +11,15 @@ import re
 
 import pandas as pd
 
-from app.core.models.PG_pandasmodels import COLLAB_PG
-from app.core.models.query_pandasmodels import QUERY_STRUCT
+from app.core.models.pg_pandasmodels import CollabPg
+from app.core.models.query_pandasmodels import QueryStruct
 from app.core.models.scoredprofiles_pandasmodels import (
-    SCORED_CHUNKS_DF,
-    SCORED_PROFILES_DF,
+    ScoredChunksDF,
+    ScoredProfilesDF,
 )
-from app.core.shared_modules.GPTbackend import GPTBackend
+from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.tokenshandler import TokenHandler
+from app.settings import Settings
 
 
 def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:
@@ -31,13 +32,13 @@ def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:
 
 
 class Chatbot:
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         self.system_string = settings.chatbot_settings.chatbot_system_template
         self.context_string = settings.chatbot_settings.chatbot_context_template
         self.query_string = settings.chatbot_settings.chatbot_query_template
 
         # set llm chatbot engine and encoder
-        self.engine = settings.chatbot_settings.chatbot_llm_model
+        self.engine = settings.chatbot_settings.chatbot_LLM_model
         # encoding name is used to compute number of tokens in context
         self.encoding_name = settings.embedder_settings.encoding_name
 
@@ -59,7 +60,7 @@ class Chatbot:
         self.current_nb_tokens = 0
 
         # pass settings to backend
-        self.llm_backend = GPTBackend(self.engine, max_tokens_in_response)
+        self.llm_backend = GptBackend(self.engine, max_tokens_in_response)
 
         # similarity threshold to pass a chunk to the context
         self.similarity_threshold = 0.8  # 0-1 min-max
@@ -86,20 +87,20 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        if not SCORED_PROFILES_DF.validate_dataframe(candidates_profiles):
+        if not ScoredProfilesDF.validate_dataframe(candidates_profiles):
             return None
-        if not SCORED_CHUNKS_DF.validate_dataframe(candidates_chunks):
+        if not ScoredChunksDF.validate_dataframe(candidates_chunks):
             return None
-        if not QUERY_STRUCT.validate_dataframe(guessintention_query):
+        if not QueryStruct.validate_dataframe(guessintention_query):
             return None
-        if not COLLAB_PG.validate_dataframe(candidate_collabs):
+        if not CollabPg.validate_dataframe(candidate_collabs):
             return None
         self.current_nb_tokens = 0
 
         # make system function string (contains chunks)
         system_string = self._make_system_string()
         # make query string
-        user_query = guessintention_query.iloc[0][QUERY_STRUCT.user_query][0]
+        user_query = guessintention_query.iloc[0][QueryStruct.user_query][0]
         query_string = self._make_query_string(
             user_query,
             candidates_chunks,
@@ -159,9 +160,9 @@ class Chatbot:
     ) -> str:
         # create list of names
         profiles_names = (
-            candidate_collabs[COLLAB_PG.surname].values
+            candidate_collabs[CollabPg.surname].values
             + " "
-            + candidate_collabs[COLLAB_PG.name].values
+            + candidate_collabs[CollabPg.name].values
         )
         profiles_names = "\n".join(profiles_names)
 
@@ -179,8 +180,10 @@ class Chatbot:
         )
         return query_string
 
-    def _make_query_context_placeholder(self: str, candidate_collabs) -> dict:
-        collab_ids = candidate_collabs[COLLAB_PG.collab_id].unique()
+    def _make_query_context_placeholder(
+        self: str, candidate_collabs: pd.DataFrame
+    ) -> dict:
+        collab_ids = candidate_collabs[CollabPg.collab_id].unique()
         # query_context_placeholder
         context_placeholder = {
             collab_id: self.context_string for collab_id in collab_ids
@@ -194,30 +197,30 @@ class Chatbot:
         context_placeholder: dict,
     ) -> dict[dict]:
         # find profiles to input in query
-        collab_ids = candidate_collabs[COLLAB_PG.collab_id].unique()
+        collab_ids = candidate_collabs[CollabPg.collab_id].unique()
         # generate headers for each profile
         for idx, collab_id in enumerate(collab_ids):
             current_profile_df = candidates_profiles[
-                candidates_profiles[SCORED_PROFILES_DF.collab_id] == collab_id
+                candidates_profiles[ScoredProfilesDF.collab_id] == collab_id
             ]
             current_collab_df = candidate_collabs[
-                candidate_collabs[SCORED_PROFILES_DF.collab_id] == collab_id
+                candidate_collabs[ScoredProfilesDF.collab_id] == collab_id
             ]
             context_placeholder[collab_id] = context_placeholder[collab_id].format(
-                surname=current_collab_df[COLLAB_PG.surname].values[0],
-                name=current_collab_df[COLLAB_PG.name].values[0],
-                roles=", ".join(current_profile_df[SCORED_PROFILES_DF.roles].values[0]),
+                surname=current_collab_df[CollabPg.surname].values[0],
+                name=current_collab_df[CollabPg.name].values[0],
+                roles=", ".join(current_profile_df[ScoredProfilesDF.roles].values[0]),
                 sectors=", ".join(
-                    current_profile_df[SCORED_PROFILES_DF.sectors].values[0],
+                    current_profile_df[ScoredProfilesDF.sectors].values[0],
                 ),
                 company=", ".join(
-                    current_profile_df[SCORED_PROFILES_DF.companies].values[0],
+                    current_profile_df[ScoredProfilesDF.companies].values[0],
                 ),
                 soft_skills=", ".join(
-                    current_profile_df[SCORED_PROFILES_DF.soft_skills].values[0],
+                    current_profile_df[ScoredProfilesDF.soft_skills].values[0],
                 ),
                 technical_skills=", ".join(
-                    current_profile_df[SCORED_PROFILES_DF.technical_skills].values[0],
+                    current_profile_df[ScoredProfilesDF.technical_skills].values[0],
                 ),
                 index=str(idx + 1),
                 cv_recap="{cv_recap}",
@@ -238,12 +241,12 @@ class Chatbot:
     ) -> dict:
         # remove chunks bellow similarity threshold
         filtered_chunks = candidates_chunks[
-            candidates_chunks[SCORED_CHUNKS_DF.semantic_score]
+            candidates_chunks[ScoredChunksDF.semantic_score]
             >= self.similarity_threshold
         ]
 
         # find profiles to input in query
-        collab_ids = candidates_chunks[SCORED_CHUNKS_DF.collab_id].unique()
+        collab_ids = candidates_chunks[ScoredChunksDF.collab_id].unique()
         # init placeholder for chunks text
         collab_ids_chunk_hashmap = {collab_id: "" for collab_id in collab_ids}
 
@@ -254,22 +257,22 @@ class Chatbot:
             for collab_id in collab_ids:
                 # filter by profile id
                 current_profile_chunks = filtered_chunks[
-                    filtered_chunks[SCORED_CHUNKS_DF.collab_id] == collab_id
+                    filtered_chunks[ScoredChunksDF.collab_id] == collab_id
                 ]
                 if current_profile_chunks.empty:
                     continue
                 else:
                     # find current best chunk for this profile
                     best_similarity = max(
-                        current_profile_chunks[SCORED_CHUNKS_DF.semantic_score],
+                        current_profile_chunks[ScoredChunksDF.semantic_score],
                     )
                     # current row
                     current_row = current_profile_chunks[
-                        current_profile_chunks[SCORED_CHUNKS_DF.semantic_score]
+                        current_profile_chunks[ScoredChunksDF.semantic_score]
                         == best_similarity
                     ]
                     # get the actual chunk
-                    chunk_text = str(current_row[SCORED_CHUNKS_DF.chunk_text].values[0])
+                    chunk_text = str(current_row[ScoredChunksDF.chunk_text].values[0])
                     # clean chunk
                     cleaned_chunks = re.sub(r"\n{3,}", "\n\n", chunk_text) + "\n\n"
                     # get len of chunk
@@ -286,9 +289,9 @@ class Chatbot:
                         self.current_nb_tokens += chunk_len
 
                     # regardless we remove row from filtered chunks
-                    chunk_id = current_row[SCORED_CHUNKS_DF.chunk_id].values[0]
+                    chunk_id = current_row[ScoredChunksDF.chunk_id].values[0]
                     index = filtered_chunks[
-                        filtered_chunks[SCORED_CHUNKS_DF.chunk_id] == chunk_id
+                        filtered_chunks[ScoredChunksDF.chunk_id] == chunk_id
                     ].index
                     filtered_chunks = filtered_chunks.drop(index=index)
 

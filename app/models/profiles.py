@@ -3,7 +3,7 @@ from sqlalchemy import Column, String
 from app.models import Base
 
 
-class PG_Profiles(Base):
+class PG_Profiles(Base):  # noqa: N801
     __tablename__ = "profiles"
 
     profile_id = Column(String, primary_key=True)

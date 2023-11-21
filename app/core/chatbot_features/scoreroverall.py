@@ -6,7 +6,7 @@
 import pandas as pd
 
 from app.core.chatbot_features.scorerprofiles import ScorerProfiles
-from app.core.models.scoredprofiles_pandasmodels import SCORED_PROFILES_DF
+from app.core.models.scoredprofiles_pandasmodels import ScoredProfilesDF
 
 
 class ScorerOverall:
@@ -14,7 +14,7 @@ class ScorerOverall:
     chunks/keywords goes here.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.scorer_profiles = ScorerProfiles()
 
     # =============================================================================
@@ -47,7 +47,7 @@ class ScorerOverall:
             df_chunks_scored,
         )
         # average keyword/embedding scores
-        df_profiles_scored[SCORED_PROFILES_DF.overall_score] = self._average_scores(
+        df_profiles_scored[ScoredProfilesDF.overall_score] = self._average_scores(
             df_profiles_scored,
         )
 
@@ -62,7 +62,7 @@ class ScorerOverall:
         alpha = 1 - beta
 
         average_col = (
-            alpha * df_profiles_scored[SCORED_PROFILES_DF.keywords_score_normalized]
-            + beta * df_profiles_scored[SCORED_PROFILES_DF.semantic_score_normalized]
+            alpha * df_profiles_scored[ScoredProfilesDF.keywords_score_normalized]
+            + beta * df_profiles_scored[ScoredProfilesDF.semantic_score_normalized]
         )
         return average_col

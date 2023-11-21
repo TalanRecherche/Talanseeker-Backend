@@ -78,7 +78,7 @@ class ParentPandasModel:
         None
         """
 
-        def _pandera_dtype_to_pandas_dtype(data_type) -> str:
+        def _pandera_dtype_to_pandas_dtype(data_type: pa.dtypes) -> str:
             """Convert pandera data type to pandas data type.
 
             :param dtype: A pandera data type

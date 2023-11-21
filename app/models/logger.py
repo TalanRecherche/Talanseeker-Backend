@@ -17,7 +17,7 @@ class Logs(Base):
     request_args = Column(Text)
     request_kwargs = Column(Text)
 
-    def log(self):
+    def log(self) -> None:
         try:
             logging.debug("Adding logs")
             with Session(engine) as session:

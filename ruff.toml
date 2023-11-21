@@ -21,6 +21,7 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "./tests" #ignore tests modules
 ]
 
 target-version = "py310"
@@ -28,14 +29,18 @@ target-version = "py310"
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C901`) by default.
-select = [
-    # pycodestyle
-    "E",
-    # Pyflakes
-    "F"
+# McCabe complexity (`C901`) by default.S
+# All rules are listed here : https://docs.astral.sh/ruff/rules/#pyflakes-f
+select = ["F", "E", "W", "I", "N", "UP", "YTT", "ANN"]
+ignore = [
+    "C", # McCabe complexity ignored
+    "S101", #Use of `assert` detected
+    "ANN101", #Missing type annotation for `self` in method
+    "ANN102", #Missing type annotation for `cls` in classmethod
+    "ANN002", #Missing type annotation for *arg
+    "ANN003", #Missing type annotation for **kwarg
+    "UP007" #Use `X | Y` for type annotations: issues with the Optional module of type package
 ]
-ignore = ["D107", "D205", "D400", "D415", "UP007"]
 
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

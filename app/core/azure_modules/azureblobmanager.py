@@ -2,11 +2,13 @@ import logging
 
 from azure.storage.blob import BlobServiceClient
 
+from app.settings import Settings
+
 
 class AzureBlobManager:
     """manage files (upload, download, ...)"""
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         """Create initial connection"""
         blob_service_client = BlobServiceClient.from_connection_string(
             settings.azure_storage.connection_string,
@@ -19,7 +21,9 @@ class AzureBlobManager:
             settings.azure_storage.container_name,
         )
 
-    def upload_file(self, file_name: str, file_data, overwrite: bool = True):
+    def upload_file(
+        self, file_name: str, file_data: bytes, overwrite: bool = True
+    ) -> None:
         """Upload file to azure storage"""
         logging.info(f"Upload {file_name}")
         self.container_client.upload_blob(file_name, file_data, overwrite=overwrite)
@@ -32,7 +36,7 @@ class AzureBlobManager:
             files.append(blob.name)
         return files
 
-    def download_file(self, file_name: str):
+    def download_file(self, file_name: str) -> bytes:
         return self.container_client.download_blob(file_name).readall()
 
     def get_file_url(self, file_name: str) -> str:

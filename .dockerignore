@@ -10,3 +10,6 @@ __pychache__
 .env_example
 .env
 tests/data_test/
+/.legacy/
+/.ruff_cache/
+/.pytest_cache/
