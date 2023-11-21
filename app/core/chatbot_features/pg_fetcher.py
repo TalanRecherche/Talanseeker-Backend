@@ -113,10 +113,10 @@ class PGfetcher:
         query = PGfetcher._build_filtered_request(query, filters)
         """ fetch the entire profile table"""
         logging.info(query)
-        print(query)
         df_profiles_ = pd.read_sql(query, con_string)
         if not ProfilePg.validate_dataframe(df_profiles_):
-            raise InvalidColumnsError("df_profiles is missing the required columns")
+            err = "df_profiles is missing the required columns"
+            raise InvalidColumnsError(err)
         return df_profiles_
 
     def filter_collabs(self, filters: Optional[Filters] = None) -> pd.DataFrame:
@@ -157,7 +157,8 @@ class PGfetcher:
             ):
                 row[CollabPg.availability_score] = 100
         except Exception:
-            logging.warning(f"Date not conform, skipping collab {row}")
+            log_string = f"Date not conform, skipping collab {row}"
+            logging.warning(log_string)
         return row
 
     def _fetch_chunks(self, collab_ids_string: str) -> pd.DataFrame | None:
@@ -172,7 +173,8 @@ class PGfetcher:
                 ChunkPg.chunk_embeddings
             ].apply(ast.literal_eval)
             if not ChunkPg.validate_dataframe(df_chunks):
-                raise InvalidColumnsError("df_profiles is missing the required columns")
+                err = "df_profiles is missing the required columns"
+                raise InvalidColumnsError(err)
 
             return df_chunks
 
@@ -181,7 +183,8 @@ class PGfetcher:
             raise
 
         except Exception as e:
-            logging.error(f"An error occurred while executing the query: {e}")
+            log_string = f"An error occurred while executing the query: {e}"
+            logging.error(log_string)
             raise
 
     def _fetch_cvs(self, collab_ids_string: str) -> pd.DataFrame | None:
@@ -192,7 +195,8 @@ class PGfetcher:
             # Execute the query and fetch the result as a DataFrame
             df_cvs = pd.read_sql(query, con_string)
             if not CvPg.validate_dataframe(df_cvs):
-                raise InvalidColumnsError("df_cvs is missing the required columns")
+                err = "df_profiles is missing the required columns"
+                raise InvalidColumnsError(err)
             return df_cvs
 
         except InvalidColumnsError as e:
@@ -200,7 +204,8 @@ class PGfetcher:
             raise
 
         except Exception as e:
-            logging.error(f"An error occurred while executing the query: {e}")
+            log_string = f"An error occurred while executing the query: {e}"
+            logging.error(log_string)
             raise
 
     def _fetch_collabs(self, collab_ids_string: str) -> pd.DataFrame | None:
@@ -211,7 +216,8 @@ class PGfetcher:
             # Execute the query and fetch the result as a DataFrame
             df_collabs = pd.read_sql(query, con_string)
             if not CollabPg.validate_dataframe(df_collabs):
-                raise InvalidColumnsError("df_collabs is missing the required columns")
+                err = "df_profiles is missing the required columns"
+                raise InvalidColumnsError(err)
             return df_collabs
 
         except InvalidColumnsError as e:
@@ -219,16 +225,18 @@ class PGfetcher:
             raise
 
         except Exception as e:
-            logging.error(f"An error occurred while executing the query: {e}")
+            log_string = f"An error occurred while executing the query: {e}"
+            logging.error(log_string)
             raise
 
     def _make_collab_string(self, collab_ids: list[str]) -> str | None:
         try:
             """Wrap each collab_id in single quotes and join them with commas"""
-            collab_ids_string = ",".join([f"'{id}'" for id in collab_ids])
+            collab_ids_string = ",".join([f"'{_id}'" for _id in collab_ids])
             return collab_ids_string
         except Exception as e:
-            logging.error(f"An error occurred while parsing collab_ids: {e}")
+            log_string = f"An error occurred while parsing collab_ids: {e}"
+            logging.error(log_string)
             raise
 
 
@@ -236,7 +244,7 @@ if __name__ == "__main__":
     settings = Settings()
     fetcher = PGfetcher(settings)
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
-    print(df_chunks)
-    print(df_collabs)
-    print(df_cvs)
-    print(df_profiles)
+    print(df_chunks)  # noqa: T201
+    print(df_collabs)  # noqa: T201
+    print(df_cvs)  # noqa: T201
+    print(df_profiles)  # noqa: T201

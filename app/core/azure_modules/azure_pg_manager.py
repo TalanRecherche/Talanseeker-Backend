@@ -75,11 +75,13 @@ class AzurePGManager:
             )
             data = pd.read_sql(req, con_string)
             if len(data) == 0:
-                logging.info(f"Adding new profile of {row[ProfilePg.collab_id]} ")
+                log_string = f"Adding new profile of {row[ProfilePg.collab_id]} "
+                logging.info(log_string)
                 new_data = pd.DataFrame(row, row.index).T
 
             else:
-                logging.info(f"Delete old profile of {row[ProfilePg.collab_id]}")
+                log_string = f"Delete old profile of {row[ProfilePg.collab_id]}"
+                logging.info(log_string)
                 req = text(
                     f"delete from profiles where collab_id = "
                     f"'{row[ProfilePg.collab_id]}'",
@@ -88,10 +90,11 @@ class AzurePGManager:
                     session.execute(req)
                     session.commit()
 
-                logging.info(f"Consolidating a profile of {row[ProfilePg.collab_id]} ")
+                log_string = f"Consolidating a profile of {row[ProfilePg.collab_id]} "
+                logging.info(log_string)
                 data.loc[len(data)] = row
 
-                # TODO: change this behavior
+                # TODO@<Youness>: change this behavior
                 # userless cols
                 useless_cols = [
                     StructCvDF.cv_id,
@@ -122,7 +125,8 @@ class AzurePGManager:
             data = pd.read_sql(req, con_string)
             if len(data) == 0:
                 logging.info("Adding new chunks")
-                logging.info(f"Adding new profile of {row[ProfilePg.collab_id]} ")
+                log_string = f"Adding new profile of {row[ProfilePg.collab_id]} "
+                logging.info(log_string)
                 new_data = pd.DataFrame(row, row.index).T
             else:
                 logging.info("Chunk already exists!")
@@ -131,7 +135,8 @@ class AzurePGManager:
             try:
                 new_data.to_sql(table_name, con_string, if_exists="append", index=False)
             except Exception as e:
-                logging.exception(f"Error updating chunks table {e}")
+                log_string = f"Error updating chunks table {e}"
+                logging.exception(log_string)
 
     @staticmethod
     def check_existence(table_name: str, id_tag: str, id_value: str) -> bool:

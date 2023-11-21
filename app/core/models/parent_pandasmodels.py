@@ -52,18 +52,19 @@ class ParentPandasModel:
         bool: True if all attributes are in the dataframe columns
             False otherwise
         """
-        # TODO: add check for null values
-        # TODO: add check for value type
-        # TODO: add check for value format
-        # TODO: add check for value length
-        # TODO: add check for empty dataframe
-        # TODO: for some execption can be the same, but return string is different
+        # TODO@antoine: add check for null values
+        # TODO@antoine: add check for value type
+        # TODO@antoine: add check for value format
+        # TODO@antoine: add check for value length
+        # TODO@antoine: add check for empty dataframe
+        # TODO@antoine: for some execption can be the same
         try:
             cls.schema.validate(df)
             is_valid = True
         except pa.errors.SchemaError as e:
             is_valid = False
-            logging.error(f"DataFrame validation error: {e}")
+            log_string = f"DataFrame validation error: {e}"
+            logging.error(log_string)
         return is_valid
 
     @classmethod

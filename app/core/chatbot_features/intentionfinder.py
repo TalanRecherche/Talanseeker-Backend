@@ -184,9 +184,8 @@ class IntentionFinder:
         if _format == "dataframe":
             out = pd.concat(res)
         else:
-            raise NotImplementedError(
-                f"format {_format} not implemented. Use dataframe.",
-            )
+            err = f"format {_format} not implemented. Use dataframe."
+            raise NotImplementedError(err)
         return out
 
     def _extract_text_from_llmoutput(self, output_llm: str, field: str) -> str:
@@ -354,7 +353,8 @@ class IntentionFinder:
         if _format == "dataframe":
             output_prepared = pd.DataFrame.from_dict([output])
         else:
-            raise NotImplementedError(f"format {_format} not implemented")
+            err = f"format {_format} not implemented"
+            raise NotImplementedError(err)
         return output_prepared
 
 
@@ -363,7 +363,7 @@ if __name__ == "__main__":
     QUERY_EXAMPLE = "Trouve moi deux data scientists"
     intention_finder = IntentionFinder(settings)
     result = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(result)
+    print(result)  # noqa: T201
     QueryStruct.validate_dataframe(result)
     from app.core.shared_modules.dataframehandler import DataFrameHandler
 

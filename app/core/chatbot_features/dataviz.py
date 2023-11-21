@@ -38,7 +38,7 @@ class DataViz:
         skill_tokens = {skill: set(skill.split()) for skill in skills_list}
         clusters = defaultdict(set)
 
-        for skill, tokens in skill_tokens.items():
+        for _, tokens in skill_tokens.items():
             matched_skills = [s for s, t in skill_tokens.items() if tokens & t]
             clusters[frozenset(matched_skills)].update(matched_skills)
 
@@ -60,7 +60,7 @@ class DataViz:
         # get prompt template
         system_function = self.settings.chatbot_ui_settings.dataviz_system_template
 
-        for id_cluster, list_skills in islice(clusters_dict.items(), self.n_top_skills):
+        for _, list_skills in islice(clusters_dict.items(), self.n_top_skills):
             query = str(list_skills)
             response = self.llm_backend.send_receive_message(query, system_function)
 
@@ -89,14 +89,16 @@ class DataViz:
         similarity_tuples_list = []
         for ii in range(nb):
             for jj in range(nb):
-                if StringHandler.check_similarity_string(
-                    competences[ii],
-                    competences[jj],
-                    threshold=0.8,
+                if (
+                    StringHandler.check_similarity_string(
+                        competences[ii],
+                        competences[jj],
+                        threshold=0.8,
+                    )
+                    and ii < jj
                 ):
-                    # not here we are going to match from top to bottom
-                    if ii < jj:
-                        similarity_tuples_list.append((ii, jj))
+                    # We match from top to bottom
+                    similarity_tuples_list.append((ii, jj))
 
         # merge data from identical clusters (ii is pushed to jj)
         for ii, jj in similarity_tuples_list:

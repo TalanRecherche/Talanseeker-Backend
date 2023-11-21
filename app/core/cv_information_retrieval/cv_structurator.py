@@ -60,8 +60,6 @@ class CvStructurator:
             One row per cv. All chunks information have been merged
         """
         # assert if input dataframe is of correct format (columns)
-        # if not ParsedDF.validate_dataframe(df_profile_chunks): return None
-
         # prepare output dataframe
         df_consolidated_cvs = StructCvDF.generate_dataframe()
         # create a hashmap of unique profile using similarity on profile_id
@@ -149,9 +147,8 @@ class CvStructurator:
             numerical_value = int(max(numerical_extract))
         except Exception as e:
             numerical_value = 0
-            logging.warning(
-                f"CVStructurator : numerical columns structuration failed {e}",
-            )
+            log_string = f"CVStructurator : numeric cols structuration failed {e}"
+            logging.warning(log_string)
         return numerical_value
 
     def _extract_integer(self, cell: pd.DataFrame) -> int | None:
@@ -170,9 +167,7 @@ class CvStructurator:
         return None
 
     def _merge_string_columns(
-        self,
-        column: str,
-        df_chunks_profile: pd.DataFrame,
+        self, column: str, df_chunks_profile: pd.DataFrame
     ) -> list[str]:
         """Merge logic for string columns
         Make a list with all strings, then clean/unique/fuzzy matching remove
@@ -210,9 +205,8 @@ class CvStructurator:
             )
         except Exception as e:
             values = []
-            logging.warning(
-                f"CVStructurator : string columns structuration failed: {e}",
-            )
+            log_string = f"CVStructurator : string columns structuration failed: {e}"
+            logging.warning(log_string)
         return values
 
     def _get_unique_cvs(self, df_profile_chunks: pd.DataFrame) -> dict:
@@ -272,4 +266,4 @@ if __name__ == "__main__":
     # consolidate profile
     structure = CvStructurator()
     cvs_struct = structure.consolidate_cvs(parsed_chunks)
-    print(cvs_struct)
+    print(cvs_struct)  # noqa: T201

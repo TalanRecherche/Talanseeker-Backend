@@ -100,15 +100,14 @@ class FileMassExtractor:
                     temp_df = pd.DataFrame([text_hashmap])
                     df_text = pd.concat([df_text, temp_df])
             except Exception:
-                logging.exception(f"Error at {file_path}")
+                log_string = f"Error at {file_path}"
+                logging.exception(log_string)
 
         if df_text.empty:
             logging.warning("no text")
             return None
 
         # assign collab_id to each document
-        print(collab_ids)
-        print(df_text[TextDF.file_full_name])
         df_text[TextDF.collab_id] = df_text[TextDF.file_full_name].map(collab_ids)
 
         logging.info("done")
@@ -184,4 +183,4 @@ if __name__ == "__main__":
 
     extractor = FileMassExtractor()
     text_df = extractor.read_all_documents(directory, collab_ids)
-    print(text_df)
+    print(text_df)  # noqa: T201

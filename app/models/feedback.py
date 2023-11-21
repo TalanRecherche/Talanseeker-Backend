@@ -32,10 +32,12 @@ class FeedbacksModel(Base):
             )
             if u:
                 u.evaluation = feedback.evaluation
-                logging.info(f"Feedback {u.user_id} Updated")
+                log_string = f"Feedback {u.user_id} Updated"
+                logging.info(log_string)
             else:
                 session.add(feedback)
-                logging.info(f"Feedback {feedback.user_id} Created")
+                log_string = f"Feedback {feedback.user_id} Created"
+                logging.info(log_string)
             session.commit()
             session.flush()
             return True
@@ -45,7 +47,8 @@ class FeedbacksModel(Base):
             session.add(self)
             session.commit()
             session.flush()
-            logging.info(f"Feedback {self.user_id} added")
+            log_string = f"Feedback {self.user_id} added"
+            logging.info(log_string)
             return True
 
     def patch(self) -> bool:
@@ -63,7 +66,8 @@ class FeedbacksModel(Base):
                 u.evaluation = self.evaluation
                 session.commit()
                 session.flush()
-                logging.info(f"Feedback {self.user_id} added")
+                log_string = f"Feedback {self.user_id} updated"
+                logging.info(log_string)
                 return True
         return False
 

@@ -10,11 +10,9 @@ router = APIRouter(prefix="/cv_manager")
 def etl_process(
     request: CVUploadRequest = Depends(), file: UploadFile = File(...)
 ) -> dict:
-    response = CVManagerBusiness.etl_business(request, file)
-    return response
+    return CVManagerBusiness.etl_business(request, file)
 
 
 @router.get("/download")
 def download(request: CVDownloadRequest = Depends()) -> Response:
-    response = CVManagerBusiness.download_cv(request)
-    return response
+    return CVManagerBusiness.download_cv(request)

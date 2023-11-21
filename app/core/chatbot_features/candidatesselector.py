@@ -101,7 +101,8 @@ class CandidatesSelector:
         if not ScoredProfilesDF.validate_dataframe(df_candidates_profiles):
             return [None] * 4
         # return if all goes well
-        logging.info("Selection done" + str(time.time() - t))
+        log_string = f"Selection done in {time.time() - t} seconds"
+        logging.info(log_string)
         return (
             df_candidates_chunks,
             df_candidates_collabs,
@@ -241,7 +242,7 @@ if __name__ == "__main__":
     QUERY_EXAMPLE = "Trouve moi 3 consultants pour une mission dans la banque"
     intention_finder = IntentionFinder(settings)
     df_query = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(df_query)
+    print(df_query)  # noqa: T201
 
     # fetch from postgres with filters based on query
     from app.core.chatbot_features.pg_fetcher import PGfetcher

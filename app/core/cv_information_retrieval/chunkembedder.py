@@ -44,7 +44,8 @@ class ChunkEmbedder:
         if not ChunkDF.validate_dataframe(df_chunks):
             return None
 
-        logging.info(f"Embeddings {len(df_chunks)} chunks...")
+        log_string = f"Embedding {len(df_chunks)} chunks..."
+        logging.info(log_string)
         # Use a list comprehension to apply the _embed_single_chunk() function
         # to each row of the input DataFrame
         embedded_rows = [

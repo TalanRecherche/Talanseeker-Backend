@@ -89,7 +89,7 @@ class ProfileStructurator:
         grouped = df_consolidated_cvs.groupby(StructCvDF.collab_id)[
             StructCvDF.cv_id
         ].apply(list)
-        hashmap_collabid_cvsid = {key: value for key, value in grouped.items()}
+        hashmap_collabid_cvsid = dict(grouped.items())
         return hashmap_collabid_cvsid
 
     def _consolidate_single_profile(
@@ -146,9 +146,8 @@ class ProfileStructurator:
             )
         except Exception as e:
             string_values = []
-            logging.warning(
-                f"ProfileStructurator : string columns structuration failed: {e}",
-            )
+            log_string = f"ProfileStructurator : string cols structuration failed: {e}"
+            logging.warning(log_string)
         return string_values
 
     def _merge_numerical_columns(
@@ -160,9 +159,8 @@ class ProfileStructurator:
             numerical_value = int(numerical_extract)
         except Exception as e:
             numerical_value = 0
-            logging.warning(
-                f"ProfileStructurator : numerical columns structuration failed: {e}",
-            )
+            log_string = f"ProfileStructurator : numeric cols structuration failed: {e}"
+            logging.warning(log_string)
         return numerical_value
 
     def _merge_static_columns(self, column: str, df_filtered_cvs: pd.DataFrame) -> list:
@@ -170,9 +168,8 @@ class ProfileStructurator:
             static_value = list(df_filtered_cvs[column])
         except Exception as e:
             static_value = []
-            logging.warning(
-                f"ProfileStructurator : static columns structuration failed: {e}",
-            )
+            log_string = f"ProfileStructurator : static cols structuration failed: {e}"
+            logging.warning(log_string)
         return static_value
 
 
@@ -215,6 +212,6 @@ if __name__ == "__main__":
     columns = consolidated_profiles.columns.tolist()
     for _, i in cvs_struct.iterrows():
         for c in columns:
-            print(c)
-            print(i[c])
-            print("############")
+            print(c)  # noqa: T201
+            print(i[c])  # noqa: T201
+            print("############")  # noqa: T201

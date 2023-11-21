@@ -46,10 +46,8 @@ class EmbedderBackend:
                     return embeddings
 
             except Exception as e:
-                logging.exception(
-                    f"openAI embedding API failed. Waiting and retry: "
-                    f"{retry} : Exception {e}",
-                )
+                log_string = f"openAI embedding API failed. Retry:{retry}:Exc{e}"
+                logging.exception(log_string)
                 # wait before retrying
                 time.sleep(1)
 

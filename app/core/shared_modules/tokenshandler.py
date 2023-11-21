@@ -14,7 +14,6 @@ class TokenHandler:
         # compute number of tokens tokens
         if not isinstance(string, str):
             return 0
-        # encoding = tiktoken.encoding_for_model(engine)
         encoding = tiktoken.get_encoding(encoding_name)
         num_tokens = len(encoding.encode(string))
 

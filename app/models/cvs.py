@@ -16,7 +16,5 @@ class PgCvs(Base):
 
     def get_cv_name_by_id(self, cv_id: str) -> str | None:
         req = select(PgCvs.file_full_name).where(PgCvs.cv_id == cv_id)
-        res = None
         with Session(engine) as session:
-            res = session.execute(req).first()
-        return res
+            return session.execute(req).first()

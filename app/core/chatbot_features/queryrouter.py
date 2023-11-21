@@ -65,7 +65,6 @@ class QueryRouter:
             return is_good_query
         # if the response is not satisfactory we try another time.
         else:
-            print("query needs correcting")
             # the new query will include the mention that the chatbot made an error
             new_query_string = self._make_newquery_string(user_query, llm_response)
             # get a new response from the chatbot
@@ -182,6 +181,6 @@ if __name__ == "__main__":
 
     for query, label in queries.items():
         response = router.get_router_response(query)
-        print("---")
-        print(query)
-        print("réponse:", response, "label:", label)
+        print("---")  # noqa: T201
+        print(query)  # noqa: T201
+        print("réponse:", response, "label:", label)  # noqa: T201

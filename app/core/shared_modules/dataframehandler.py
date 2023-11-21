@@ -41,14 +41,17 @@ class DataFrameHandler:
             # Read pickle file (utf8 and cell.dtype are preserved by default)
             df_loaded = pd.read_pickle(load_file_path)
             return df_loaded
-        except FileNotFoundError:
-            logging.exception(f"File not found: {load_file_path}")
-            raise FileNotFoundError(f"File not found: {load_file_path}")
-        except (OSError, PermissionError):
-            logging.exception(f"Error reading file: {load_file_path}")
-            raise OSError(f"Error reading file: {load_file_path}")
+        except FileNotFoundError as e:
+            err = f"File not found: {load_file_path}"
+            logging.exception(err)
+            raise RuntimeError(err) from e
+        except (OSError, PermissionError) as e:
+            err = f"File not found: {load_file_path}"
+            logging.exception(err)
+            raise RuntimeError(err) from e
         except Exception as e:
-            logging.exception(f"An unexpected error occurred: {e!s}")
+            err = f"File not found: {load_file_path}"
+            logging.exception(err)
             raise e
 
     @staticmethod

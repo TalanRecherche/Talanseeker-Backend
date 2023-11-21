@@ -42,9 +42,8 @@ class GptBackend(AbcLlmBackend):
         # get llm response
         response_message = self._send_payload(payload)
         if not response_message:
-            raise RuntimeError(
-                "API call failed after reaching the maximum number of retries.",
-            )
+            err = "API call failed after reaching the maximum number of retries."
+            raise RuntimeError(err)
         return response_message
 
     # =============================================================================

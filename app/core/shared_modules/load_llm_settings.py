@@ -19,10 +19,9 @@ def load_llm_settings(llm_settings_file: str = "app/llm_settings.YAML") -> dict:
                 os.environ[environ_key] = value
         logging.info("llm settings.YAML loaded and pushed to os.environ variables.")
     else:
-        logging.info(
-            "llm settings.YAML does not exists. Nothing pushed to os.environ "
-            "variables."
-        )
-        raise FileNotFoundError(f"{llm_settings_file} does not exist.")
+        log_string = f"{llm_settings_file} does not exist."
+        logging.info(log_string)
+        err = f"{llm_settings_file} does not exist."
+        raise FileNotFoundError(err)
 
     return llm_settings

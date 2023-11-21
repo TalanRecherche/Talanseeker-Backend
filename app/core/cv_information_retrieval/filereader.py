@@ -25,7 +25,7 @@ class FileReader:
 
     def __init__(self) -> None:
         # list of valid extensions for which a loader is ready.
-        # TODO add functions to read .doc, .ppt
+        # TODO@antooine: add functions to read .doc, .ppt
         self.loader_router = {
             ".pptx": PPTXReader.read_text,
             ".docx": DOCXReader.read_text,
@@ -73,13 +73,13 @@ class FileReader:
                 }
                 return text_and_metadata
             else:
-                logging.warning(
-                    f"No text detected in file: {file_name}{file_extension}",
-                )
+                log_string = f"No text detected in file: {file_name}{file_extension}"
+                logging.warning(log_string)
                 return None
         # else pass
         else:
-            logging.warning(f"Not readable format:{file_extension}")
+            log_string = f"Not readable format:{file_extension}"
+            logging.warning(log_string)
             return None
 
     # =============================================================================
@@ -94,4 +94,4 @@ if __name__ == "__main__":
     reader = FileReader()
     file_path = r"data_dev/data_1_1cv/Talan - CV - Mehdi IKBAL - 202108 - Paris.pptx"
     content = reader.read_single_document(file_path)
-    print(content)
+    print(content)  # noqa: T201

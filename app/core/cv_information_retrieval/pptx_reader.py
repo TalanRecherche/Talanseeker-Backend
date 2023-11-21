@@ -83,10 +83,9 @@ class PPTXReader(ABCReader):
         elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:  # from groups
             for sub_shape in shape.shapes:
                 sub_texts.extend(PPTXReader._extract_text_from_shape(sub_shape))
-        elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA:  # from media
-            if shape.has_text_frame:
-                for paragraph in shape.text_frame.paragraphs:
-                    for run in paragraph.runs:
-                        sub_texts.append(run.text)
+        elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA and shape.has_text_frame:
+            for paragraph in shape.text_frame.paragraphs:
+                for run in paragraph.runs:
+                    sub_texts.append(run.text)
 
         return " ".join(sub_texts).strip()

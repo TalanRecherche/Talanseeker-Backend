@@ -77,7 +77,8 @@ class LLMParser:
             return None
 
         all_chunks_hashmap = []
-        logging.debug(f"Parsing {len(df_chunks)} chunks...")
+        log_string = f"parsing {len(df_chunks)} chunks"
+        logging.debug(log_string)
 
         # iter over rows (chunks)
         for _, row in tqdm(df_chunks.iterrows(), total=len(df_chunks), desc="Parsing:"):
@@ -91,7 +92,7 @@ class LLMParser:
             response_hashmap = self._clean_response(response_hashmap)
             # if response is not empty: add row fields and place into output hashmap
             if response_hashmap:
-                for keys in row.keys():
+                for keys in row:
                     # add rows fiels to final hashmap
                     response_hashmap[keys] = row[keys]
                 # place response hashmap to final hashmap list
@@ -145,7 +146,8 @@ class LLMParser:
             return json_string
 
         except Exception as e:
-            logging.error(f"_prepare_JSON_string: failed {e}")
+            log_string = f"_prepare_JSON_string: failed {e}"
+            logging.error(log_string)
             return ""
 
     def _push_response_to_hashmap(self, json_string: str) -> dict:
@@ -168,18 +170,14 @@ class LLMParser:
             # parse JSON to dict using JSON load
             hashmap_response = json.loads(json_string)
         except Exception as e:
-            logging.warning(
-                f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-                f"Trying with ast.",
-            )
+            log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
+            logging.warning(log_string)
             try:
                 # if JSON load failed, we try manually
                 hashmap_response = ast.literal_eval(json_string)
             except Exception as e:
-                logging.warning(
-                    f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-                    f"ast parsing failed",
-                )
+                log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
+                logging.warning(log_string)
                 # if everything fails we send back an empty dict
                 hashmap_response = {}
 
@@ -192,7 +190,7 @@ class LLMParser:
         clean_hashmap = {}
         keys = ParsedDF.parsed_keys_
         # place response hashmap to output final hashmap
-        for idx, key in enumerate(keys):
+        for _, key in enumerate(keys):
             # non-years fields are list[str]
             if key != ParsedDF.years:
                 try:
@@ -202,7 +200,8 @@ class LLMParser:
                     clean_hashmap[key] = parsed_string
                 except Exception as e:
                     clean_hashmap[key] = []
-                    logging.warning(f"_clean_response: nothing parsed {e}")
+                    log_string = f"_clean_response: {key} not caught {e}"
+                    logging.warning(log_string)
             else:
                 # year field is int
                 try:
@@ -213,7 +212,8 @@ class LLMParser:
                     clean_hashmap[ParsedDF.years] = max(found_integers)
                 except Exception as e:
                     clean_hashmap[ParsedDF.years] = 0
-                    logging.warning(f"_clean_response: .years not caught {e}")
+                    log_string = f"_clean_response: .years not caught {e}"
+                    logging.warning(log_string)
 
         if response_hashmap:
             return clean_hashmap
@@ -305,4 +305,4 @@ if __name__ == "__main__":
     parser = LLMParser(settings)
     parsed_chunks = parser.parse_all_chunks(df_chunks)
 
-    print(parsed_chunks)
+    print(parsed_chunks)  # noqa: T201

@@ -25,7 +25,8 @@ class AzureBlobManager:
         self, file_name: str, file_data: bytes, overwrite: bool = True
     ) -> None:
         """Upload file to azure storage"""
-        logging.info(f"Upload {file_name}")
+        log_string = f"Upload {file_name}"
+        logging.info(log_string)
         self.container_client.upload_blob(file_name, file_data, overwrite=overwrite)
 
     def list_files(self) -> list:

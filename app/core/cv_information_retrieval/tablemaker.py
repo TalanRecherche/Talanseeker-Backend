@@ -119,7 +119,6 @@ if __name__ == "__main__":
 
     env = Settings()
     data_path = r"data_dev/data_1"
-    # data_path = r'data_dev/data_1_1cv'
 
     # prepare {filenames : collab_id} map from the main
     from app.core.shared_modules.pathexplorer import PathExplorer
@@ -143,7 +142,7 @@ if __name__ == "__main__":
         read_only_extensions=[],
         ignore_extensions=[],
     )
-    print("1", df_text["collab_id"])
+    print("1", df_text["collab_id"])  # noqa: T201
     # =============================================================================
     #     # make the chunks
     # =============================================================================
@@ -152,7 +151,7 @@ if __name__ == "__main__":
     chunker = Chunker()
     # make chunks, One row per chunks
     df_chunks = chunker.chunk_documents(df_text)
-    print("2", df_chunks["collab_id"])
+    print("2", df_chunks["collab_id"])  # noqa: T201
     # =============================================================================
     #     # compute embeddings
     # =============================================================================
@@ -164,7 +163,7 @@ if __name__ == "__main__":
         df_embeddings,
         save_to_file_path=data_path + r"\df_embeddings.pkl",
     )
-    print("3", df_embeddings["collab_id"])
+    print("3", df_embeddings["collab_id"])  # noqa: T201
     # =============================================================================
     #     # parse the chunks
     # =============================================================================
@@ -176,7 +175,7 @@ if __name__ == "__main__":
         parsed_chunks,
         save_to_file_path=data_path + r"\df_parsed_chunks.pkl",
     )
-    print("4", parsed_chunks["collab_id"])
+    print("4", parsed_chunks["collab_id"])  # noqa: T201
     # =============================================================================
     #     # consolidate CVs
     # =============================================================================
@@ -185,7 +184,7 @@ if __name__ == "__main__":
 
     cv_structurator = CvStructurator()
     df_struct_cvs = cv_structurator.consolidate_cvs(parsed_chunks)
-    print("5", df_struct_cvs["collab_id"])
+    print("5", df_struct_cvs["collab_id"])  # noqa: T201
     # =============================================================================
     #     # consolidate profiles
     # =============================================================================
@@ -195,7 +194,7 @@ if __name__ == "__main__":
 
     structure = ProfileStructurator()
     df_profiles = structure.consolidate_profiles(df_struct_cvs)
-    print("6", df_profiles["collab_id"])
+    print("6", df_profiles["collab_id"])  # noqa: T201
     # =============================================================================
     #     # make pg tables
     # =============================================================================

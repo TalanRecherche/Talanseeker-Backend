@@ -24,7 +24,7 @@ from app.settings import Settings
 
 def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:
     final_query_string = ""
-    for key in query_contexts.keys():
+    for key in query_contexts:
         final_query_string += "\n" + query_contexts[key]
 
     final_query_string += "\n" + query_footer

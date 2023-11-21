@@ -32,7 +32,8 @@ class CVManagerBusiness:
                 if isinstance(binary_data, bytes):
                     with open(os.path.join(temp_dir, new_name), "wb") as writer:
                         writer.write(binary_data)
-                logging.info(f"Collab {request.f_name} {request.l_name} is uploaded")
+                log_string = f"Collab {request.f_name} {request.l_name} is uploaded"
+                logging.info(log_string)
                 CVManagerBusiness.start_etl(temp_dir, cv_names)
             else:
                 raise HTTPException(status_code=412, detail="Collaborateur introuvable")
@@ -43,7 +44,7 @@ class CVManagerBusiness:
         }
 
     @staticmethod
-    def download_cv(request: CVDownloadRequest) -> Response:
+    def download_cv(request: CVDownloadRequest) -> Response | None:
         file_name = PgCvs().get_cv_name_by_id(request.cv_id)
         if not file_name:
             raise HTTPException(status_code=400, detail="CV Introuvable")
@@ -55,7 +56,7 @@ class CVManagerBusiness:
                 content=file,
                 media_type="application/octet-stream",
             )
-        elif request.type == "link":
+        if request.type == "link":
             return Response(
                 status_code=200,
                 content=str(
@@ -66,6 +67,7 @@ class CVManagerBusiness:
                     ),
                 ),
             )
+        return None
 
     @staticmethod
     def get_time_stamp() -> str:

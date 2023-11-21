@@ -24,4 +24,5 @@ class Logs(Base):
                 session.add(self)
                 session.commit()
         except Exception as e:
-            logging.error(f"Logs not working {e}")
+            log_string = f"An error occurred while adding logs: {e}"
+            logging.error(log_string)

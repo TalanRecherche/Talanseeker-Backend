@@ -28,4 +28,5 @@ class ChatbotLogs(Base):
                 session.commit()
                 return self.id
         except Exception as e:
-            logging.error(f"Logs not working {e}")
+            log_string = f"An error occurred while adding logs: {e}"
+            logging.error(log_string)

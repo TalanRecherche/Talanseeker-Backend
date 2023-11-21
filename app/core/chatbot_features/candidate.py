@@ -137,5 +137,5 @@ class Candidate:
         value = row[column].values[0]
         if not value_is_list:
             return default_value if pd.isnull(value) else value
-        else:
-            return [] if len(value) == 0 else value
+
+        return [] if len(value) == 0 else value

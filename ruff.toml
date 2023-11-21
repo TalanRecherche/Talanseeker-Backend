@@ -31,15 +31,37 @@ target-version = "py310"
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.S
 # All rules are listed here : https://docs.astral.sh/ruff/rules/#pyflakes-f
-select = ["F", "E", "W", "I", "N", "UP", "YTT", "ANN"]
+select = ["F", "E", "W", "I", "N", "UP", "YTT", "ANN", "ASYNC", "BLE", "FBT", "B", "A", "COM", "C4", "T10",
+        "DJ", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET",
+        "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "TD", "ERA"]
 ignore = [
+    # TO SOLVE:
+    "S", # Ignore all SQL security issues
+    "BLE", # Ignore all blind exception issues
+    "B008", # Do not perform function calls in defaults argument
+    "B905", # `zip()` without an explicit `strict=` parameter
+    "A003", # Class attribute `id` 'type' is shadowing a Python builtin
+    "DTZ", # Wrong Use of `datetime.now` detected
+    "SIM105", # Exception handler
+    "PTH", # proper use of PATH package
+    "PD", # proper usage of pandas
+    # TO IGNORE:
+    "FBT", # This limits the use of default boolean arguments in function definitions
     "C", # McCabe complexity ignored
     "S101", #Use of `assert` detected
     "ANN101", #Missing type annotation for `self` in method
     "ANN102", #Missing type annotation for `cls` in classmethod
     "ANN002", #Missing type annotation for *arg
     "ANN003", #Missing type annotation for **kwarg
-    "UP007" #Use `X | Y` for type annotations: issues with the Optional module of type package
+    "UP007", #Use `X | Y` for type annotations: issues with the Optional module of type package
+    "RET504", # prevents assignment of a variable before its return. Annoying for understandable code
+    "RET505", # forces if else logic. Annoying for understandable code
+    "RET507", #same as RET505
+    "ARG", # prevents assignmenet of unused variables. This however is usefull for later use of the variable
+    "FIX", # force issue resolving (in todos)
+    "TD003", #force issue link in todos
+    "COM812",
+    "ISC001"
 ]
 
 
