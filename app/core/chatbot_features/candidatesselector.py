@@ -13,10 +13,7 @@ from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
 from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.core.models.query_pandasmodels import QueryStruct
-from app.core.models.scoredprofiles_pandasmodels import (
-    ScoredChunksDF,
-    ScoredProfilesDF,
-)
+from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.settings.settings import Settings
 
 

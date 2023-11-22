@@ -26,8 +26,7 @@ class QueryRouter:
 
         # initialize the backend llm
         self.llm_backend = GptBackend(
-            self.engine,
-            max_token_in_response=max_tokens_in_response,
+            self.engine, max_token_in_response=max_tokens_in_response
         )
 
         # encoding name is used to compute number of tokens in context
