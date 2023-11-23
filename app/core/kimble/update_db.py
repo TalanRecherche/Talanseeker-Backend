@@ -2,12 +2,12 @@ import logging
 
 import pandas as pd
 
-from app.core.azure_modules.azurePGmanager import AzurePGManager
+from app.core.azure_modules.azure_pg_manager import AzurePGManager
 from app.core.azure_modules.models import UpsertPolicies
-from app.core.models.PG_pandasmodels import COLLAB_PG
+from app.core.models.pg_pandasmodels import CollabPg
 from app.core.shared_modules.stringhandler import StringHandler
-from app.models.chunks import PG_Chunks
-from app.models.cvs import PG_CVs
+from app.models.chunks import PgChunks
+from app.models.cvs import PgCvs
 from app.models.profiles import PG_Profiles
 
 
@@ -20,43 +20,43 @@ class KimbleUpdater:
         """
         logging.info("Start processing Kimble file")
         # split full name into name and surname
-        data[COLLAB_PG.name] = ""
-        data[COLLAB_PG.surname] = ""
+        data[CollabPg.name] = ""
+        data[CollabPg.surname] = ""
         data = data.apply(KimbleUpdater.process_name, axis=1)
 
         # remove [EXT] alea
         data = data.apply(KimbleUpdater.remove_unnecessary_txt, axis=1)
 
         # generate collab_id
-        data[COLLAB_PG.collab_id] = data.apply(KimbleUpdater.generate_collab_id, axis=1)
+        data[CollabPg.collab_id] = data.apply(KimbleUpdater.generate_collab_id, axis=1)
         # drop collab_id duplicates
-        data.drop_duplicates(subset=COLLAB_PG.collab_id, inplace=True)
+        data.drop_duplicates(subset=CollabPg.collab_id, inplace=True)
 
         # rename columns
         renaming_dict = {
-            COLLAB_PG.collab_id: COLLAB_PG.collab_id,
-            COLLAB_PG.name: COLLAB_PG.name,
-            COLLAB_PG.surname: COLLAB_PG.surname,
-            COLLAB_PG.username_: COLLAB_PG.email,
-            COLLAB_PG.bu_internal_: COLLAB_PG.bu_internal,
-            COLLAB_PG.bu_: COLLAB_PG.bu,
-            COLLAB_PG.bu_secondary_: COLLAB_PG.bu_secondary,
-            COLLAB_PG.domain_: COLLAB_PG.domain,
-            COLLAB_PG.community_: COLLAB_PG.community,
-            COLLAB_PG.manager_: COLLAB_PG.manager,
-            COLLAB_PG.start_date_: COLLAB_PG.start_date,
-            COLLAB_PG.end_date_: COLLAB_PG.end_date,
-            COLLAB_PG.revenue_: COLLAB_PG.revenue,
-            COLLAB_PG.cost_: COLLAB_PG.cost,
-            COLLAB_PG.cost_unit_: COLLAB_PG.cost_unit,
-            COLLAB_PG.resource_type_: COLLAB_PG.resource_type,
-            COLLAB_PG.grade_: COLLAB_PG.grade,
-            COLLAB_PG.role_: COLLAB_PG.role,
-            COLLAB_PG.sub_role_: COLLAB_PG.sub_role,
-            COLLAB_PG.region_: COLLAB_PG.region,
-            COLLAB_PG.city_: COLLAB_PG.city,
-            COLLAB_PG.assigned_until_: COLLAB_PG.assigned_until,
-            COLLAB_PG.availability_score_: COLLAB_PG.availability_score,
+            CollabPg.collab_id: CollabPg.collab_id,
+            CollabPg.name: CollabPg.name,
+            CollabPg.surname: CollabPg.surname,
+            CollabPg.username_: CollabPg.email,
+            CollabPg.bu_internal_: CollabPg.bu_internal,
+            CollabPg.bu_: CollabPg.bu,
+            CollabPg.bu_secondary_: CollabPg.bu_secondary,
+            CollabPg.domain_: CollabPg.domain,
+            CollabPg.community_: CollabPg.community,
+            CollabPg.manager_: CollabPg.manager,
+            CollabPg.start_date_: CollabPg.start_date,
+            CollabPg.end_date_: CollabPg.end_date,
+            CollabPg.revenue_: CollabPg.revenue,
+            CollabPg.cost_: CollabPg.cost,
+            CollabPg.cost_unit_: CollabPg.cost_unit,
+            CollabPg.resource_type_: CollabPg.resource_type,
+            CollabPg.grade_: CollabPg.grade,
+            CollabPg.role_: CollabPg.role,
+            CollabPg.sub_role_: CollabPg.sub_role,
+            CollabPg.region_: CollabPg.region,
+            CollabPg.city_: CollabPg.city,
+            CollabPg.assigned_until_: CollabPg.assigned_until,
+            CollabPg.availability_score_: CollabPg.availability_score,
         }
         data.rename(columns=renaming_dict, inplace=True)
         data = data[renaming_dict.values()]
@@ -68,28 +68,28 @@ class KimbleUpdater:
         return data
 
     @staticmethod
-    def generate_collab_id(row: pd.Series):
+    def generate_collab_id(row: pd.Series) -> str:
         full_name = StringHandler.normalize_string(
-            row[COLLAB_PG.resource_],
+            row[CollabPg.resource_],
             remove_special_chars=True,
         )
         return StringHandler.generate_unique_id(full_name)
 
     @staticmethod
-    def process_name(row: pd.Series):
-        fullname = row[COLLAB_PG.resource_]
-        row[COLLAB_PG.name] = " ".join(
+    def process_name(row: pd.Series) -> pd.Series:
+        fullname = row[CollabPg.resource_]
+        row[CollabPg.name] = " ".join(
             [elem for elem in fullname.split(" ") if not elem.isupper()],
         )
-        row[COLLAB_PG.surname] = " ".join(
+        row[CollabPg.surname] = " ".join(
             [elem for elem in fullname.split(" ") if elem.isupper()],
         )
         return row
 
     @staticmethod
     def remove_unnecessary_txt(row: pd.Series) -> pd.Series:
-        row[COLLAB_PG.resource_] = row[COLLAB_PG.resource_].replace(
-            COLLAB_PG.ext_txt_,
+        row[CollabPg.resource_] = row[CollabPg.resource_].replace(
+            CollabPg.ext_txt_,
             "",
         )
         return row
@@ -97,7 +97,7 @@ class KimbleUpdater:
     @staticmethod
     def format_date(row: pd.Series) -> pd.Series:
         """Change cells date format"""
-        for date_col in COLLAB_PG.date_cols:
+        for date_col in CollabPg.date_cols:
             row[date_col] = KimbleUpdater.format_date_helper(row[date_col])
         return row
 
@@ -109,7 +109,7 @@ class KimbleUpdater:
         return "-".join(reversed(date_.split("/")))
 
     @staticmethod
-    def update_db(file: bytes):
+    def update_db(file: bytes) -> None:
         """Erase the old data and insert new ones"""
         try:
             logging.warning("Start updating Kimble")
@@ -119,15 +119,16 @@ class KimbleUpdater:
             KimbleUpdater.clean_db()
             logging.warning("Update Kimble finished")
         except Exception as e:
-            logging.warning(f"Failed to update Kimble {e}")
+            log_string = f"Failed to update Kimble {e}"
+            logging.warning(log_string)
 
     @staticmethod
-    def clean_db():
+    def clean_db() -> None:
         """Define list of request to delete collabs that don't exist in kimble"""
         req = "DELETE FROM {} WHERE collab_id NOT IN (SELECT collab_id FROM collabs);"
         for table_name in [
-            PG_Chunks.__tablename__,
-            PG_CVs.__tablename__,
+            PgChunks.__tablename__,
+            PgCvs.__tablename__,
             PG_Profiles.__tablename__,
         ]:
             AzurePGManager.execute_raw_req(req.format(table_name))

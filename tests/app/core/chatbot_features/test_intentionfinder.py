@@ -6,8 +6,9 @@ r"""Created on Sun Sep 17 13:07:47 2023
 import pytest
 
 from app.core.chatbot_features.intentionfinder import IntentionFinder
-from app.core.models.query_pandasmodels import QUERY_STRUCT
-from app.settings import Settings
+from app.core.models.query_pandasmodels import QueryStruct
+from app.settings.settings import Settings
+import pandas as pd
 
 
 @pytest.mark.skip_this(
@@ -19,7 +20,7 @@ def test_01_structured_query_format():
     intention_finder = IntentionFinder(settings)
     structured_query = intention_finder.guess_intention(user_query)
 
-    assert QUERY_STRUCT.validate_dataframe(structured_query)
+    assert QueryStruct.validate_dataframe(structured_query)
 
 
 if __name__ == "__main__":

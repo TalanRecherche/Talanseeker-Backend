@@ -1,4 +1,4 @@
-class SCORED_PROFILES_DF:
+class ScoredProfilesDF:
     """column structured profiles table on PostGres"""
 
     collab_id = "collab_id"
@@ -19,11 +19,11 @@ class SCORED_PROFILES_DF:
     overall_score = "overall_score"
 
     @classmethod
-    def get_attributes_(cls):
+    def get_attributes_(cls) -> list[str]:
         return [attr for attr, value in vars(cls).items() if not attr.endswith("_")]
 
 
-class SCORED_CHUNKS_DF:
+class ScoredChunksDF:
     chunk_id = "chunk_id"
     cv_id = "cv_id"
     collab_id = "collab_id"
@@ -33,5 +33,5 @@ class SCORED_CHUNKS_DF:
     semantic_score = "semantic_score"
 
     @classmethod
-    def get_attributes_(cls):
+    def get_attributes_(cls) -> list[str]:
         return [attr for attr, value in vars(cls).items() if not attr.endswith("_")]

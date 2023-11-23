@@ -3,7 +3,7 @@
 @author: agarc
 
 """
-from app.core.cv_information_retrieval.ABCreader import ABCReader
+from app.core.cv_information_retrieval.abc_reader import ABCReader
 
 
 class TXTReader(ABCReader):

@@ -10,11 +10,12 @@ import pytest
 from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
 from app.core.models.scoredprofiles_pandasmodels import (
-    SCORED_CHUNKS_DF,
-    SCORED_PROFILES_DF,
+    ScoredChunksDF,
+    ScoredProfilesDF,
 )
 from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.settings import Settings
+from app.settings.settings import Settings
+import pandas as pd
 
 settings = Settings()
 
@@ -24,7 +25,7 @@ def setup_data():
     # load test structured query
     data_path = r"tests/data_test/"
     query_structured_path = os.path.join(data_path, "df_struct_query.pkl")
-    structured_query = DataFrameHandler.load_df(query_structured_path)
+    structured_query = pd.read_pickle(query_structured_path)
 
     # prepare query
     transformer = QueryTransformer(settings)
@@ -33,8 +34,8 @@ def setup_data():
     query_embeddings = transformer.get_embedded_query(query_row)
 
     # load test tables
-    df_chunks = DataFrameHandler.load_df(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
-    df_profiles = DataFrameHandler.load_df(
+    df_chunks = pd.read_pickle(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
+    df_profiles = pd.read_pickle(
         os.path.join(data_path, "PG_PROFILES_001.pkl"),
     )
 
@@ -55,7 +56,7 @@ def test_get_overall_scores_chunks_columns(setup_data):
         query_embeddings,
     )
 
-    assert SCORED_CHUNKS_DF.validate_dataframe(df_chunks_scored)
+    assert ScoredChunksDF.validate_dataframe(df_chunks_scored)
 
 
 @pytest.mark.skip_this(
@@ -72,7 +73,7 @@ def test_get_overall_scores_profiles_columns(setup_data):
         query_embeddings,
     )
 
-    assert SCORED_PROFILES_DF.validate_dataframe(df_profiles_scored)
+    assert ScoredProfilesDF.validate_dataframe(df_profiles_scored)
 
 
 if __name__ == "__main__":

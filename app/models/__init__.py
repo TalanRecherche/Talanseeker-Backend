@@ -9,7 +9,7 @@ engine = create_engine(con_string)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_db():
+def get_db() -> SessionLocal:
     db = SessionLocal()
     try:
         yield db

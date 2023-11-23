@@ -1,13 +1,14 @@
 """This module is used to process the user query
-and extract the intention of the user."""
+and extract the intention of the user.
+"""
 import logging
 
 import pandas as pd
 from langchain.llms import AzureOpenAI
 
-from app.core.models.query_pandasmodels import QUERY_STRUCT
+from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings import Settings
+from app.settings.settings import Settings
 
 
 class IntentionFinder:
@@ -36,7 +37,7 @@ class IntentionFinder:
         #>>> res_to_send_to_cvranker.to_csv("test_guessintention1.csv", index=None)
     """
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings) -> None:
         """Initializes the class.
 
         Args:
@@ -60,7 +61,9 @@ class IntentionFinder:
             self.settings.guess_intention_settings.roleseeker_query_template
         )
 
-    def guess_intention(self, user_query: str, _format: str = "dataframe"):
+    def guess_intention(
+        self, user_query: str, _format: str = "dataframe"
+    ) -> pd.DataFrame:
         """Process the user query and extract the intention of the user.
 
         Args:
@@ -84,7 +87,7 @@ class IntentionFinder:
         res = self._extract_infos_per_role(user_query, _format, roles_dict)
         return res
 
-    def _prepare_roleseeker_template(self, uquery: str):
+    def _prepare_roleseeker_template(self, uquery: str) -> str:
         """Prepares the complete prompt to call the llm for the roleseeker.
 
         Args:
@@ -101,7 +104,7 @@ class IntentionFinder:
         ).replace("{query}", uquery)
         return uquery_template
 
-    def _process_roleseeker_answer(self, output_llm: str):
+    def _process_roleseeker_answer(self, output_llm: str) -> dict:
         """Process the output of the roleseeker llm and extract the
             roles and number of required collabs per role.
 
@@ -122,29 +125,31 @@ class IntentionFinder:
             dict: Result of the process in a dictionary.
         """
         ans = {}
-        ans[QUERY_STRUCT.roles] = StringHandler.string_to_list_with_separator(
+        ans[QueryStruct.roles] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "roles"),
             separator=",",
         )
-        ans[QUERY_STRUCT.nb_profiles] = StringHandler.string_to_list_with_separator(
+        ans[QueryStruct.nb_profiles] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "nombre"),
             separator=",",
         )
 
-        if len(ans[QUERY_STRUCT.roles]) != len(ans[QUERY_STRUCT.nb_profiles]):
-            if len(ans[QUERY_STRUCT.roles]) > len(ans[QUERY_STRUCT.nb_profiles]):
-                while len(ans[QUERY_STRUCT.roles]) > len(ans[QUERY_STRUCT.nb_profiles]):
-                    ans[QUERY_STRUCT.nb_profiles].append("Non renseigné")
+        if len(ans[QueryStruct.roles]) != len(ans[QueryStruct.nb_profiles]):
+            if len(ans[QueryStruct.roles]) > len(ans[QueryStruct.nb_profiles]):
+                while len(ans[QueryStruct.roles]) > len(ans[QueryStruct.nb_profiles]):
+                    ans[QueryStruct.nb_profiles].append("Non renseigné")
             else:
-                while len(ans[QUERY_STRUCT.roles]) < len(ans[QUERY_STRUCT.nb_profiles]):
-                    ans[QUERY_STRUCT.roles].append("Non renseigné")
-        assert len(ans[QUERY_STRUCT.roles]) == len(ans[QUERY_STRUCT.nb_profiles]), (
-            f"roles and nb_profiles have different lengths: \ "
-            f"{ans[QUERY_STRUCT.roles]} and {ans[QUERY_STRUCT.nb_profiles]}"
+                while len(ans[QueryStruct.roles]) < len(ans[QueryStruct.nb_profiles]):
+                    ans[QueryStruct.roles].append("Non renseigné")
+        assert len(ans[QueryStruct.roles]) == len(ans[QueryStruct.nb_profiles]), (
+            f"roles and nb_profiles have different lengths: \n"
+            f"{ans[QueryStruct.roles]} and {ans[QueryStruct.nb_profiles]}"
         )
         return ans
 
-    def _extract_infos_per_role(self, user_query: str, _format: str, roles: dict):
+    def _extract_infos_per_role(
+        self, user_query: str, _format: str, roles: dict
+    ) -> pd.DataFrame:
         """Extracts the information for each role.
 
         Args:
@@ -165,8 +170,8 @@ class IntentionFinder:
         """
         res = []
         for role, n_role in zip(
-            roles[QUERY_STRUCT.roles],
-            roles[QUERY_STRUCT.nb_profiles],
+            roles[QueryStruct.roles],
+            roles[QueryStruct.nb_profiles],
         ):
             # prepare prompt for llm
             uquery_template = self._prepare_template(user_query, role)
@@ -179,12 +184,11 @@ class IntentionFinder:
         if _format == "dataframe":
             out = pd.concat(res)
         else:
-            raise NotImplementedError(
-                f"format {_format} not implemented. Use dataframe.",
-            )
+            err = f"format {_format} not implemented. Use dataframe."
+            raise NotImplementedError(err)
         return out
 
-    def _extract_text_from_llmoutput(self, output_llm: str, field: str):
+    def _extract_text_from_llmoutput(self, output_llm: str, field: str) -> str:
         """Extracts the value associated to the field to extract from the output of
         the llm.
 
@@ -220,7 +224,7 @@ class IntentionFinder:
         return res
 
     # envoyer dans staticModules ListHandler
-    def _wrap_txt_with_list(self, text: str):
+    def _wrap_txt_with_list(self, text: str) -> list[str]:
         """Wraps a text with a list.
 
         Args:
@@ -233,7 +237,7 @@ class IntentionFinder:
         """
         return [text]
 
-    def _prepare_template(self, uquery: str, role: str):
+    def _prepare_template(self, uquery: str, role: str) -> str:
         """Prepares the complete prompt to call the llm.
         To apply prompt engineering, assemble here:
         - the prompt template
@@ -255,13 +259,15 @@ class IntentionFinder:
         )
         return uquery_template
 
-    def _process_answer(self, output_llm: str, uquery: str, role: str, n_role: int):
+    def _process_answer(
+        self, output_llm: str, uquery: str, role: str, n_role: int
+    ) -> dict:
         """Process the output of the llm and extract the intention of the user.
 
         Example:
         -------
             >>> uquery = "Trouve moi une équipe de développeurs pour une mission banque"
-            >>> ans = process_query(uquery)
+            >>> ans = self._process_answer(uquery)
             >>> print(ans)
             {'bu': 'Non renseigné',
             'company': 'Non renseigné',
@@ -292,39 +298,37 @@ class IntentionFinder:
             dict: Result of the process in a dictionary.
         """
         ans = {}
-        ans[QUERY_STRUCT.user_query] = self._wrap_txt_with_list(uquery)
-        ans[QUERY_STRUCT.simplified_query] = self._wrap_txt_with_list(
+        ans[QueryStruct.user_query] = self._wrap_txt_with_list(uquery)
+        ans[QueryStruct.simplified_query] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "simplified_mission"),
         )
-        ans[QUERY_STRUCT.nb_profiles] = [n_role]
-        ans[QUERY_STRUCT.years] = StringHandler.string_to_list_with_separator(
+        ans[QueryStruct.nb_profiles] = [n_role]
+        ans[QueryStruct.years] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "Années d'expérience"),
             separator=",",
         )
         ans[
-            QUERY_STRUCT.diplomas_certifications
+            QueryStruct.diplomas_certifications
         ] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "Certifications"),
             separator=";",
         )
-        ans[QUERY_STRUCT.soft_skills] = StringHandler.string_to_list_with_separator(
+        ans[QueryStruct.soft_skills] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "Compétences non techniques"),
             separator=";",
         )
-        ans[
-            QUERY_STRUCT.technical_skills
-        ] = StringHandler.string_to_list_with_separator(
+        ans[QueryStruct.technical_skills] = StringHandler.string_to_list_with_separator(
             self._extract_text_from_llmoutput(output_llm, "Compétences techniques"),
             separator=";",
         )
-        ans[QUERY_STRUCT.roles] = [role]
-        ans[QUERY_STRUCT.missions] = self._wrap_txt_with_list(
+        ans[QueryStruct.roles] = [role]
+        ans[QueryStruct.missions] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Objectif mission"),
         )
-        ans[QUERY_STRUCT.sectors] = self._wrap_txt_with_list(
+        ans[QueryStruct.sectors] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Secteurs d'activité"),
         )
-        ans[QUERY_STRUCT.companies] = self._wrap_txt_with_list(
+        ans[QueryStruct.companies] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Compagnie"),
         )
         return ans
@@ -349,7 +353,8 @@ class IntentionFinder:
         if _format == "dataframe":
             output_prepared = pd.DataFrame.from_dict([output])
         else:
-            raise NotImplementedError(f"format {_format} not implemented")
+            err = f"format {_format} not implemented"
+            raise NotImplementedError(err)
         return output_prepared
 
 
@@ -358,8 +363,8 @@ if __name__ == "__main__":
     QUERY_EXAMPLE = "Trouve moi deux data scientists"
     intention_finder = IntentionFinder(settings)
     result = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(result)
-    QUERY_STRUCT.validate_dataframe(result)
+    print(result)  # noqa: T201
+    QueryStruct.validate_dataframe(result)
     from app.core.shared_modules.dataframehandler import DataFrameHandler
 
     DataFrameHandler.save_df(result, "tests/data_testdf_struct_query.pkl")

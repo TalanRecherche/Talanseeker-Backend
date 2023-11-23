@@ -6,7 +6,7 @@
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
-from app.core.cv_information_retrieval.ABCreader import ABCReader
+from app.core.cv_information_retrieval.abc_reader import ABCReader
 
 
 class PPTXReader(ABCReader):
@@ -65,7 +65,7 @@ class PPTXReader(ABCReader):
             return None
 
     @staticmethod
-    def _extract_text_from_shape(shape) -> str:
+    def _extract_text_from_shape(shape: Presentation) -> str:
         """Extract any text from multiple shapes types
         This could be defined recursively also but this seems easier that way.
         """
@@ -83,10 +83,9 @@ class PPTXReader(ABCReader):
         elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:  # from groups
             for sub_shape in shape.shapes:
                 sub_texts.extend(PPTXReader._extract_text_from_shape(sub_shape))
-        elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA:  # from media
-            if shape.has_text_frame:
-                for paragraph in shape.text_frame.paragraphs:
-                    for run in paragraph.runs:
-                        sub_texts.append(run.text)
+        elif shape.shape_type == MSO_SHAPE_TYPE.MEDIA and shape.has_text_frame:
+            for paragraph in shape.text_frame.paragraphs:
+                for run in paragraph.runs:
+                    sub_texts.append(run.text)
 
         return " ".join(sub_texts).strip()

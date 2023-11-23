@@ -13,7 +13,8 @@ from app.core.chatbot_features.candidate import Candidates
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.dataviz import DataViz
 from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.settings import Settings
+from app.settings.settings import Settings
+import pandas as pd
 
 settings = Settings()
 
@@ -23,13 +24,13 @@ def setup_data():
     # load test structured query
     data_path = r"tests/data_test/"
     query_filename = "df_struct_query.pkl"
-    df_query = DataFrameHandler.load_df(os.path.join(data_path, query_filename))
+    df_query = pd.read_pickle(os.path.join(data_path, query_filename))
 
     # load postgres test tables
-    df_chunks = DataFrameHandler.load_df(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
-    df_collabs = DataFrameHandler.load_df(os.path.join(data_path, "PG_COLLABS_001.pkl"))
-    df_cvs = DataFrameHandler.load_df(os.path.join(data_path, "PG_CVS_001.pkl"))
-    df_profiles = DataFrameHandler.load_df(
+    df_chunks = pd.read_pickle(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
+    df_collabs = pd.read_pickle(os.path.join(data_path, "PG_COLLABS_001.pkl"))
+    df_cvs = pd.read_pickle(os.path.join(data_path, "PG_CVS_001.pkl"))
+    df_profiles = pd.read_pickle(
         os.path.join(data_path, "PG_PROFILES_001.pkl"),
     )
 

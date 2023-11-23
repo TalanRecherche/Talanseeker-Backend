@@ -8,12 +8,12 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 
-from app.core.models.ETL_pandasmodels import CHUNK_DF, TEXT_DF
+from app.core.models.etl_pandasmodels import ChunkDF, TextDF
 from app.core.shared_modules.stringhandler import StringHandler
 
 
 class Chunker:
-    def __init__(self):
+    def __init__(self) -> None:
         self.chunk_min_size = 256
         self.chunk_max_size = 512
 
@@ -34,20 +34,20 @@ class Chunker:
             dataframe containing all chunks, metadata and embeddings. One row per chunk.
         """
         # assert if input dataframe is of correct format (columns)
-        if not TEXT_DF.validate_dataframe(df_documents):
+        if not TextDF.validate_dataframe(df_documents):
             return None
 
         # prepare output container
-        df_chunks = pd.DataFrame(columns=CHUNK_DF.get_attributes())
+        df_chunks = pd.DataFrame(columns=ChunkDF.get_attributes())
 
         # iterate through each CV
-        for index, row in tqdm(
+        for _, row in tqdm(
             df_documents.iterrows(),
             desc="Chunking document:",
             total=len(df_documents),
         ):
             # get text
-            text = row[TEXT_DF.file_text]
+            text = row[TextDF.file_text]
             # cut into chunks
             chunks = self._split_string_approx(
                 text,
@@ -57,17 +57,17 @@ class Chunker:
             # push each chunk in a new row of the output pandas dataframe
             for chunk in chunks:
                 # temp container
-                chunk_df_temp = pd.DataFrame(columns=CHUNK_DF.get_attributes())
+                chunk_df_temp = pd.DataFrame(columns=ChunkDF.get_attributes())
                 common_cols = list(
-                    set(TEXT_DF.get_attributes()).intersection(
-                        set(CHUNK_DF.get_attributes()),
+                    set(TextDF.get_attributes()).intersection(
+                        set(ChunkDF.get_attributes()),
                     ),
                 )
                 chunk_df_temp.loc[0, common_cols] = row[common_cols].values
                 # assign current chunk
-                chunk_df_temp[CHUNK_DF.chunk_text] = chunk
+                chunk_df_temp[ChunkDF.chunk_text] = chunk
                 # compute chunk_id using hash
-                chunk_df_temp[CHUNK_DF.chunk_id] = StringHandler.generate_unique_id(
+                chunk_df_temp[ChunkDF.chunk_id] = StringHandler.generate_unique_id(
                     chunk.lower(),
                 )
                 # push to new row
@@ -158,5 +158,5 @@ if __name__ == "__main__":
     # display chunk length histogram
     import matplotlib.pyplot as plt
 
-    chunks[CHUNK_DF.chunk_text].apply(lambda x: len(x)).plot.hist(bins=50)
+    chunks[ChunkDF.chunk_text].apply(lambda x: len(x)).plot.hist(bins=50)
     plt.show()

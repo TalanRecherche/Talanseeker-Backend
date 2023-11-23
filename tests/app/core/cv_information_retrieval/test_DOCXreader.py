@@ -5,7 +5,7 @@
 """
 import pytest
 
-from app.core.cv_information_retrieval.DOCXreader import DOCXReader
+from app.core.cv_information_retrieval.docx_reader import DOCXReader
 
 
 def test_read_text():

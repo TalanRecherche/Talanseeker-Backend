@@ -1,8 +1,11 @@
+"""Used to start the FastAPI application."""
+
 import logging
 
 from fastapi import FastAPI
 
 from app.exceptions.handlers import exception_handler
+
 from .api import router as api_router
 
 logging.basicConfig(
@@ -12,7 +15,10 @@ logging.basicConfig(
 )
 
 
-def init_app() -> None:
+def init_app() -> FastAPI:
+    """Initialize the FastAPI application.
+    Load all the routes and exception handlers.
+    """
     fastapi_app = FastAPI()
     fastapi_app.include_router(api_router)
     exception_handler(fastapi_app)

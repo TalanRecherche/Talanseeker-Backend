@@ -6,7 +6,7 @@
 import pytest
 
 from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-from app.core.models.ETL_pandasmodels import TEXT_DF
+from app.core.models.etl_pandasmodels import TextDF
 
 
 @pytest.mark.skip_this()
@@ -23,7 +23,7 @@ def setup_data():
 @pytest.mark.skip_this()
 def test_dataframe_type(setup_data):
     text_df = setup_data
-    assert TEXT_DF.validate_dataframe(text_df)
+    assert TextDF.validate_dataframe(text_df)
 
 
 @pytest.mark.skip_this()
