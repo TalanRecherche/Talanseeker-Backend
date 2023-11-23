@@ -12,7 +12,7 @@ logging.basicConfig(
 )
 
 
-def init_app():
+def init_app() -> None:
     fastapi_app = FastAPI()
     fastapi_app.include_router(api_router)
     exception_handler(fastapi_app)

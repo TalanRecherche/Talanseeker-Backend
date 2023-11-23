@@ -12,7 +12,7 @@ code_quality:
 
 pytest:
   stage: test
-  image: python:3.10
+  image: python:3.1
   variables:
     PYTHONDONTWRITEBYTECODE: 1
     PYTHONPATH: ${PYTHONPATH}:${CI_PROJECT_DIR}
