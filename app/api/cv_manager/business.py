@@ -1,12 +1,13 @@
 import datetime
 import logging
-import os
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi import HTTPException, Response, UploadFile
 
 from app.core import azure_blob_manager, azure_pg_manager
 from app.core.shared_modules.stringhandler import StringHandler
+from app.exceptions.exceptions import CvException
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.schema.cv_manager import CVDownloadRequest, CVDownloadResponse, CVUploadRequest
@@ -29,7 +30,7 @@ class CVManagerBusiness:
                 binary_data = file.file.read()
                 azure_blob_manager.upload_file(new_name, binary_data)
                 if isinstance(binary_data, bytes):
-                    with open(os.path.join(temp_dir, new_name), "wb") as writer:
+                    with Path(Path(temp_dir) / new_name).open("wb") as writer:
                         writer.write(binary_data)
                 log_string = f"Collab {request.f_name} {request.l_name} is uploaded"
                 logging.info(log_string)
@@ -70,7 +71,7 @@ class CVManagerBusiness:
 
     @staticmethod
     def get_time_stamp() -> str:
-        return datetime.datetime.now().strftime("%Y-%m-%d %H_%M_%S")
+        return datetime.datetime.now().astimezone().strftime("%Y-%m-%d %H_%M_%S")
 
     @staticmethod
     def check_collab_exist(collab_id: str) -> bool:
@@ -100,7 +101,7 @@ class CVManagerBusiness:
             ignore_extensions=[],
         )
         if df_text is None:
-            return
+            raise CvException
         # =============================================================================
         # # make the chunks
         # =============================================================================

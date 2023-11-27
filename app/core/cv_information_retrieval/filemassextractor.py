@@ -99,8 +99,8 @@ class FileMassExtractor:
                     # if not None : push to dataframe
                     temp_df = pd.DataFrame([text_hashmap])
                     df_text = pd.concat([df_text, temp_df])
-            except Exception:
-                log_string = f"Error at {file_path}"
+            except Exception as e:
+                log_string = f"Error at {file_path} {e}"
                 logging.exception(log_string)
 
         if df_text.empty:

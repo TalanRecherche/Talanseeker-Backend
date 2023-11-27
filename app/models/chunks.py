@@ -7,7 +7,6 @@ class PgChunks(Base):
     __tablename__ = "chunks"
 
     chunk_id = Column(String, primary_key=True)
-    cv_id = Column(String)
     collab_id = Column(String)
     chunk_text = Column(String)
     chunk_embeddings = Column(String)

@@ -3,7 +3,7 @@ Features:
 """
 import copy
 import logging
-import os
+from pathlib import Path
 
 import pandas as pd
 
@@ -19,9 +19,9 @@ class DataFrameHandler:
             save_to_file_path (str): The path to the output pickle file.
         """
         # Check if the folder exists, and create it if it doesn't
-        output_folder = os.path.dirname(save_to_file_path)
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+        output_folder = Path(save_to_file_path).parent
+        if not Path.exists(output_folder):
+            Path.mkdir(output_folder)
 
         # Save the DataFrame to a pickle file
         df.to_pickle(save_to_file_path)

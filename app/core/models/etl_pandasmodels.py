@@ -27,7 +27,6 @@ class TextDF(ParentPandasModel):
         {
             cv_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
-            file_path: Column(str, nullable=True),
             file_name: Column(str, nullable=True),
             file_extension: Column(str, nullable=True),
             file_full_name: Column(str, nullable=True),
@@ -247,7 +246,6 @@ class StructProfileDF(ParentPandasModel):
             companies: Column(list[str], nullable=True),
             soft_skills: Column(list[str], nullable=True),
             technical_skills: Column(list[str], nullable=True),
-            file_path: Column(list[str], nullable=True),
             file_name: Column(list[str], nullable=True),
             file_extension: Column(list[str], nullable=True),
             file_full_name: Column(list[str], nullable=True),

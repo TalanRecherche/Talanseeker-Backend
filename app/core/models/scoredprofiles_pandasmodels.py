@@ -42,7 +42,6 @@ class ScoredProfilesDF(ParentPandasModel):
 
 class ScoredChunksDF(ParentPandasModel):
     chunk_id = "chunk_id"
-    cv_id = "cv_id"
     collab_id = "collab_id"
     chunk_text = "chunk_text"
     chunk_embeddings = "chunk_embeddings"
@@ -51,7 +50,6 @@ class ScoredChunksDF(ParentPandasModel):
     schema = pa.DataFrameSchema(
         {
             chunk_id: Column(str, nullable=True),
-            cv_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
             chunk_embeddings: Column(list[float], nullable=True),

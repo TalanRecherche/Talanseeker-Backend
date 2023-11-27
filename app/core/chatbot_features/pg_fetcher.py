@@ -112,7 +112,7 @@ class PGfetcher:
     def _fetch_profiles(self, filters: Optional[Filters] = None) -> pd.DataFrame:
         query = (
             "select p.* from profiles p left join collabs c on p.collab_id = "
-            "c.collab_id where true"
+            "c.collab_id where true "
         )
         query = PGfetcher._build_filtered_request(query, filters)
         """ fetch the entire profile table"""
@@ -156,7 +156,7 @@ class PGfetcher:
                 or datetime.datetime.strptime(
                     row[CollabPg.assigned_until],
                     "%Y-%m-%d",
-                ).date()
+                ).astimezone().date()
                 <= start_date
             ):
                 row[CollabPg.availability_score] = 100
@@ -186,13 +186,16 @@ class PGfetcher:
     def _fetch_chunks(self, collab_ids_string: str) -> pd.DataFrame | None:
         try:
             """Create the SQL query using the formatted collab_ids_str
-            #query = f"select * from chunks where collab_id in ({collab_ids_string})"
+            query = f"select * from chunks where collab_id in ({collab_ids_string})"
+
             """
+
             query = PGfetcher._sql_request_builder("collab_chunks",
                                                    collab_ids_string=tuple(
                                                        collab_ids_string.
                                                        replace("'", "").
                                                        split(",")))
+
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_chunks = pd.read_sql(query, con_string)
@@ -216,31 +219,25 @@ class PGfetcher:
             raise
 
     def _fetch_cvs(self, collab_ids_string: str) -> pd.DataFrame | None:
-        try:
-            """Create the SQL query using the formatted collab_ids_str
-            query = f"select * from cvs where collab_id in ({collab_ids_string})"
-            """
-            query = PGfetcher._sql_request_builder("collab_cvs",
-                                                   collab_ids_string=tuple(
-                                                       collab_ids_string.
-                                                       replace("'", "").
-                                                       split(",")))
-            logging.info(query)
-            # Execute the query and fetch the result as a DataFrame
-            df_cvs = pd.read_sql(query, con_string)
-            if not CvPg.validate_dataframe(df_cvs):
-                err = "df_profiles is missing the required columns"
-                raise InvalidColumnsError(err)
-            return df_cvs
+        """Create the SQL query using the formatted collab_ids_str
+        query = f"select * from cvs where collab_id in ({collab_ids_string})"
 
-        except InvalidColumnsError as e:
-            logging.error(e)
-            raise
+        """
+        query = PGfetcher._sql_request_builder("collab_cvs",
+                                               collab_ids_string=tuple(
+                                                   collab_ids_string.
+                                                   replace("'", "").
+                                                   split(",")))
 
-        except Exception as e:
-            log_string = f"An error occurred while executing the query: {e}"
-            logging.error(log_string)
-            raise
+
+        logging.info(query)
+        # Execute the query and fetch the result as a DataFrame
+        df_cvs = pd.read_sql(query, con_string)
+        if not CvPg.validate_dataframe(df_cvs):
+            err = "df_profiles is missing the required columns"
+            raise InvalidColumnsError(err)
+        return df_cvs
+
 
     def _fetch_collabs(self, collab_ids_string: str) -> pd.DataFrame | None:
         try:
@@ -252,6 +249,7 @@ class PGfetcher:
                                                        collab_ids_string.
                                                        replace("'", "").
                                                        split(",")))
+
             logging.info(query)
             # Execute the query and fetch the result as a DataFrame
             df_collabs = pd.read_sql(query, con_string)

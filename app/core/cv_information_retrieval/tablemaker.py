@@ -96,12 +96,22 @@ class TableMaker:
         pg_chunks = pg_chunks.merge(df_embeddings, on=merge_cols, how="outer")
 
         for idx in range(len(df_profiles)):
+
+            collab_ids = df_profiles.iloc[idx][StructProfileDF.collab_id]
+            for collab_id in collab_ids:
+                pg_cvs_idx = pg_chunks[(pg_chunks[ChunkPg.collab_id] == collab_id)].index.values
+                if pg_cvs_idx.size > 0:
+                    collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
+                    pg_chunks.loc[pg_cvs_idx, ChunkPg.collab_id] = collab_id
+
+            """
             cv_ids = df_profiles.iloc[idx][StructProfileDF.cv_id]
             for cv_id in cv_ids:
                 pg_cvs_idx = pg_chunks[(pg_chunks[ChunkPg.cv_id] == cv_id)].index.values
                 if pg_cvs_idx.size > 0:
                     collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
                     pg_chunks.loc[pg_cvs_idx, ChunkPg.collab_id] = collab_id
+            """
 
         if pg_chunks.empty:
             logging.warning("returns empty")
