@@ -121,7 +121,7 @@ class KimbleUpdater:
             logging.warning("Update Kimble finished")
         except Exception as e:
             log_string = f"Failed to update Kimble {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
 
     @staticmethod
     def clean_db() -> None:

@@ -160,9 +160,10 @@ class PGfetcher:
                 <= start_date
             ):
                 row[CollabPg.availability_score] = 100
-        except Exception:
-            log_string = f"Date not conform, skipping collab {row}"
+        except Exception as e:
+            log_string = f"Date not conform, skipping collab {row} {e}"
             logging.warning(log_string)
+            raise e
         return row
     @staticmethod
     def _sql_request_builder(req_target:str, **kwargs)->str | None:

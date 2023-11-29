@@ -7,7 +7,7 @@ from fastapi import HTTPException, Response, UploadFile
 
 from app.core import azure_blob_manager, azure_pg_manager
 from app.core.shared_modules.stringhandler import StringHandler
-from app.exceptions.exceptions import CvException
+from app.exceptions.exceptions import CvExceptionError
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.schema.cv_manager import CVDownloadRequest, CVDownloadResponse, CVUploadRequest
@@ -101,7 +101,7 @@ class CVManagerBusiness:
             ignore_extensions=[],
         )
         if df_text is None:
-            raise CvException
+            raise CvExceptionError
         # =============================================================================
         # # make the chunks
         # =============================================================================

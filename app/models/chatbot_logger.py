@@ -29,4 +29,4 @@ class ChatbotLogs(Base):
                 return self.id
         except Exception as e:
             log_string = f"An error occurred while adding logs: {e}"
-            logging.error(log_string)
+            logging.exception(log_string)

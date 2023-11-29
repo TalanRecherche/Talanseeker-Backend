@@ -148,7 +148,7 @@ class CvStructurator:
         except Exception as e:
             numerical_value = 0
             log_string = f"CVStructurator : numeric cols structuration failed {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
         return numerical_value
 
     def _extract_integer(self, cell: pd.DataFrame) -> int | None:
@@ -173,6 +173,7 @@ class CvStructurator:
         Make a list with all strings, then clean/unique/fuzzy matching remove
         returns the list of string
         """
+        values = []
         try:
             # cast values of columns into a list
             values = df_chunks_profile[column].tolist()
@@ -204,9 +205,8 @@ class CvStructurator:
                 threshold=self.similarity_threshold,
             )
         except Exception as e:
-            values = []
             log_string = f"CVStructurator : string columns structuration failed: {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
         return values
 
     def _get_unique_cvs(self, df_profile_chunks: pd.DataFrame) -> dict:

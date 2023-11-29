@@ -36,9 +36,6 @@ select = ["F", "E", "W", "I", "N", "UP", "YTT", "ANN", "ASYNC", "BLE", "FBT", "B
         "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "TD", "ERA", "S", "B905", "B008", "DTZ", "SIM105", "A003",
         "PTH"]
 ignore = [
-    # TO SOLVE:
-    "BLE", # Ignore all blind exception issues
-    "PD", # proper usage of pandas
     # TO IGNORE:
     "FBT", # This limits the use of default boolean arguments in function definitions
     "C", # McCabe complexity ignored

@@ -147,7 +147,7 @@ class LLMParser:
 
         except Exception as e:
             log_string = f"_prepare_JSON_string: failed {e}"
-            logging.error(log_string)
+            logging.exception(log_string)
             return ""
 
     def _push_response_to_hashmap(self, json_string: str) -> dict:
@@ -171,13 +171,13 @@ class LLMParser:
             hashmap_response = json.loads(json_string)
         except Exception as e:
             log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-            logging.warning(log_string)
+            logging.exception(log_string)
             try:
                 # if JSON load failed, we try manually
                 hashmap_response = ast.literal_eval(json_string)
             except Exception as e:
                 log_string = f"LLMParser_push_response_to_hashmap: nothing parsed {e}. "
-                logging.warning(log_string)
+                logging.exception(log_string)
                 # if everything fails we send back an empty dict
                 hashmap_response = {}
 
@@ -201,7 +201,7 @@ class LLMParser:
                 except Exception as e:
                     clean_hashmap[key] = []
                     log_string = f"_clean_response: {key} not caught {e}"
-                    logging.warning(log_string)
+                    logging.exception(log_string)
             else:
                 # year field is int
                 try:
@@ -213,7 +213,7 @@ class LLMParser:
                 except Exception as e:
                     clean_hashmap[ParsedDF.years] = 0
                     log_string = f"_clean_response: .years not caught {e}"
-                    logging.warning(log_string)
+                    logging.exception(log_string)
 
         if response_hashmap:
             return clean_hashmap

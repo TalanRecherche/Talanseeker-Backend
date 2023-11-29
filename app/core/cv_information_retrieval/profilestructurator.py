@@ -147,7 +147,7 @@ class ProfileStructurator:
         except Exception as e:
             string_values = []
             log_string = f"ProfileStructurator : string cols structuration failed: {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
         return string_values
 
     def _merge_numerical_columns(
@@ -160,7 +160,7 @@ class ProfileStructurator:
         except Exception as e:
             numerical_value = 0
             log_string = f"ProfileStructurator : numeric cols structuration failed: {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
         return numerical_value
 
     def _merge_static_columns(self, column: str, df_filtered_cvs: pd.DataFrame) -> list:
@@ -169,7 +169,7 @@ class ProfileStructurator:
         except Exception as e:
             static_value = []
             log_string = f"ProfileStructurator : static cols structuration failed: {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
         return static_value
 
 

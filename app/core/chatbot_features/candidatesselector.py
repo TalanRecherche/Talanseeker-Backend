@@ -62,10 +62,13 @@ class CandidatesSelector:
                 query_row,
             )
             # number of identical profiles needed in this subquery
+
             try:
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
-            except Exception:
+            except Exception as e:
                 nb_profiles = 3
+                logging.exception(e)
+
             # find best profiles for this subquery, NOT in already_selected_profiles_ids
             selected_ids = self._select_profiles_ids(
                 nb_profiles,
