@@ -5,6 +5,9 @@ services:
     build: .
     ports:
         - "80:80"
+    env_file:
+      - .env
+
   postgres:
     image: ankane/pgvector:v0.4.4
     container_name: neostaff-postgres_
