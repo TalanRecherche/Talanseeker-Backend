@@ -12,4 +12,5 @@ if __name__ == "__main__":
         app="app.start_app:app",
         reload=True,
         workers=1,
+        port=80
     )
