@@ -1,7 +1,7 @@
 stages:
-  #- code_quality
-  #- test
   - deploy
+  - code_quality
+  - test
 
 
 code_quality:
