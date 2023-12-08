@@ -50,3 +50,4 @@ deployment:
 
 #  rules:
 #    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+# this rule is to only run pipeline during merge request to main branch
