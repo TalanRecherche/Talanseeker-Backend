@@ -1,9 +1,11 @@
-from app.models.logger import Logs
+from collections.abc import Callable
+
 from app.models.chatbot_logger import ChatbotLogs
+from app.models.logger import Logs
 
 
-def db_logger(func):
-    def wrapper(*args, **kwargs):
+def db_logger(func: Callable) -> Callable:
+    def wrapper(*args, **kwargs) -> Callable:
         log = Logs()
         log.request_args = str(args)
         log.request_kwargs = str(kwargs)
@@ -15,18 +17,21 @@ def db_logger(func):
     return wrapper
 
 
-def chatbot_logger(func):
-    def wrapper(*args, **kwargs):
+def chatbot_logger(func: Callable) -> Callable:
+    def wrapper(*args, **kwargs) -> Callable:
         log = ChatbotLogs()
-        log.request_issuer = st.session_state['username'] if 'username' in st.session_state else None
         response, candidates = func(*args, **kwargs)
         log.query = args[1]  # args[1] is the user query
         log.response = response
         if candidates is not None:
-            log.candidates = "|".join([f"{candidate.name} {candidate.surname}" for candidate in candidates.list_candidates])
+            log.candidates = "|".join(
+                [
+                    f"{candidate.name} {candidate.surname}"
+                    for candidate in candidates.list_candidates
+                ],
+            )
 
         # insert the log
-        st.session_state["query_id"] = log.log()
         return response
 
     return wrapper

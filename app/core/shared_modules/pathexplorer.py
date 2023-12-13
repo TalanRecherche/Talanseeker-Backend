@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug  8 15:42:28 2023
+"""Created on Tue Aug  8 15:42:28 2023
 
 @author: agarc
 
 """
 import logging
 import os
+from pathlib import Path
 
 
 # =============================================================================
 # PathExplorer
 # =============================================================================
 class PathExplorer:
-    """
-    This class handles path and file/extension list by exploring folders.
+    """Handles path and file/extension list by exploring folders.
     It also handles path/directory definitions and either files exists
     """
 
@@ -23,16 +21,17 @@ class PathExplorer:
     # =============================================================================
     @staticmethod
     def get_all_files_paths(directory: str) -> list:
-        """
-        Explore the main folder and list all files, including their paths.
+        """Explore the main folder and list all files, including their paths.
+
         Args:
-        directory (str): The path of the directory to explore. You can also input a filepath
+        ----
+        directory (str): The path of the directory to explore. You can also input a
+        filepath
         Returns:
         list: A list of file paths.
         """
-
         # Check if the input is a file path
-        if os.path.isfile(directory):
+        if Path(directory).is_file():
             return [directory]
 
         # Check if the directory exists and check if it starts with ./ or ../
@@ -42,21 +41,23 @@ class PathExplorer:
         file_paths = []
         for root, _, files in os.walk(directory):
             for file in files:
-                file_path = os.path.join(root, file)
+                file_path = Path(root) / file
                 file_paths.append(file_path)
         return file_paths
 
     @staticmethod
     def get_all_paths_with_extension_name(directory: str) -> list[dict]:
-        """
-        Get a hashmap with file extensions lists of file paths
+        """Get a hashmap with file extensions lists of file paths
             with that extension as values.
+
         Args:
+        ----
         directory (str): The path of the directory to explore.
+
         Returns:
+        -------
         dict: A list  [file paths, file extensions]
         """
-
         all_file_paths = PathExplorer.get_all_files_paths(directory)
 
         temp_extensions = set()
@@ -64,10 +65,14 @@ class PathExplorer:
         for file_path in all_file_paths:
             file_extension = PathExplorer.get_single_file_extension(file_path)
             file_name = PathExplorer.get_single_file_name(file_path)
-            paths_with_extension.append({"file_path": file_path,
-                                         "file_extension": file_extension,
-                                         "file_name": file_name,
-                                         "file_full_name": file_name + file_extension})
+            paths_with_extension.append(
+                {
+                    "file_path": file_path,
+                    "file_extension": file_extension,
+                    "file_name": file_name,
+                    "file_full_name": file_name + file_extension,
+                },
+            )
 
             temp_extensions.add(file_extension)
         return paths_with_extension
@@ -77,35 +82,40 @@ class PathExplorer:
     # =============================================================================
     @staticmethod
     def get_single_file_extension(single_file_path: str) -> str:
-        """
-        Get the file extension of a single file.
+        """Get the file extension of a single file.
+
         Args:
+        ----
         single_file_path (str): The path of the file.
+
         Returns:
+        -------
         str: The file extension.
         """
-        _, file_extension = os.path.splitext(single_file_path)
+        file_extension = Path(single_file_path).suffix
         return file_extension.lower()
 
     @staticmethod
     def get_single_file_name(single_file_path: str) -> str:
-        """
-        Get the file name without extension of a single file.
+        """Get the file name without extension of a single file.
+
         Args:
+        ----
         single_file_path (str): The path of the file.
+
         Returns:
+        -------
         str: The file name without extension.
         """
-        file_name, _ = os.path.splitext(single_file_path)
-        return os.path.basename(file_name)
+        file_name = Path(single_file_path).stem
+        return Path(file_name).name
 
     # =============================================================================
     # path manipulation
     # =============================================================================
     @staticmethod
     def split_path(path: str) -> list:
-        """
-        Split a path into sub path.
+        """Split a path into sub path.
         Useful to construct new paths.
 
         Parameters
@@ -136,16 +146,15 @@ class PathExplorer:
     # =============================================================================
     @staticmethod
     def assert_directory(directory: str) -> bool:
-        """
-        check if the directory exits.
+        """Check if the directory exits.
         check if the directory given starts with ./ or ../
         use only relative path please:)
         """
-        if os.path.exists(directory):
+        if Path(directory).exists():
             return True
 
-        if directory[0] == '.' or directory[0:2] == '..':
-            if os.path.exists(directory):
+        if directory[0] == "." or directory[0:2] == "..":
+            if Path(directory).exists():
                 return True
             else:
                 logging.debug("Directory does not exist")
@@ -156,35 +165,35 @@ class PathExplorer:
 
     @staticmethod
     def assert_file_exists(file_path: str) -> bool:
-        """
-        check if a file exists
-        """
-        if os.path.exists(file_path):
+        """Check if a file exists"""
+        if Path(file_path).exists():
             return True
         else:
-            logging.debug('This file does not exists: {file_path}')
+            logging.debug("This file does not exists: {file_path}")
             return False
 
     @staticmethod
-    def check_path_type(path: str) -> str:
-        """
-        check if the path is a directory or a file.
-        """
+    def check_path_type(path: str) -> str | None:
+        """Check if the path is a directory or a file."""
         # if the path points towards a file we check if it exits
-        if os.path.isfile(path):
+        if Path(path).is_file():
             if PathExplorer.assert_file_exists(path):
                 return "File"
+            else:
+                return "Invalid path"
 
         # if path is a directory we check if it has the correct format './' '../'
-        elif os.path.isdir(path):
+        elif Path(path).is_dir():
             if PathExplorer.assert_directory(path):
                 return "Directory"
+            else:
+                return "Invalid path"
 
         else:
             return "Invalid path"
 
 
 if __name__ == "__main__":
-    directory = r'./_data_raw/'
+    directory = r"./_data_raw/"
     files = PathExplorer.get_all_paths_with_extension_name(directory)
-    print(files)
+    print(files)  # noqa: T201

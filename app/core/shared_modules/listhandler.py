@@ -1,15 +1,12 @@
-"""
-Created by agarc at 01/10/2023
+"""Created by agarc at 01/10/2023
 Features:
 """
 
 
 class ListHandler:
-
     @staticmethod
     def flatten_list(the_list: list) -> list:
-        """
-        make a list from a list[list].
+        """Make a list from a list[list].
         Rather usefull considering all of our cells contain list
         """
         if not the_list:
@@ -40,12 +37,16 @@ class ListHandler:
         capitalized_list = [string.capitalize() for string in the_list]
         return capitalized_list
 
-
     @staticmethod
-    def remove_strings_in_list(the_list: list[str], strings_to_remove: list[str] = None) -> list[str]:
+    def remove_strings_in_list(
+        the_list: list[str],
+        strings_to_remove: list[str] = None,
+    ) -> list[str]:
         if strings_to_remove is None:
-            strings_to_remove = ['_']
-        cleaned_list = [string for string in the_list if string not in strings_to_remove]
+            strings_to_remove = ["_"]
+        cleaned_list = [
+            string for string in the_list if string not in strings_to_remove
+        ]
         if cleaned_list:
             return cleaned_list
         else:

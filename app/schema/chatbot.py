@@ -1,24 +1,35 @@
+"""Created on 21/11/2023
+
+@author: Youness
+
+"""
 from __future__ import annotations
 
-from fastapi import Depends, Query
-from pydantic import BaseModel, Field
+from typing import Optional
 
-from typing import List, Optional, Annotated
+from fastapi import Query
+from pydantic import BaseModel, Field
 
 
 class Filters(BaseModel):
-    region: Optional[List[str]] = None
-    city: Optional[List[str]] = None
-    grade: Optional[List[str]] = None
+    region: Optional[list[str]] = None
+    city: Optional[list[str]] = None
+    grade: Optional[list[str]] = None
     assigned_until: Optional[str] = None
     availability_score: Optional[int] = 0
 
 
 class ChatbotRequest(BaseModel):
     user_query: str
-    region: Optional[List[str]] = Field(Query(None, description='Séléctionner des régions'))
-    city: Optional[List[str]] = Field(Query(None, description='Séléctionner des villes'))
-    grade: Optional[List[str]] = Field(Query(None, description='Séléctionner des grades'))
+    region: Optional[list[str]] = Field(
+        Query(None, description="Séléctionner des régions"),
+    )
+    city: Optional[list[str]] = Field(
+        Query(None, description="Séléctionner des villes"),
+    )
+    grade: Optional[list[str]] = Field(
+        Query(None, description="Séléctionner des grades"),
+    )
     assigned_until: Optional[str] = Field(Query(None))
     availability_score: Optional[int] = Field(Query(None))
 
@@ -36,12 +47,12 @@ class GeneralInformation(BaseModel):
     assigned_until: Optional[str] = None
     availability_score: Optional[str] = None
     years: Optional[str] = None
-    diplomas_certifications: Optional[List[str]] = None
-    roles: Optional[List[str]] = None
-    sectors: Optional[List[str]] = None
-    companies: Optional[List[str]] = None
-    soft_skills: Optional[List[str]] = None
-    technical_skills: Optional[List[str]] = None
+    diplomas_certifications: Optional[list[str]] = None
+    roles: Optional[list[str]] = None
+    sectors: Optional[list[str]] = None
+    companies: Optional[list[str]] = None
+    soft_skills: Optional[list[str]] = None
+    technical_skills: Optional[list[str]] = None
 
 
 class CvsInformation(BaseModel):
@@ -50,14 +61,14 @@ class CvsInformation(BaseModel):
 
 
 class SkillsTable(BaseModel):
-    global_skill: Optional[List[str]] = None
-    score: Optional[List[int]] = None
-    skills: Optional[List[List[str]]] = None
+    global_skill: Optional[list[str]] = None
+    score: Optional[list[int]] = None
+    skills: Optional[list[list[str]]] = None
 
 
 class Candidate(BaseModel):
     general_information: Optional[GeneralInformation] = None
-    cvs_information: Optional[List[CvsInformation]] = None
+    cvs_information: Optional[list[CvsInformation]] = None
     skills_table: Optional[SkillsTable] = None
 
 
@@ -65,4 +76,4 @@ class ChatbotResponse(BaseModel):
     question_valid: bool = True
     query_id: Optional[str] = None
     chatbot_response: Optional[str] = None
-    candidates: Optional[List[Candidate]] = None
+    candidates: Optional[list[Candidate]] = None

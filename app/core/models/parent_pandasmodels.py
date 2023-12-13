@@ -1,5 +1,4 @@
-"""
-Created by agarc at 26/10/2023
+"""Created by agarc at 26/10/2023
 Features:
 Parent class for all pandas dataframes models
 Create the schemas in child classes as follows:
@@ -21,82 +20,86 @@ class MyModel(ParentPandasModel):
 
 The class methods are:
     - get_attributes(): return a list of the columns of the schema
-    - validate_dataframe(df): check if the dataframe is valid according to the schema (check value type and columns name)
+    - validate_dataframe(df): check if the dataframe is valid according to the schema
+    (check value type and columns name)
     - generate_dataframe(): generate an empty dataframe valid according to the schema
 """
+import logging
+
 import pandas as pd
 import pandera as pa
-import logging
 
 
 class ParentPandasModel:
-    """
-    This is a parent class for all the models that are based on pandas
-    """
+    """Parent class for all the models that are based on pandas"""
+
     # this will be overwritten by the child class
     schema = pa.DataFrameSchema({})
 
     @classmethod
     def get_attributes(cls) -> list[str]:
-        """ list columns of the schema"""
+        """List columns of the schema"""
         return list(cls.schema.columns.keys())
 
     @classmethod
     def validate_dataframe(cls, df: pd.DataFrame) -> bool:
-        """
-        Check if the dataframe is valid according to the schema
+        """Check if the dataframe is valid according to the schema
         Args:
         df (pd.DataFrame): dataframe to validate
 
-        Returns:
+        Returns
+        -------
         bool: True if all attributes are in the dataframe columns
             False otherwise
         """
-        #TODO: add check for null values
-        #TODO: add check for value type
-        #TODO: add check for value format
-        #TODO: add check for value length
-        #TODO: add check for empty dataframe
-        #TODO: for some execption can be the same, but return string is different
+        # TODO@antoine: add check for null values
+        # TODO@antoine: add check for value type
+        # TODO@antoine: add check for value format
+        # TODO@antoine: add check for value length
+        # TODO@antoine: add check for empty dataframe
+        # TODO@antoine: for some execption can be the same
         try:
             cls.schema.validate(df)
             is_valid = True
         except pa.errors.SchemaError as e:
             is_valid = False
-            logging.error(f"DataFrame validation error: {e}")
+            log_string = f"DataFrame validation error: {e}"
+            logging.error(log_string)
         return is_valid
 
     @classmethod
     def generate_dataframe(cls) -> pd.DataFrame:
-        """
-        Generate an empty dataframe with the columns of the schema and correct data types
+        """Generate an empty dataframe with the columns of the schema and correct data
+        types
         Args:
         df (pd.DataFrame): dataframe to generate attributes from
 
-        Returns:
+        Returns
+        -------
         None
         """
 
-        def _pandera_dtype_to_pandas_dtype(data_type) -> str:
-            """
-            Convert pandera data type to pandas data type.
+        def _pandera_dtype_to_pandas_dtype(data_type: pa.dtypes) -> str:
+            """Convert pandera data type to pandas data type.
 
             :param dtype: A pandera data type
             :return: A pandas data type
             """
             data_type = str(data_type)
-            if data_type == 'str':
-                return "object"
-            elif data_type == 'int64':
-                return "int64"
-            elif data_type == 'float':
-                return "float64"
-            elif data_type == 'bool':
-                return "boolean"
+            map_data_type = {
+                "str": "object",
+                "int64": "int64",
+                "float": "float64",
+                "bool": "boolean",
+            }
+            if data_type in map_data_type:
+                return map_data_type[data_type]
             else:
                 return "object"
 
-        empty_data = {col_name: pd.Series([], dtype=_pandera_dtype_to_pandas_dtype(col.dtype)) for col_name, col in
-                      cls.schema.columns.items()}
+        empty_data = {
+            col_name: pd.Series([], dtype=_pandera_dtype_to_pandas_dtype(col.dtype))
+            for col_name, col in cls.schema.columns.items()
+        }
         empty_df = pd.DataFrame(empty_data)
         return empty_df

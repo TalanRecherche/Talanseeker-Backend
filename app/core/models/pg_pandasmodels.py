@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created by agarc at 01/10/2023
+"""Created by agarc at 01/10/2023
 Features:
 """
 import pandera as pa
 from pandera import Column
+
 from app.core.models.parent_pandasmodels import ParentPandasModel
 
 
-class COLLAB_PG(ParentPandasModel):
-    """ column main table on PostGres """
+class CollabPg(ParentPandasModel):
+    """column main table on PostGres"""
+
     # information of this table will be extracted from Kimble and other ERPs"
     # primary key
     collab_id = "collab_id"
@@ -86,33 +86,34 @@ class COLLAB_PG(ParentPandasModel):
             region: Column(str, nullable=True),
             city: Column(str, nullable=True),
             assigned_until: Column(str, nullable=True),
-            availability_score: Column(float, nullable=True)
-        }
+            availability_score: Column(float, nullable=True),
+        },
     )
 
 
-class CV_PG(ParentPandasModel):
-    """ column CV table on PostGres"""
-    cv_id = 'cv_id'
-    collab_id = 'collab_id'
-    file_full_name = 'file_full_name'
+class CvPg(ParentPandasModel):
+    """column CV table on PostGres"""
+
+    cv_id = "cv_id"
+    collab_id = "collab_id"
+    file_full_name = "file_full_name"
 
     schema = pa.DataFrameSchema(
         {
             cv_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
-            file_full_name: Column(str, nullable=True)
-        }
+            file_full_name: Column(str, nullable=True),
+        },
     )
 
 
-class CHUNK_PG(ParentPandasModel):
-    """ column chunks & embeddings table on PostGres """
-    chunk_id = 'chunk_id'
-    collab_id = 'collab_id'
-    chunk_text = 'chunk_text'
-    chunk_embeddings = 'chunk_embeddings'
-    cv_id = 'cv_id'
+class ChunkPg(ParentPandasModel):
+    """column chunks & embeddings table on PostGres"""
+
+    chunk_id = "chunk_id"
+    collab_id = "collab_id"
+    chunk_text = "chunk_text"
+    chunk_embeddings = "chunk_embeddings"
 
     schema = pa.DataFrameSchema(
         {
@@ -120,23 +121,23 @@ class CHUNK_PG(ParentPandasModel):
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
             chunk_embeddings: Column(list[float], nullable=True),
-            cv_id: Column(str, nullable=True)
-        }
+        },
     )
 
 
-class PROFILE_PG(ParentPandasModel):
-    """ column structured profiles table on PostGres """
+class ProfilePg(ParentPandasModel):
+    """column structured profiles table on PostGres"""
+
     # primary key
-    collab_id = 'collab_id'
+    collab_id = "collab_id"
     # attribut
-    years = 'years'
-    diplomas_certifications = 'diplomas_certifications'
-    roles = 'roles'
-    sectors = 'sectors'
-    companies = 'companies'
-    soft_skills = 'soft_skills'
-    technical_skills = 'technical_skills'
+    years = "years"
+    diplomas_certifications = "diplomas_certifications"
+    roles = "roles"
+    sectors = "sectors"
+    companies = "companies"
+    soft_skills = "soft_skills"
+    technical_skills = "technical_skills"
 
     schema = pa.DataFrameSchema(
         {
@@ -147,6 +148,6 @@ class PROFILE_PG(ParentPandasModel):
             sectors: Column(list[str], nullable=True),
             companies: Column(list[str], nullable=True),
             soft_skills: Column(list[str], nullable=True),
-            technical_skills: Column(list[str], nullable=True)
-        }
+            technical_skills: Column(list[str], nullable=True),
+        },
     )

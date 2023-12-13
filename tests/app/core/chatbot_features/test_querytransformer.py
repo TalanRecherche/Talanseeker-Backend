@@ -1,23 +1,22 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 14 10:50:00 2023
+r"""Created on Thu Sep 14 10:50:00 2023
 
 @author: agarc
 /!\ THIS TEST CALLS THE OPENAI API AND WILL BE BILLED /!\
 """
-import pytest
 import pandas as pd
-from app.core.shared_modules.dataframehandler import DataFrameHandler
+import pytest
+
 from app.core.chatbot_features.querytransformer import QueryTransformer
-from app.settings import Settings
+from app.core.shared_modules.dataframehandler import DataFrameHandler
+from app.settings.settings import Settings
 
 settings = Settings()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def setup_data():
-    query_structured_path = r'tests/data_test/df_struct_query.pkl'
-    structured_query = DataFrameHandler.load_df(query_structured_path)
+    query_structured_path = r"tests/data_test/df_struct_query.pkl"
+    structured_query = pd.read_pickle(query_structured_path)
     return structured_query
 
 
@@ -30,7 +29,9 @@ def test_keywords_retrieval_output_format(setup_data):
         assert isinstance(keywords, list)
 
 
-@pytest.mark.skip_this(reason="Skipping test from running because it is calling OpenAI-API")
+@pytest.mark.skip_this(
+    reason="Skipping test from running because it is calling OpenAI-API",
+)
 def test_embeddings_retrieval_output_format(setup_data):
     structured_query = setup_data
     transformer = QueryTransformer(settings)
