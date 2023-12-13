@@ -5,6 +5,7 @@
 """
 import logging
 import os
+from pathlib import Path
 
 
 # =============================================================================
@@ -30,7 +31,7 @@ class PathExplorer:
         list: A list of file paths.
         """
         # Check if the input is a file path
-        if os.path.isfile(directory):
+        if Path(directory).is_file():
             return [directory]
 
         # Check if the directory exists and check if it starts with ./ or ../
@@ -40,7 +41,7 @@ class PathExplorer:
         file_paths = []
         for root, _, files in os.walk(directory):
             for file in files:
-                file_path = os.path.join(root, file)
+                file_path = Path(root) / file
                 file_paths.append(file_path)
         return file_paths
 
@@ -91,7 +92,7 @@ class PathExplorer:
         -------
         str: The file extension.
         """
-        _, file_extension = os.path.splitext(single_file_path)
+        file_extension = Path(single_file_path).suffix
         return file_extension.lower()
 
     @staticmethod
@@ -106,8 +107,8 @@ class PathExplorer:
         -------
         str: The file name without extension.
         """
-        file_name, _ = os.path.splitext(single_file_path)
-        return os.path.basename(file_name)
+        file_name = Path(single_file_path).stem
+        return Path(file_name).name
 
     # =============================================================================
     # path manipulation
@@ -149,11 +150,11 @@ class PathExplorer:
         check if the directory given starts with ./ or ../
         use only relative path please:)
         """
-        if os.path.exists(directory):
+        if Path(directory).exists():
             return True
 
         if directory[0] == "." or directory[0:2] == "..":
-            if os.path.exists(directory):
+            if Path(directory).exists():
                 return True
             else:
                 logging.debug("Directory does not exist")
@@ -165,7 +166,7 @@ class PathExplorer:
     @staticmethod
     def assert_file_exists(file_path: str) -> bool:
         """Check if a file exists"""
-        if os.path.exists(file_path):
+        if Path(file_path).exists():
             return True
         else:
             logging.debug("This file does not exists: {file_path}")
@@ -175,14 +176,14 @@ class PathExplorer:
     def check_path_type(path: str) -> str | None:
         """Check if the path is a directory or a file."""
         # if the path points towards a file we check if it exits
-        if os.path.isfile(path):
+        if Path(path).is_file():
             if PathExplorer.assert_file_exists(path):
                 return "File"
             else:
                 return "Invalid path"
 
         # if path is a directory we check if it has the correct format './' '../'
-        elif os.path.isdir(path):
+        elif Path(path).is_dir():
             if PathExplorer.assert_directory(path):
                 return "Directory"
             else:

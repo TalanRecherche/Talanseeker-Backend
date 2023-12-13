@@ -114,7 +114,6 @@ class ChunkPg(ParentPandasModel):
     collab_id = "collab_id"
     chunk_text = "chunk_text"
     chunk_embeddings = "chunk_embeddings"
-    cv_id = "cv_id"
 
     schema = pa.DataFrameSchema(
         {
@@ -122,7 +121,6 @@ class ChunkPg(ParentPandasModel):
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
             chunk_embeddings: Column(list[float], nullable=True),
-            cv_id: Column(str, nullable=True),
         },
     )
 

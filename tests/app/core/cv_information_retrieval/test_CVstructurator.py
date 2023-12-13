@@ -8,12 +8,13 @@ import pytest
 from app.core.cv_information_retrieval.cv_structurator import CvStructurator
 from app.core.models.etl_pandasmodels import StructCvDF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
+import pandas as pd
 
 
 @pytest.fixture(scope="module")
 def setup_data():
     chunked_parsed_path = r"tests/data_test/df_parsed_chunks.pkl"
-    loaded_parsed_chunks = DataFrameHandler.load_df(chunked_parsed_path)
+    loaded_parsed_chunks = pd.read_pickle(chunked_parsed_path)
     structurator = CvStructurator()
     cvs_struct = structurator.consolidate_cvs(loaded_parsed_chunks)
     return cvs_struct

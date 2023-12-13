@@ -13,10 +13,7 @@ from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
 from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.core.models.query_pandasmodels import QueryStruct
-from app.core.models.scoredprofiles_pandasmodels import (
-    ScoredChunksDF,
-    ScoredProfilesDF,
-)
+from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.settings.settings import Settings
 
 
@@ -65,10 +62,13 @@ class CandidatesSelector:
                 query_row,
             )
             # number of identical profiles needed in this subquery
+
             try:
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
-            except Exception:
+            except Exception as e:
                 nb_profiles = 3
+                logging.exception(e)
+
             # find best profiles for this subquery, NOT in already_selected_profiles_ids
             selected_ids = self._select_profiles_ids(
                 nb_profiles,

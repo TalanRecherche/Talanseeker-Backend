@@ -2,6 +2,7 @@
 Features:
 """
 import hashlib
+import logging
 import re
 from difflib import SequenceMatcher
 
@@ -22,8 +23,8 @@ class StringHandler:
             string = unidecode(string)
             if remove_special_chars:
                 string = re.sub("[^a-zA-Z]", "", string)
-        except Exception:
-            pass
+        except Exception as e:
+            logging.exception("String Handler exception %s", e)
         return string
 
     @staticmethod

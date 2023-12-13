@@ -19,8 +19,6 @@ import pandas as pd
 
 from app.core.models.etl_pandasmodels import EmbeddingDF, StructProfileDF
 from app.core.models.pg_pandasmodels import ChunkPg, CvPg, ProfilePg
-from app.core.shared_modules.dataframehandler import DataFrameHandler
-from app.core.shared_modules.stringhandler import StringHandler
 
 
 class TableMaker:
@@ -98,12 +96,22 @@ class TableMaker:
         pg_chunks = pg_chunks.merge(df_embeddings, on=merge_cols, how="outer")
 
         for idx in range(len(df_profiles)):
+
+            collab_ids = df_profiles.iloc[idx][StructProfileDF.collab_id]
+            for collab_id in collab_ids:
+                pg_cvs_idx = pg_chunks[(pg_chunks[ChunkPg.collab_id] == collab_id)].index.values
+                if pg_cvs_idx.size > 0:
+                    collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
+                    pg_chunks.loc[pg_cvs_idx, ChunkPg.collab_id] = collab_id
+
+            """
             cv_ids = df_profiles.iloc[idx][StructProfileDF.cv_id]
             for cv_id in cv_ids:
                 pg_cvs_idx = pg_chunks[(pg_chunks[ChunkPg.cv_id] == cv_id)].index.values
                 if pg_cvs_idx.size > 0:
                     collab_id = df_profiles.iloc[idx][StructProfileDF.collab_id]
                     pg_chunks.loc[pg_cvs_idx, ChunkPg.collab_id] = collab_id
+            """
 
         if pg_chunks.empty:
             logging.warning("returns empty")
@@ -112,92 +120,3 @@ class TableMaker:
         # reorder columns
         pg_chunks = pg_chunks[ChunkPg.get_attributes()]
         return pg_chunks
-
-
-if __name__ == "__main__":
-    from app.settings.settings import Settings
-
-    env = Settings()
-    data_path = r"data_dev/data_1"
-
-    # prepare {filenames : collab_id} map from the main
-    from app.core.shared_modules.pathexplorer import PathExplorer
-
-    files = PathExplorer.get_all_paths_with_extension_name(data_path)
-    collab_ids = {
-        files[ii]["file_full_name"]: StringHandler.generate_unique_id(str(ii))
-        for ii in range(len(files))
-    }
-
-    # =============================================================================
-    #     # extract text
-    # =============================================================================
-    from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-
-    extractor = FileMassExtractor()
-    # get text dataframe. One row per documents
-    df_text = extractor.read_all_documents(
-        data_path,
-        collab_ids,
-        read_only_extensions=[],
-        ignore_extensions=[],
-    )
-    print("1", df_text["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # make the chunks
-    # =============================================================================
-    from app.core.cv_information_retrieval.chunker import Chunker
-
-    chunker = Chunker()
-    # make chunks, One row per chunks
-    df_chunks = chunker.chunk_documents(df_text)
-    print("2", df_chunks["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # compute embeddings
-    # =============================================================================
-    from app.core.cv_information_retrieval.chunkembedder import ChunkEmbedder
-
-    embedder = ChunkEmbedder(env)
-    df_embeddings = embedder.embed_chunk_dataframe(df_chunks)
-    DataFrameHandler.save_df(
-        df_embeddings,
-        save_to_file_path=data_path + r"\df_embeddings.pkl",
-    )
-    print("3", df_embeddings["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # parse the chunks
-    # =============================================================================
-    from app.core.cv_information_retrieval.llm_parser import LLMParser
-
-    parser = LLMParser(env)
-    parsed_chunks = parser.parse_all_chunks(df_chunks)
-    DataFrameHandler.save_df(
-        parsed_chunks,
-        save_to_file_path=data_path + r"\df_parsed_chunks.pkl",
-    )
-    print("4", parsed_chunks["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # consolidate CVs
-    # =============================================================================
-    parsed_chunks = DataFrameHandler.load_df(data_path + r"\df_parsed_chunks.pkl")
-    from app.core.cv_information_retrieval.cv_structurator import CvStructurator
-
-    cv_structurator = CvStructurator()
-    df_struct_cvs = cv_structurator.consolidate_cvs(parsed_chunks)
-    print("5", df_struct_cvs["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # consolidate profiles
-    # =============================================================================
-    from app.core.cv_information_retrieval.profilestructurator import (
-        ProfileStructurator,
-    )
-
-    structure = ProfileStructurator()
-    df_profiles = structure.consolidate_profiles(df_struct_cvs)
-    print("6", df_profiles["collab_id"])  # noqa: T201
-    # =============================================================================
-    #     # make pg tables
-    # =============================================================================
-    df_embeddings = DataFrameHandler.load_df(data_path + r"\df_embeddings.pkl")
-    maker = TableMaker()
-    pg_profiles, pg_chunks, pg_cvs = maker.make_pg_tables(df_profiles, df_embeddings)

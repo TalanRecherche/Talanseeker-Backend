@@ -13,6 +13,8 @@ logging.basicConfig(
     "%(funcName)s %(message)s",
     level=logging.INFO,
 )
+logging.basicConfig(level=logging.DEBUG)
+
 
 
 def init_app() -> FastAPI:

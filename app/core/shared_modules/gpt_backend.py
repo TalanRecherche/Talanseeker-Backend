@@ -102,7 +102,7 @@ class GptBackend(AbcLlmBackend):
                     break
 
             except Exception as error:
-                logging.error(error, retry)
+                logging.exception(error, retry)
                 # wait before retrying
                 time.sleep(1)
 

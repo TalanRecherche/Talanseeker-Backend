@@ -8,6 +8,7 @@ import pytest
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.models.query_pandasmodels import QueryStruct
 from app.settings.settings import Settings
+import pandas as pd
 
 
 @pytest.mark.skip_this(

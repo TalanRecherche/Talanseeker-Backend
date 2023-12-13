@@ -89,9 +89,9 @@ class LlmBackend:
                 response_string = response["choices"][0]["message"]["content"]
                 if response_string:
                     is_to_do = False
-            except Exception as error:
+            except Exception as e:
                 try_counter += 1
-                logging.error(error, try_counter)
+                logging.exception(e, try_counter)
                 # wait before retrying
                 time.sleep(1)
         return response_string

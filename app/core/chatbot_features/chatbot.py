@@ -13,10 +13,7 @@ import pandas as pd
 
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.models.query_pandasmodels import QueryStruct
-from app.core.models.scoredprofiles_pandasmodels import (
-    ScoredChunksDF,
-    ScoredProfilesDF,
-)
+from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.tokenshandler import TokenHandler
 from app.settings.settings import Settings

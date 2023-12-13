@@ -8,6 +8,7 @@ import pytest
 from app.core.chatbot_features.pg_fetcher import PGfetcher
 from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.settings.settings import Settings
+import pandas as pd
 
 settings = Settings()
 

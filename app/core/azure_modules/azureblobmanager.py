@@ -13,10 +13,14 @@ class AzureBlobManager:
         blob_service_client = BlobServiceClient.from_connection_string(
             settings.azure_storage.connection_string,
         )
+
         try:
-            blob_service_client.create_container(settings.azure_storage.container_name)
-        except Exception:
-            pass
+            if len(list(blob_service_client.list_containers(
+                    name_starts_with=settings.azure_storage.container_name))) == 0:
+                (blob_service_client.
+                 create_container(settings.azure_storage.container_name))
+        except Exception as e:
+            logging.exception("Blob exception %s", e)
         self.container_client = blob_service_client.get_container_client(
             settings.azure_storage.container_name,
         )

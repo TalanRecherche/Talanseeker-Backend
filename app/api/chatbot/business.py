@@ -19,9 +19,7 @@ from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
-    profiles_data: pd.DataFrame,
-    cvs: pd.DataFrame,
-    skills_table: dict,
+    profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: dict
 ) -> list[Candidate]:
     candidates = []
     profiles_data.apply(

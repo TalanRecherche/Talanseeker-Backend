@@ -33,18 +33,9 @@ target-version = "py310"
 # All rules are listed here : https://docs.astral.sh/ruff/rules/#pyflakes-f
 select = ["F", "E", "W", "I", "N", "UP", "YTT", "ANN", "ASYNC", "BLE", "FBT", "B", "A", "COM", "C4", "T10",
         "DJ", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET",
-        "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "TD", "ERA"]
+        "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "TD", "ERA", "S", "B905", "B008", "DTZ", "SIM105", "A003",
+        "PTH"]
 ignore = [
-    # TO SOLVE:
-    "S", # Ignore all SQL security issues
-    "BLE", # Ignore all blind exception issues
-    "B008", # Do not perform function calls in defaults argument
-    "B905", # `zip()` without an explicit `strict=` parameter
-    "A003", # Class attribute `id` 'type' is shadowing a Python builtin
-    "DTZ", # Wrong Use of `datetime.now` detected
-    "SIM105", # Exception handler
-    "PTH", # proper use of PATH package
-    "PD", # proper usage of pandas
     # TO IGNORE:
     "FBT", # This limits the use of default boolean arguments in function definitions
     "C", # McCabe complexity ignored
@@ -62,7 +53,10 @@ ignore = [
     "TD003", #force issue link in todos
     "COM812",
     "ISC001",
-    "SIM118" # this prevents the use of keys() in dictionaries. But it forgets pd.Series have keys()...
+    "SIM118", # this prevents the use of keys() in dictionaries. But it forgets pd.Series have keys()...
+    "SIM108",
+    "UP032"
+
 ]
 
 
@@ -76,12 +70,22 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
-
 # Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
-
 # Like Black, respect magic trailing commas.
 skip-magic-trailing-comma = false
-
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
+
+[lint.pycodestyle]
+max-line-length = 100
+
+# define immutables like fastapi.Depends
+[flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends",
+    "fastapi.File", "fastapi.params.File",
+    "fastapi.Query", "fastapi.params.Query"]
+
+# ignore built in python keywords
+[flake8-builtins]
+builtins-ignorelist = ["id", "type"]

@@ -7,6 +7,7 @@ from app.core.azure_modules.models import UpsertPolicies
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.shared_modules.stringhandler import StringHandler
 from app.models.chunks import PgChunks
+from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.models.profiles import PG_Profiles
 
@@ -115,12 +116,12 @@ class KimbleUpdater:
             logging.warning("Start updating Kimble")
             data = pd.read_excel(file)
             data = KimbleUpdater.process_data(data)
-            AzurePGManager.save_to_db("collabs", data, UpsertPolicies.ERASE)
+            AzurePGManager.save_to_db(PgCollabs, data, UpsertPolicies.ERASE)
             KimbleUpdater.clean_db()
             logging.warning("Update Kimble finished")
         except Exception as e:
             log_string = f"Failed to update Kimble {e}"
-            logging.warning(log_string)
+            logging.exception(log_string)
 
     @staticmethod
     def clean_db() -> None:

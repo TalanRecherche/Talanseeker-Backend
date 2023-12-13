@@ -1,6 +1,8 @@
 """Created by agarc at 11/10/2023
 Features:
 """
+from pathlib import Path
+
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings.settings import Settings
@@ -26,8 +28,7 @@ class QueryRouter:
 
         # initialize the backend llm
         self.llm_backend = GptBackend(
-            self.engine,
-            max_token_in_response=max_tokens_in_response,
+            self.engine, max_token_in_response=max_tokens_in_response
         )
 
         # encoding name is used to compute number of tokens in context
@@ -165,7 +166,7 @@ if __name__ == "__main__":
     import json
 
     def load_queries_from_json(json_file: json) -> dict:
-        with open(json_file, encoding="utf-8") as file:
+        with Path.open(json_file, encoding="utf-8") as file:
             data = json.load(file)
 
         queries = {}

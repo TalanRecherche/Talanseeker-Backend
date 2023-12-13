@@ -12,6 +12,7 @@ from app.core.chatbot_features.scoreroverall import ScorerProfiles
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF
 from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.settings.settings import Settings
+import pandas as pd
 
 settings = Settings()
 
@@ -21,7 +22,7 @@ def setup_data():
     # load test structured query
     data_path = r"tests/data_test/"
     query_structured_path = os.path.join(data_path, "df_struct_query.pkl")
-    structured_query = DataFrameHandler.load_df(query_structured_path)
+    structured_query = pd.read_pickle(query_structured_path)
 
     # prepare query
     transformer = QueryTransformer(settings)
@@ -30,8 +31,8 @@ def setup_data():
     query_embeddings = transformer.get_embedded_query(query_row)
 
     # load test tables
-    df_chunks = DataFrameHandler.load_df(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
-    df_profiles = DataFrameHandler.load_df(
+    df_chunks = pd.read_pickle(os.path.join(data_path, "PG_CHUNKS_001.pkl"))
+    df_profiles = pd.read_pickle(
         os.path.join(data_path, "PG_PROFILES_001.pkl"),
     )
 

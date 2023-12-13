@@ -4,6 +4,7 @@ Features:
 import fnmatch
 import logging
 import os
+from pathlib import Path
 
 import yaml
 
@@ -12,13 +13,13 @@ def load_llm_settings() -> dict:
     # find the YAML file
     filename = "llm_settings.YAML"
     llm_settings_file = None
-    for root, _, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
+    for root, _, files in os.walk(Path.resolve(Path().parent)):
         for file in fnmatch.filter(files, filename):
-            llm_settings_file = os.path.join(root, file)
+            llm_settings_file = Path(root) / file
 
     """Load llm settings YAML file and push the data to environment variable."""
-    if os.path.exists(llm_settings_file):
-        with open(llm_settings_file, encoding="utf-8") as file:
+    if Path(llm_settings_file).exists():
+        with Path.open(Path(llm_settings_file), encoding="utf-8") as file:
             llm_settings = yaml.safe_load(file)
         # push all values in os.environ variables
         for key_1, dict_2 in llm_settings.items():

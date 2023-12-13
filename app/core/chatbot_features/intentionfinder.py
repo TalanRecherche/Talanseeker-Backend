@@ -172,7 +172,7 @@ class IntentionFinder:
         for role, n_role in zip(
             roles[QueryStruct.roles],
             roles[QueryStruct.nb_profiles],
-        ):
+                strict=False):
             # prepare prompt for llm
             uquery_template = self._prepare_template(user_query, role)
             # calling llm with prompt
