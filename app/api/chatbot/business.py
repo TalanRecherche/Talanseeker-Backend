@@ -93,8 +93,10 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     settings = Settings()
 
     # check if query is meaningful and related to staffing
+    t = time.time()
     router = QueryRouter(settings)
     query_valid_bool = router.get_router_response(chatbot_request.user_query)
+    logging.exception("query router total time", round(time.time() - t))
     if query_valid_bool:
         chatbot_business_helper(chatbot_request, settings, chatbot_response)
 
@@ -117,7 +119,7 @@ def chatbot_business_helper(
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
-    logging.info("intention finder total time", round(time.time() - t))
+    logging.exception("intention finder total time", round(time.time() - t))
 
     t = time.time()
     # Fetch data from postgres
@@ -125,7 +127,7 @@ def chatbot_business_helper(
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
-    logging.info("fecthing pg data total time", round(time.time() - t))
+    logging.exception("fecthing pg data total time", round(time.time() - t))
 
     t = time.time()
     # Select best candidates
@@ -137,7 +139,7 @@ def chatbot_business_helper(
         df_profiles,
         guess_intention_query,
     )
-    logging.info("candidate selection  total time", round(time.time() - t))
+    logging.exception("candidate selection  total time", round(time.time() - t))
 
     t = time.time()
     skills_table = get_skills_table(chunks, collabs, cvs, profiles)
@@ -149,7 +151,7 @@ def chatbot_business_helper(
         cvs,
         skills_table,
     )
-    logging.info("construire la donnée API", round(time.time() - t))
+    logging.exception("construire la donnée API", round(time.time() - t))
 
     t = time.time()
     # Send candidates data to chatbot and get answer
@@ -161,4 +163,4 @@ def chatbot_business_helper(
         profiles,
     )
     chatbot_response.chatbot_response = response
-    logging.info("chatbot response  total time", round(time.time() - t))
+    logging.exception("chatbot response  total time", round(time.time() - t))

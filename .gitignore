@@ -22,3 +22,4 @@ tests/data_test/
 /.pytest_cache/
 /.ruff_cache/
 /.legacy/
+_profiling.py
