@@ -1,7 +1,9 @@
-import logging
-import time
+import cProfile
+import tempfile
+from pathlib import Path
 
 import pandas as pd
+from fastapi import Response
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
@@ -93,10 +95,8 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     settings = Settings()
 
     # check if query is meaningful and related to staffing
-    t = time.time()
     router = QueryRouter(settings)
     query_valid_bool = router.get_router_response(chatbot_request.user_query)
-    logging.exception("query router total time", round(time.time() - t))
     if query_valid_bool:
         chatbot_business_helper(chatbot_request, settings, chatbot_response)
 
@@ -115,21 +115,16 @@ def chatbot_business_helper(
         settings: Settings,
         chatbot_response: ChatbotResponse,
 ) -> None:
-    t = time.time()
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
-    logging.exception("intention finder total time", round(time.time() - t))
 
-    t = time.time()
     # Fetch data from postgres
     fetcher = PGfetcher(settings)
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
-    logging.exception("fecthing pg data total time", round(time.time() - t))
 
-    t = time.time()
     # Select best candidates
     selector = CandidatesSelector(settings)
     chunks, collabs, cvs, profiles = selector.select_candidates(
@@ -139,9 +134,7 @@ def chatbot_business_helper(
         df_profiles,
         guess_intention_query,
     )
-    logging.exception("candidate selection  total time", round(time.time() - t))
 
-    t = time.time()
     skills_table = get_skills_table(chunks, collabs, cvs, profiles)
 
     profiles_data = collabs.merge(profiles, on="collab_id")
@@ -151,9 +144,7 @@ def chatbot_business_helper(
         cvs,
         skills_table,
     )
-    logging.exception("construire la donnée API", round(time.time() - t))
 
-    t = time.time()
     # Send candidates data to chatbot and get answer
     chatbot = Chatbot(settings)
     response, query_sent = chatbot.get_chatbot_response(
@@ -163,4 +154,16 @@ def chatbot_business_helper(
         profiles,
     )
     chatbot_response.chatbot_response = response
-    logging.exception("chatbot response  total time", round(time.time() - t))
+
+
+def profile_chatbot_business(chatbot_request: ChatbotRequest) -> Response:
+    with tempfile.TemporaryDirectory() as dir_:
+        file_name = Path(dir_) / "profiling.prof"
+        cProfile.runctx("chatbot_business(chatbot_request)",
+                        globals(), locals(), str(file_name))
+        with Path(file_name).open("rb") as file:
+            return Response(
+                status_code=200,
+                content=file,
+                media_type="application/octet-stream",
+            )
