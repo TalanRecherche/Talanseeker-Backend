@@ -4,7 +4,6 @@
 
 """
 import logging
-import time
 from typing import Any
 
 import pandas as pd
@@ -37,7 +36,6 @@ class CandidatesSelector:
         df_profiles: pd.DataFrame,
         df_query: pd.DataFrame,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
-        t = time.time()
         # Prepare list of selected ids
         already_selected_profiles_ids = []
         # loop through sub queries from GuessIntention
@@ -79,9 +77,6 @@ class CandidatesSelector:
             df_profiles_scored,
             already_selected_profiles_ids,
         )
-        # return if all goes well
-        log_string = f"Selection done in {time.time() - t} seconds"
-        logging.info(log_string)
         return (
             df_candidates_chunks,
             df_candidates_collabs,

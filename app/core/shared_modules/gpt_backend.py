@@ -82,8 +82,6 @@ class GptBackend(AbcLlmBackend):
         max_retries = 5
         for retry in range(max_retries):
             try:
-                # pause for API safety
-                time.sleep(0.1)
                 # get response
                 response = openai.ChatCompletion.create(
                     engine=self.engine,
@@ -100,10 +98,12 @@ class GptBackend(AbcLlmBackend):
                 # exit the retry loop if the llm response is not None
                 if response_string:
                     break
+                # pause for API safety
+                time.sleep(0.1)
 
             except Exception as error:
                 logging.exception(error, retry)
                 # wait before retrying
-                time.sleep(1)
+                time.sleep(0.1*retry)
 
         return response_string

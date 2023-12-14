@@ -140,10 +140,10 @@ class ScorerProfiles:
         # place data in a list
         relevant_data = row[fields_to_check].values.tolist()
         relevant_data = ListHandler.flatten_list(relevant_data)
-        # make unique (skills dont count twice)
+        # make unique
         relevant_data = list(set(relevant_data))
 
-        # loops through all keywords and check if they are in the relevant consultant profile
+        # loops through all query words and check if they are in the relevant consultant profile
         score = 0
         for query_keyword in query:
             # find number of fuzzy occurrences
