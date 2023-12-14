@@ -56,7 +56,8 @@ ignore = [
     "ISC001",
     "SIM118", # this prevents the use of keys() in dictionaries. But it forgets pd.Series have keys()...
     "SIM108",
-    "UP032"
+    "UP032",
+    "G004" # prevent loggin statement with f"" strings
 
 ]
 

@@ -1,5 +1,7 @@
 import cProfile
+import logging
 import tempfile
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -115,6 +117,7 @@ def chatbot_business_helper(
         settings: Settings,
         chatbot_response: ChatbotResponse,
 ) -> None:
+    t = time.time()
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
@@ -124,7 +127,9 @@ def chatbot_business_helper(
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
+    logging.info(f"IntentionFinder: {time.time() - t}")
 
+    t = time.time()
     # Select best candidates
     selector = CandidatesSelector(settings)
     chunks, collabs, cvs, profiles = selector.select_candidates(
@@ -134,17 +139,25 @@ def chatbot_business_helper(
         df_profiles,
         guess_intention_query,
     )
+    logging.info(f"CandidatesSelector: {time.time() - t}")
 
+    t = time.time()
     skills_table = get_skills_table(chunks, collabs, cvs, profiles)
+    logging.info(f"SkillsTable: {time.time() - t}")
 
+    t = time.time()
     profiles_data = collabs.merge(profiles, on="collab_id")
+    logging.info(f"profiles_data: {time.time() - t}")
 
+    t = time.time()
     chatbot_response.candidates = df_to_candidate_schema(
         profiles_data,
         cvs,
         skills_table,
     )
+    logging.info(f"Make candidates: {time.time() - t}")
 
+    t = time.time()
     # Send candidates data to chatbot and get answer
     chatbot = Chatbot(settings)
     response, query_sent = chatbot.get_chatbot_response(
@@ -153,6 +166,8 @@ def chatbot_business_helper(
         collabs,
         profiles,
     )
+    logging.info(f"Chatbot response: {time.time() - t}")
+
     chatbot_response.chatbot_response = response
 
 
