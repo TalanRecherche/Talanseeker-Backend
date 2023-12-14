@@ -11,7 +11,7 @@ import pandas as pd
 
 from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
-from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
+from app.core.models.pg_pandasmodels import CollabPg, CvPg
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.settings.settings import Settings
@@ -37,18 +37,6 @@ class CandidatesSelector:
         df_profiles: pd.DataFrame,
         df_query: pd.DataFrame,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
-        # assert df format coming from PostGres
-        if not ChunkPg.validate_dataframe(df_chunks):
-            return [None] * 4
-        if not CollabPg.validate_dataframe(df_collabs):
-            return [None] * 4
-        if not CvPg.validate_dataframe(df_cvs):
-            return [None] * 4
-        if not ProfilePg.validate_dataframe(df_profiles):
-            return [None] * 4
-        if not QueryStruct.validate_dataframe(df_query):
-            return [None] * 4
-
         t = time.time()
         # Prepare list of selected ids
         already_selected_profiles_ids = []
@@ -91,15 +79,6 @@ class CandidatesSelector:
             df_profiles_scored,
             already_selected_profiles_ids,
         )
-        # assert df formats
-        if not ScoredChunksDF.validate_dataframe(df_candidates_chunks):
-            return [None] * 4
-        if not CollabPg.validate_dataframe(df_candidates_collabs):
-            return [None] * 4
-        if not CvPg.validate_dataframe(df_candidates_cvs):
-            return [None] * 4
-        if not ScoredProfilesDF.validate_dataframe(df_candidates_profiles):
-            return [None] * 4
         # return if all goes well
         log_string = f"Selection done in {time.time() - t} seconds"
         logging.info(log_string)

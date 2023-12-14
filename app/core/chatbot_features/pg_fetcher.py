@@ -3,7 +3,6 @@
 @author: agarc
 
 """
-import ast
 import datetime
 import logging
 from datetime import date
@@ -15,7 +14,7 @@ from sqlalchemy import select
 from app.core.models.pg_pandasmodels import ChunkPg, CollabPg, CvPg, ProfilePg
 from app.exceptions.exceptions import InvalidColumnsError
 from app.models import con_string
-from app.models.chunks import PgChunks
+from app.models.chunks import ChunkModel
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.schema.chatbot import ChatbotRequest, Filters
@@ -175,8 +174,8 @@ class PGfetcher:
         """
         req = None
         if req_target == "collab_chunks":
-            req = select(PgChunks).where(
-                PgChunks.collab_id.in_(kwargs["collab_ids_string"]))
+            req = select(ChunkModel).where(
+                ChunkModel.collab_id.in_(kwargs["collab_ids_string"]))
         elif req_target == "collab_cvs":
             req = select(PgCvs).where(
                 PgCvs.collab_id.in_(kwargs["collab_ids_string"]))
@@ -201,9 +200,9 @@ class PGfetcher:
             # Execute the query and fetch the result as a DataFrame
             df_chunks = pd.read_sql(query, con_string)
             # convert chunk embeddings to array[float]
-            df_chunks[ChunkPg.chunk_embeddings] = df_chunks[
-                ChunkPg.chunk_embeddings
-            ].apply(ast.literal_eval)
+            # df_chunks[ChunkPg.chunk_embeddings] = df_chunks[
+            #     ChunkPg.chunk_embeddings
+            # ].apply(ast.literal_eval)
             if not ChunkPg.validate_dataframe(df_chunks):
                 err = "df_profiles is missing the required columns"
                 raise InvalidColumnsError(err)

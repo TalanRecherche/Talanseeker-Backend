@@ -1,4 +1,9 @@
+import cProfile
+import tempfile
+from pathlib import Path
+
 import pandas as pd
+from fastapi import Response
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
@@ -147,3 +152,17 @@ def chatbot_business_helper(
         profiles,
     )
     chatbot_response.chatbot_response = response
+
+
+
+def profile_chatbot_business(chatbot_request: ChatbotRequest)->Response:
+    with tempfile.TemporaryDirectory() as dir_:
+        file_name = Path(dir_) / "profiling.prof"
+        cProfile.runctx("chatbot_business(chatbot_request)",
+                        globals(), locals(), str(file_name))
+        with Path(file_name).open("rb") as file:
+            return Response(
+                status_code=200,
+                content=file,
+                media_type="application/octet-stream",
+            )

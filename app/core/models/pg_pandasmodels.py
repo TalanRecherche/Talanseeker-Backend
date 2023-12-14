@@ -120,7 +120,7 @@ class ChunkPg(ParentPandasModel):
             chunk_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
-            chunk_embeddings: Column(list[float], nullable=True),
+            chunk_embeddings: Column(object, nullable=True),
         },
     )
 

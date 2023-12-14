@@ -84,14 +84,6 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        if not ScoredProfilesDF.validate_dataframe(candidates_profiles):
-            return None
-        if not ScoredChunksDF.validate_dataframe(candidates_chunks):
-            return None
-        if not QueryStruct.validate_dataframe(guessintention_query):
-            return None
-        if not CollabPg.validate_dataframe(candidate_collabs):
-            return None
         self.current_nb_tokens = 0
 
         # make system function string (contains chunks)
