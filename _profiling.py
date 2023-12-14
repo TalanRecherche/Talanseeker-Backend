@@ -10,7 +10,7 @@ from app.schema.chatbot import ChatbotRequest  # noqa: E402
 profiler = Profiler()
 profiler.start()
 req = ChatbotRequest(
-    user_query="je veux un consultant qui puisse faire du java et du SQL",
+    user_query="Pour une mission dans l'énergie chez EDF. Je cherche un consultant avec 5 ans d'expérience minimum. et un chef de projet",
     region=None,
     city=None,
     grade=None,

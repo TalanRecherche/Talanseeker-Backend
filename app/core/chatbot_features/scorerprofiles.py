@@ -7,6 +7,7 @@ import difflib
 
 import numpy as np
 import pandas as pd
+from Levenshtein import distance
 
 from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
 from app.core.models.scoredprofiles_pandasmodels import (
@@ -127,7 +128,6 @@ class ScorerProfiles:
 
     def _score_by_keywords_single_profile(self, row: pd.DataFrame, query: list[str]) -> float:
         """Similarity scoring using keywords"""
-        threshold = 0.8
         # prepare data to check
         fields_to_check = [
             ProfilePg.diplomas_certifications,
@@ -142,15 +142,40 @@ class ScorerProfiles:
         relevant_data = ListHandler.flatten_list(relevant_data)
         # make unique
         relevant_data = list(set(relevant_data))
+        # compute score based on levenstein distance (currently fastest implementation)
+        score = self._distance_levenstein(query, relevant_data)
 
-        # loops through all query words and check if they are in the relevant consultant profile
+        return score
+
+    def _distance_levenstein(self, query: list[str], relevant_data: list[str]) -> float:
+        """ uses the levenstein distance to calculate the similarity between two list of strings """
+        threshold = 0.65
+        score = 0
+        # Calculate similarity scores for each pair of strings
+        for str1 in query:
+            # check if exact match exists in the relevant_data
+            if str1 in relevant_data:
+                score += 1
+            # else check if fuzzy match exists in the query
+            else:
+                for str2 in relevant_data:
+                    dist = distance(str1, str2) / max(len(str1), len(str2))
+                    similarity = 1 - dist
+                    if similarity > threshold:
+                        score += 1
+                        # exit the loop and move to next part of query if a match is found
+                        break
+        return score
+
+    def _distance_cdifflib(self, query: list[str], relevant_data: list[str]) -> float:
+        """ uses the difflib library to calculate the similarity between two list of strings"""
+        threshold = 0.8
         score = 0
         for query_keyword in query:
             # find number of fuzzy occurrences
             ii = difflib.get_close_matches(query_keyword, relevant_data, cutoff=threshold)
             # add to score
             score += len(ii)
-
         return score
 
     def _normalize_column(
