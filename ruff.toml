@@ -21,7 +21,8 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
-    "./tests" #ignore tests modules
+    "./tests", #ignore tests modules
+    "_profiling.py"
 ]
 
 target-version = "py310"

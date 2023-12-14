@@ -1,14 +1,15 @@
-from dotenv import load_dotenv
-from pyinstrument import Profiler
-
-from app.api.chatbot.business import chatbot_business
-from app.schema.chatbot import ChatbotRequest
-
+from dotenv import load_dotenv # noqa: E402
 load_dotenv()
+
+from pyinstrument import Profiler # noqa: E402
+
+from app.api.chatbot.business import chatbot_business  # noqa: E402
+from app.schema.chatbot import ChatbotRequest  # noqa: E402
+
 
 profiler = Profiler()
 profiler.start()
-req = ChatbotRequest(user_query="je cherche un consultant data",
+req = ChatbotRequest(user_query="je cherche un consultant data pour une mission dans la banque pour un mission à la BNP",
                      region=None,
                      city=None,
                      grade=None,

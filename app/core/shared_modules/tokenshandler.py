@@ -5,6 +5,8 @@ import tiktoken
 
 
 class TokenHandler:
+    # saves the encoding to avoid loading it every time
+    _encoding_cache = {}
     @staticmethod
     def count_tokens_from_string(
         string: str,
@@ -14,7 +16,12 @@ class TokenHandler:
         # compute number of tokens tokens
         if not isinstance(string, str):
             return 0
-        encoding = tiktoken.get_encoding(encoding_name)
+
+        # cache encoding to avoid loading it every time
+        if encoding_name not in TokenHandler._encoding_cache:
+            TokenHandler._encoding_cache[encoding_name] = tiktoken.get_encoding(encoding_name)
+
+        encoding = TokenHandler._encoding_cache[encoding_name]
         num_tokens = len(encoding.encode(string))
 
         return num_tokens
