@@ -1,3 +1,6 @@
+import logging
+import time
+
 import pandas as pd
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
@@ -19,7 +22,7 @@ from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
-    profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: dict
+        profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: dict
 ) -> list[Candidate]:
     candidates = []
     profiles_data.apply(
@@ -33,10 +36,10 @@ def df_to_candidate_schema(
 
 
 def row_to_candidate_schema(
-    row: pd.Series,
-    candidates: list[Candidate],
-    cvs: pd.DataFrame,
-    skills_table: pd.DataFrame,
+        row: pd.Series,
+        candidates: list[Candidate],
+        cvs: pd.DataFrame,
+        skills_table: pd.DataFrame,
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
@@ -106,20 +109,25 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
 
 
 def chatbot_business_helper(
-    chatbot_request: ChatbotRequest,
-    settings: Settings,
-    chatbot_response: ChatbotResponse,
+        chatbot_request: ChatbotRequest,
+        settings: Settings,
+        chatbot_response: ChatbotResponse,
 ) -> None:
+    t = time.time()
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
+    logging.info("intention finder total time", round(time.time() - t))
 
+    t = time.time()
     # Fetch data from postgres
     fetcher = PGfetcher(settings)
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
+    logging.info("fecthing pg data total time", round(time.time() - t))
 
+    t = time.time()
     # Select best candidates
     selector = CandidatesSelector(settings)
     chunks, collabs, cvs, profiles = selector.select_candidates(
@@ -129,6 +137,9 @@ def chatbot_business_helper(
         df_profiles,
         guess_intention_query,
     )
+    logging.info("candidate selection  total time", round(time.time() - t))
+
+    t = time.time()
     skills_table = get_skills_table(chunks, collabs, cvs, profiles)
 
     profiles_data = collabs.merge(profiles, on="collab_id")
@@ -138,6 +149,9 @@ def chatbot_business_helper(
         cvs,
         skills_table,
     )
+    logging.info("construire la donnée API", round(time.time() - t))
+
+    t = time.time()
     # Send candidates data to chatbot and get answer
     chatbot = Chatbot(settings)
     response, query_sent = chatbot.get_chatbot_response(
@@ -147,3 +161,4 @@ def chatbot_business_helper(
         profiles,
     )
     chatbot_response.chatbot_response = response
+    logging.info("chatbot response  total time", round(time.time() - t))

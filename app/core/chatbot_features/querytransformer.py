@@ -108,9 +108,9 @@ class QueryTransformer:
         # add some logic here.. for now we just take the inputs
         try:  # try to get GuessIntension simplified query
             query_string = "Profil recherché:\n"
-            query_string += row_df_query[QueryStruct.simplified_query].values[0]
+            query_string += row_df_query.loc[0][QueryStruct.simplified_query][0]
         except Exception as e:  # else we take the user query
-            query_string = row_df_query[QueryStruct.user_query].values[0]
+            query_string = row_df_query.loc[0][QueryStruct.user_query][0]
             logging.exception(e)
 
         return query_string
