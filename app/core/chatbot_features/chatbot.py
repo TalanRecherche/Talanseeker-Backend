@@ -46,8 +46,8 @@ class Chatbot:
             buffer_tokens = 8000  # avoid over feeding tokens !
         elif self.engine == "gpt-35-turbo":
             max_tokens = 8000
-            max_tokens_in_response = 1000  # maximum token in llm response
-            buffer_tokens = 1000  # avoid over feeding tokens !
+            max_tokens_in_response = 500  # maximum token in llm response
+            buffer_tokens = 4000  # avoid over feeding tokens !
         else:
             max_tokens = 8000
             max_tokens_in_response = 1000
@@ -290,5 +290,7 @@ class Chatbot:
                 "{cv_recap}",
                 collab_ids_chunk_hashmap[collab_id],
             )
+            # remove trailing \n
+            context_placeholder[collab_id] = context_placeholder[collab_id].strip("\n")
 
         return context_placeholder
