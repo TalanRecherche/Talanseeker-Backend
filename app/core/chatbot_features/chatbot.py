@@ -46,8 +46,8 @@ class Chatbot:
             buffer_tokens = 8000  # avoid over feeding tokens !
         elif self.engine == "gpt-35-turbo":
             max_tokens = 8000
-            max_tokens_in_response = 1000  # maximum token in llm response
-            buffer_tokens = 1000  # avoid over feeding tokens !
+            max_tokens_in_response = 500  # maximum token in llm response
+            buffer_tokens = 4000  # avoid over feeding tokens !
         else:
             max_tokens = 8000
             max_tokens_in_response = 1000
@@ -84,14 +84,6 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        if not ScoredProfilesDF.validate_dataframe(candidates_profiles):
-            return None
-        if not ScoredChunksDF.validate_dataframe(candidates_chunks):
-            return None
-        if not QueryStruct.validate_dataframe(guessintention_query):
-            return None
-        if not CollabPg.validate_dataframe(candidate_collabs):
-            return None
         self.current_nb_tokens = 0
 
         # make system function string (contains chunks)
@@ -298,5 +290,7 @@ class Chatbot:
                 "{cv_recap}",
                 collab_ids_chunk_hashmap[collab_id],
             )
+            # remove trailing \n
+            context_placeholder[collab_id] = context_placeholder[collab_id].strip("\n")
 
         return context_placeholder

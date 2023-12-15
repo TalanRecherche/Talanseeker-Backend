@@ -5,12 +5,12 @@ Features:
 
 class ListHandler:
     @staticmethod
-    def flatten_list(the_list: list) -> list:
+    def flatten_list(the_list: list) -> list | None:
         """Make a list from a list[list].
         Rather usefull considering all of our cells contain list
         """
-        if not the_list:
-            return the_list
+        if the_list is None:
+            return None
 
         rt = []
         for i in the_list:

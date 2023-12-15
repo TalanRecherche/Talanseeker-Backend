@@ -6,7 +6,7 @@ from app.core.azure_modules.azure_pg_manager import AzurePGManager
 from app.core.azure_modules.models import UpsertPolicies
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.shared_modules.stringhandler import StringHandler
-from app.models.chunks import PgChunks
+from app.models.chunks import ChunkModel
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.models.profiles import PG_Profiles
@@ -128,7 +128,7 @@ class KimbleUpdater:
         """Define list of request to delete collabs that don't exist in kimble"""
         req = "DELETE FROM {} WHERE collab_id NOT IN (SELECT collab_id FROM collabs);"
         for table_name in [
-            PgChunks.__tablename__,
+            ChunkModel.__tablename__,
             PgCvs.__tablename__,
             PG_Profiles.__tablename__,
         ]:

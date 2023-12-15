@@ -37,10 +37,6 @@ class QueryTransformer:
         list of keywords.
 
         """
-        # assert case
-        if not QueryStruct.validate_dataframe(row_df_query):
-            return None
-
         # filter only fields to be used to score
         filtered_df = row_df_query[QueryKeywords.get_attributes()]
 
