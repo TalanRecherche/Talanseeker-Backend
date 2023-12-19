@@ -25,6 +25,5 @@ _profiling.py
 /.ruff_cache/
 /.legacy/
 tests/
-_profiling.py
 profile
 profile.prof

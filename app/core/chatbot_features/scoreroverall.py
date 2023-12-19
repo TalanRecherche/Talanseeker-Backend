@@ -41,10 +41,14 @@ class ScorerOverall:
         df_chunks_semantic_scored = self.scorer_profiles.score_by_semantic(
             df_chunks,
             embedded_semantic_query)
+        #
+        # df_chunks_semantic_scored =
+        # PGfetcher.fetch_selected_chunks(
+        #     df_chunks_semantic_scored)
 
-        # df_chunks_semantic_scored = self.
-        # scorer_profiles.score_score_by_semantic_pg_vector(
-        #     embedded_semantic_query)
+        # df_chunks_semantic_scored = (self.
+        # scorer_profiles.score_by_semantic_pg_vector(
+        #     embedded_semantic_query))
 
         # assign embeddings scores to correct profiles
         df_profiles_scored = self.scorer_profiles.assign_scores_to_profiles(

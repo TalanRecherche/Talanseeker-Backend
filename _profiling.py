@@ -21,4 +21,3 @@ res = chatbot_business(req)
 profiler.stop()
 
 profiler.open_in_browser()
-print(res.chatbot_response)

@@ -17,6 +17,8 @@ class ChunkModel(Base):
     def similarity_query(emb: list[float], limit_lines: int = 20) -> select:
         query = (select(ChunkModel, ChunkModel.chunk_embeddings
                         .cosine_distance(emb)
-                        .label(ScoredChunksDF.semantic_score)))
+                        .label(ScoredChunksDF.semantic_score))
+                 .limit(limit_lines))
+
 
         return query
