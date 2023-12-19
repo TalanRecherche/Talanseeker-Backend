@@ -17,7 +17,7 @@ class FeedbacksModel(Base):
     user_id = Column(String)
 
     @staticmethod
-    def create(feedback: "FeedbacksModel"):
+    def create(feedback: "FeedbacksModel") -> bool:
         """Create or update a a feedback"""
         with Session(engine) as session:
             # find feedback of the same collab and the same query and the same user
@@ -32,23 +32,26 @@ class FeedbacksModel(Base):
             )
             if u:
                 u.evaluation = feedback.evaluation
-                logging.info(f"Feedback {u.user_id} Updated")
+                log_string = f"Feedback {u.user_id} Updated"
+                logging.info(log_string)
             else:
                 session.add(feedback)
-                logging.info(f"Feedback {feedback.user_id} Created")
+                log_string = f"Feedback {feedback.user_id} Created"
+                logging.info(log_string)
             session.commit()
             session.flush()
             return True
 
-    def add(self):
+    def add(self) -> bool:
         with Session(engine) as session:
             session.add(self)
             session.commit()
             session.flush()
-            logging.info(f"Feedback {self.user_id} added")
+            log_string = f"Feedback {self.user_id} added"
+            logging.info(log_string)
             return True
 
-    def patch(self):
+    def patch(self) -> bool:
         with Session(engine) as session:
             u = (
                 session.query(FeedbacksModel)
@@ -63,7 +66,8 @@ class FeedbacksModel(Base):
                 u.evaluation = self.evaluation
                 session.commit()
                 session.flush()
-                logging.info(f"Feedback {self.user_id} added")
+                log_string = f"Feedback {self.user_id} updated"
+                logging.info(log_string)
                 return True
         return False
 

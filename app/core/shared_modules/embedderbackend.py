@@ -10,9 +10,11 @@ import time
 import openai
 from langchain.embeddings.openai import OpenAIEmbeddings
 
+from app.settings.settings import Settings
+
 
 class EmbedderBackend:
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # embeddings setup
         self.embedding_model = settings.embedder_settings.embedder_model
         self.embedding_function = OpenAIEmbeddings(
@@ -44,12 +46,10 @@ class EmbedderBackend:
                     return embeddings
 
             except Exception as e:
-                logging.exception(
-                    f"openAI embedding API failed. Waiting and retry: "
-                    f"{retry} : Exception {e}",
-                )
+                log_string = f"openAI embedding API failed. Retry:{retry}:Exc{e}"
+                logging.exception(log_string)
                 # wait before retrying
-                time.sleep(1)
+                time.sleep(0.1*retry)
 
         logging.error("Embeddings backend failed")
         return None

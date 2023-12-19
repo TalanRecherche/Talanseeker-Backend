@@ -1,33 +1,37 @@
 """Created by agarc at 01/10/2023
 Features:
 """
-import tiktoken
 
 
 class TokenHandler:
+
     @staticmethod
     def count_tokens_from_string(
-        string: str,
-        encoding_name="cl100k_base",
-        engine="gpt-35-turbo",
+            string: str,
+            encoding_name: str = "cl100k_base",
+            engine: str = "gpt-35-turbo",
     ) -> int:
         # compute number of tokens tokens
         if not isinstance(string, str):
             return 0
-        # encoding = tiktoken.encoding_for_model(engine)
-        encoding = tiktoken.get_encoding(encoding_name)
-        num_tokens = len(encoding.encode(string))
+
+        # TODO(antoine): fix this, this is too slow
+        # encoding = tiktoken.get_encoding(encoding_name)  # this takes 2 seconds !!! # noqa: ERA001
+        # encoding = TokenHandler.fetch_encoding(encoding_name)  # noqa: ERA001
+        # num_tokens = len(encoding.encode(string))  # noqa: ERA001
+
+        num_tokens = int(len(string)/4)
 
         return num_tokens
 
     @staticmethod
     def count_tokens_from_hashmap(
-        hashmap,
-        encoding_name="cl100k_base",
-        engine="gpt-35-turbo",
+            hashmap: dict,
+            encoding_name: str = "cl100k_base",
+            engine: str = "gpt-35-turbo",
     ) -> int:
         curr_len = 0
-        for key in hashmap.keys():
+        for key in hashmap:
             string = hashmap[key]
             curr_len += TokenHandler.count_tokens_from_string(
                 string,

@@ -3,19 +3,21 @@
 @author: agarc
 
 """
+import logging
 
 import pandas as pd
 
-from app.core.models.query_pandasmodels import QUERY_KEYWORDS, QUERY_STRUCT
+from app.core.models.query_pandasmodels import QueryKeywords, QueryStruct
 from app.core.shared_modules.embedderbackend import EmbedderBackend
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
+from app.settings.settings import Settings
 
 
 class QueryTransformer:
     """This class generate the keywords/semantic queries to compute similarities."""
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         # initialize embedder to vectorized query for semantic search
         self.embedder = EmbedderBackend(settings)
 
@@ -35,12 +37,8 @@ class QueryTransformer:
         list of keywords.
 
         """
-        # assert case
-        if not QUERY_STRUCT.validate_dataframe(row_df_query):
-            return None
-
         # filter only fields to be used to score
-        filtered_df = row_df_query[QUERY_KEYWORDS.get_attributes()]
+        filtered_df = row_df_query[QueryKeywords.get_attributes()]
 
         # concatenate keywords which will be used during the profile scoring
         list_keywords = ListHandler.flatten_list(filtered_df.values.tolist())
@@ -106,9 +104,10 @@ class QueryTransformer:
         # add some logic here.. for now we just take the inputs
         try:  # try to get GuessIntension simplified query
             query_string = "Profil recherché:\n"
-            query_string += row_df_query[QUERY_STRUCT.simplified_query].values[0]
-        except Exception:  # else we take the user query
-            query_string = row_df_query[QUERY_STRUCT.user_query].values[0]
+            query_string += row_df_query.loc[0][QueryStruct.simplified_query][0]
+        except Exception as e:  # else we take the user query
+            query_string = row_df_query.loc[0][QueryStruct.user_query][0]
+            logging.exception(e)
 
         return query_string
 

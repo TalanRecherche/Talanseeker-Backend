@@ -9,12 +9,12 @@ import pandas as pd
 from tqdm import tqdm
 
 from app.core.cv_information_retrieval.filereader import FileReader
-from app.core.models.ETL_pandasmodels import TEXT_DF
+from app.core.models.etl_pandasmodels import TextDF
 from app.core.shared_modules.pathexplorer import PathExplorer
 
 
 class FileMassExtractor:
-    """This class takes case of reading entire directories.
+    """Read entire directories.
 
     read_all_documents(self, directory: str) -> list[dict]: To read documents without
     saving read_dump_and_copy_all_files(self, directory: str): To read documents
@@ -23,7 +23,7 @@ class FileMassExtractor:
     Uses an instance of FileReader to read single documents
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # This instance handles the text and metadata extraction
         self.file_reader = FileReader()
 
@@ -34,10 +34,10 @@ class FileMassExtractor:
         self,
         path: str,
         collab_ids: dict,
-        read_only_extensions=None,
-        ignore_extensions=None,
+        read_only_extensions: list[str] = None,
+        ignore_extensions: list[str] = None,
     ) -> pd.DataFrame | None:
-        """Finds files in path or directory
+        """Find files in path or directory
         Filter (un)wanted extensions
         Sequentially loads every document using FileReader.
         Push to text_df
@@ -53,12 +53,14 @@ class FileMassExtractor:
             Enables tracking the name of the user (collab_id) which is assigned to each
             file
 
-        read_only_extensions : list, optional (type: '.txt', '.docx' etc.)
-        A list of file extensions to include in the filtered list. If provided,
+        read_only_extensions :
+            list, optional (type: '.txt', '.docx' etc.)
+            A list of file extensions to include in the filtered list. If provided,
             only files with these extensions will be included.
 
-        ignore_extensions : list, optional (type: '.txt', '.docx' etc.)
-        A list of file extensions to exclude from the filtered list. If
+        ignore_extensions :
+            list, optional (type: '.txt', '.docx' etc.)
+            A list of file extensions to exclude from the filtered list. If
             provided, files with these extensions will be excluded.
 
         Returns
@@ -81,7 +83,7 @@ class FileMassExtractor:
             return None
 
         # prepare output df
-        df_text = TEXT_DF.generate_dataframe()
+        df_text = TextDF.generate_dataframe()
         # filter only files with extension provided:
         file_paths = self._filter_extensions(
             file_paths,
@@ -97,17 +99,16 @@ class FileMassExtractor:
                     # if not None : push to dataframe
                     temp_df = pd.DataFrame([text_hashmap])
                     df_text = pd.concat([df_text, temp_df])
-            except Exception:
-                logging.exception(f"Error at {file_path}")
+            except Exception as e:
+                log_string = f"Error at {file_path} {e}"
+                logging.exception(log_string)
 
         if df_text.empty:
             logging.warning("no text")
             return None
 
         # assign collab_id to each document
-        print(collab_ids)
-        print(df_text[TEXT_DF.file_full_name])
-        df_text[TEXT_DF.collab_id] = df_text[TEXT_DF.file_full_name].map(collab_ids)
+        df_text[TextDF.collab_id] = df_text[TextDF.file_full_name].map(collab_ids)
 
         logging.info("done")
         return df_text
@@ -118,8 +119,8 @@ class FileMassExtractor:
     def _filter_extensions(
         self,
         file_paths: list[str],
-        read_only_extensions=None,
-        ignore_extensions=None,
+        read_only_extensions: list[str] = None,
+        ignore_extensions: list[str] = None,
     ) -> list[str]:
         """Filter file paths based on their extensions.
 
@@ -182,4 +183,4 @@ if __name__ == "__main__":
 
     extractor = FileMassExtractor()
     text_df = extractor.read_all_documents(directory, collab_ids)
-    print(text_df)
+    print(text_df)  # noqa: T201

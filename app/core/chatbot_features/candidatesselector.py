@@ -4,20 +4,16 @@
 
 """
 import logging
-import time
 from typing import Any
 
 import pandas as pd
 
 from app.core.chatbot_features.querytransformer import QueryTransformer
 from app.core.chatbot_features.scoreroverall import ScorerOverall
-from app.core.models.PG_pandasmodels import CHUNK_PG, COLLAB_PG, CV_PG, PROFILE_PG
-from app.core.models.query_pandasmodels import QUERY_STRUCT
-from app.core.models.scoredprofiles_pandasmodels import (
-    SCORED_CHUNKS_DF,
-    SCORED_PROFILES_DF,
-)
-from app.settings import Settings
+from app.core.models.pg_pandasmodels import CollabPg, CvPg
+from app.core.models.query_pandasmodels import QueryStruct
+from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
+from app.settings.settings import Settings
 
 
 class CandidatesSelector:
@@ -25,7 +21,7 @@ class CandidatesSelector:
     It then finds best candidates and returns their dataframes
     """
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings) -> None:
         self.queryTransformer = QueryTransformer(settings)
         self.scorer = ScorerOverall()
 
@@ -40,19 +36,6 @@ class CandidatesSelector:
         df_profiles: pd.DataFrame,
         df_query: pd.DataFrame,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
-        # assert df format coming from PostGres
-        if not CHUNK_PG.validate_dataframe(df_chunks):
-            return [None] * 4
-        if not COLLAB_PG.validate_dataframe(df_collabs):
-            return [None] * 4
-        if not CV_PG.validate_dataframe(df_cvs):
-            return [None] * 4
-        if not PROFILE_PG.validate_dataframe(df_profiles):
-            return [None] * 4
-        if not QUERY_STRUCT.validate_dataframe(df_query):
-            return [None] * 4
-
-        t = time.time()
         # Prepare list of selected ids
         already_selected_profiles_ids = []
         # loop through sub queries from GuessIntention
@@ -65,10 +48,13 @@ class CandidatesSelector:
                 query_row,
             )
             # number of identical profiles needed in this subquery
+
             try:
-                nb_profiles = int(query_row[QUERY_STRUCT.nb_profiles][0][0])
-            except Exception:
+                nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
+            except Exception as e:
                 nb_profiles = 3
+                logging.exception(e)
+
             # find best profiles for this subquery, NOT in already_selected_profiles_ids
             selected_ids = self._select_profiles_ids(
                 nb_profiles,
@@ -91,17 +77,6 @@ class CandidatesSelector:
             df_profiles_scored,
             already_selected_profiles_ids,
         )
-        # assert df formats
-        if not SCORED_CHUNKS_DF.validate_dataframe(df_candidates_chunks):
-            return [None] * 4
-        if not COLLAB_PG.validate_dataframe(df_candidates_collabs):
-            return [None] * 4
-        if not CV_PG.validate_dataframe(df_candidates_cvs):
-            return [None] * 4
-        if not SCORED_PROFILES_DF.validate_dataframe(df_candidates_profiles):
-            return [None] * 4
-        # return if all goes well
-        logging.info("Selection done" + str(time.time() - t))
         return (
             df_candidates_chunks,
             df_candidates_collabs,
@@ -169,9 +144,9 @@ class CandidatesSelector:
         """
         # sort profile by overall score
         sorted_ids = df_scored_profiles.sort_values(
-            by=[SCORED_PROFILES_DF.overall_score],
+            by=[ScoredProfilesDF.overall_score],
             ascending=False,
-        )[SCORED_PROFILES_DF.collab_id].values
+        )[ScoredProfilesDF.collab_id].values
         # counters for loop
         added_ids = 0
         idx = 0
@@ -212,16 +187,16 @@ class CandidatesSelector:
         """
         # populate dataframes
         df_candidates_chunks = df_chunks_scored.loc[
-            df_chunks_scored[SCORED_CHUNKS_DF.collab_id].isin(collab_ids)
+            df_chunks_scored[ScoredChunksDF.collab_id].isin(collab_ids)
         ]
         df_candidates_profiles = df_profiles_scored.loc[
-            df_profiles_scored[SCORED_PROFILES_DF.collab_id].isin(collab_ids)
+            df_profiles_scored[ScoredProfilesDF.collab_id].isin(collab_ids)
         ]
-        df_candidates_cvs = df_cvs.loc[df_cvs[CV_PG.collab_id].isin(collab_ids)]
+        df_candidates_cvs = df_cvs.loc[df_cvs[CvPg.collab_id].isin(collab_ids)]
 
-        collab_ids = df_candidates_profiles[SCORED_PROFILES_DF.collab_id].values
+        collab_ids = df_candidates_profiles[ScoredProfilesDF.collab_id].values
         df_candidates_collabs = df_collabs.loc[
-            df_collabs[COLLAB_PG.collab_id].isin(collab_ids)
+            df_collabs[CollabPg.collab_id].isin(collab_ids)
         ]
 
         return (
@@ -241,10 +216,10 @@ if __name__ == "__main__":
     QUERY_EXAMPLE = "Trouve moi 3 consultants pour une mission dans la banque"
     intention_finder = IntentionFinder(settings)
     df_query = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(df_query)
+    print(df_query)  # noqa: T201
 
     # fetch from postgres with filters based on query
-    from app.core.chatbot_features.PGfetcher import PGfetcher
+    from app.core.chatbot_features.pg_fetcher import PGfetcher
 
     PGfetcher = PGfetcher(settings)
     df_chunks, df_collabs, df_cvs, df_profiles = PGfetcher.fetch_all()

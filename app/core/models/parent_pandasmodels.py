@@ -31,7 +31,7 @@ import pandera as pa
 
 
 class ParentPandasModel:
-    """This is a parent class for all the models that are based on pandas"""
+    """Parent class for all the models that are based on pandas"""
 
     # this will be overwritten by the child class
     schema = pa.DataFrameSchema({})
@@ -52,18 +52,19 @@ class ParentPandasModel:
         bool: True if all attributes are in the dataframe columns
             False otherwise
         """
-        # TODO: add check for null values
-        # TODO: add check for value type
-        # TODO: add check for value format
-        # TODO: add check for value length
-        # TODO: add check for empty dataframe
-        # TODO: for some execption can be the same, but return string is different
+        # TODO@antoine: add check for null values
+        # TODO@antoine: add check for value type
+        # TODO@antoine: add check for value format
+        # TODO@antoine: add check for value length
+        # TODO@antoine: add check for empty dataframe
+        # TODO@antoine: for some execption can be the same
         try:
             cls.schema.validate(df)
             is_valid = True
         except pa.errors.SchemaError as e:
             is_valid = False
-            logging.error(f"DataFrame validation error: {e}")
+            log_string = f"DataFrame validation error: {e}"
+            logging.error(log_string)
         return is_valid
 
     @classmethod
@@ -78,21 +79,21 @@ class ParentPandasModel:
         None
         """
 
-        def _pandera_dtype_to_pandas_dtype(data_type) -> str:
+        def _pandera_dtype_to_pandas_dtype(data_type: pa.dtypes) -> str:
             """Convert pandera data type to pandas data type.
 
             :param dtype: A pandera data type
             :return: A pandas data type
             """
             data_type = str(data_type)
-            if data_type == "str":
-                return "object"
-            elif data_type == "int64":
-                return "int64"
-            elif data_type == "float":
-                return "float64"
-            elif data_type == "bool":
-                return "boolean"
+            map_data_type = {
+                "str": "object",
+                "int64": "int64",
+                "float": "float64",
+                "bool": "boolean",
+            }
+            if data_type in map_data_type:
+                return map_data_type[data_type]
             else:
                 return "object"
 

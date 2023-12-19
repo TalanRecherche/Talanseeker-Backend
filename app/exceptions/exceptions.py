@@ -2,5 +2,8 @@ class InvalidColumnsError(Exception):
     pass
 
 
-class UserIntegrityException(Exception):
+class UserIntegrityError(Exception):
+    pass
+
+class CvExceptionError(Exception):
     pass

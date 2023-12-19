@@ -1,3 +1,8 @@
+"""Created on 21/11/2023
+
+@author: Youness
+
+"""
 from __future__ import annotations
 
 from typing import Optional
@@ -55,16 +60,9 @@ class CvsInformation(BaseModel):
     cv_id: Optional[str] = None
 
 
-class SkillsTable(BaseModel):
-    global_skill: Optional[list[str]] = None
-    score: Optional[list[int]] = None
-    skills: Optional[list[list[str]]] = None
-
-
 class Candidate(BaseModel):
     general_information: Optional[GeneralInformation] = None
     cvs_information: Optional[list[CvsInformation]] = None
-    skills_table: Optional[SkillsTable] = None
 
 
 class ChatbotResponse(BaseModel):

@@ -1,19 +1,17 @@
 from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from app.models import Base
 
 
-class PG_Profiles(Base):
+class PG_Profiles(Base):  # noqa: N801
     __tablename__ = "profiles"
 
-    profile_id = Column(String, primary_key=True)
-    collab_id = Column(String)
-    name = Column(String)
-    surname = Column(String)
+    collab_id = Column(String, primary_key=True)
     years = Column(String)
-    diploma_certification = Column(String)
-    roles = Column(String)
-    sectors = Column(String)
-    company = Column(String)
-    soft_skills = Column(String)
-    technical_skills = Column(String)
+    diplomas_certifications = Column(ARRAY(String))
+    roles = Column(ARRAY(String))
+    sectors = Column(ARRAY(String))
+    companies = Column(ARRAY(String))
+    soft_skills = Column(ARRAY(String))
+    technical_skills = Column(ARRAY(String))

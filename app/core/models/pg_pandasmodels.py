@@ -7,7 +7,7 @@ from pandera import Column
 from app.core.models.parent_pandasmodels import ParentPandasModel
 
 
-class COLLAB_PG(ParentPandasModel):
+class CollabPg(ParentPandasModel):
     """column main table on PostGres"""
 
     # information of this table will be extracted from Kimble and other ERPs"
@@ -91,7 +91,7 @@ class COLLAB_PG(ParentPandasModel):
     )
 
 
-class CV_PG(ParentPandasModel):
+class CvPg(ParentPandasModel):
     """column CV table on PostGres"""
 
     cv_id = "cv_id"
@@ -107,27 +107,25 @@ class CV_PG(ParentPandasModel):
     )
 
 
-class CHUNK_PG(ParentPandasModel):
+class ChunkPg(ParentPandasModel):
     """column chunks & embeddings table on PostGres"""
 
     chunk_id = "chunk_id"
     collab_id = "collab_id"
     chunk_text = "chunk_text"
     chunk_embeddings = "chunk_embeddings"
-    cv_id = "cv_id"
 
     schema = pa.DataFrameSchema(
         {
             chunk_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
-            chunk_embeddings: Column(list[float], nullable=True),
-            cv_id: Column(str, nullable=True),
+            chunk_embeddings: Column(object, nullable=True),
         },
     )
 
 
-class PROFILE_PG(ParentPandasModel):
+class ProfilePg(ParentPandasModel):
     """column structured profiles table on PostGres"""
 
     # primary key

@@ -3,7 +3,9 @@
 @author: agarc
 
 """
-from app.core.cv_information_retrieval.ABCreader import ABCReader
+from pathlib import Path
+
+from app.core.cv_information_retrieval.abc_reader import ABCReader
 
 
 class TXTReader(ABCReader):
@@ -22,7 +24,7 @@ class TXTReader(ABCReader):
             the extracted text from the txt file.
 
         """
-        with open(file_path, encoding="utf-8") as file:
+        with Path(file_path).open(encoding="utf-8") as file:
             text = file.read()
 
         if text:

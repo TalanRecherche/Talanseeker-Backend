@@ -5,7 +5,7 @@
 """
 import pytest
 
-from app.core.cv_information_retrieval.PDFreader import PDFReader
+from app.core.cv_information_retrieval.pdf_reader import PDFReader
 
 
 def test_read_text():

@@ -17,7 +17,7 @@ class ChatbotLogs(Base):
     response = Column(Text)
     candidates = Column(Text)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.request_issuer} {self.request} {self.response}"
 
     def log(self) -> int:
@@ -28,4 +28,5 @@ class ChatbotLogs(Base):
                 session.commit()
                 return self.id
         except Exception as e:
-            logging.error(f"Logs not working {e}")
+            log_string = f"An error occurred while adding logs: {e}"
+            logging.exception(log_string)

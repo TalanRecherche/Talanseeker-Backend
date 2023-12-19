@@ -20,3 +20,7 @@ class ExceptionConfig:
         status_code=422,
         message="Impossible de créer l'utilisateur!",
     )
+    not_found_exception = ExceptionMetaData(
+        status_code=404,
+        message="!!!",
+    )

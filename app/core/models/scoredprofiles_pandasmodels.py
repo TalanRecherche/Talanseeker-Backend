@@ -4,7 +4,7 @@ from pandera import Column
 from app.core.models.parent_pandasmodels import ParentPandasModel
 
 
-class SCORED_PROFILES_DF(ParentPandasModel):
+class ScoredProfilesDF(ParentPandasModel):
     """column structured profiles table on PostGres"""
 
     collab_id = "collab_id"
@@ -40,9 +40,8 @@ class SCORED_PROFILES_DF(ParentPandasModel):
     )
 
 
-class SCORED_CHUNKS_DF(ParentPandasModel):
+class ScoredChunksDF(ParentPandasModel):
     chunk_id = "chunk_id"
-    cv_id = "cv_id"
     collab_id = "collab_id"
     chunk_text = "chunk_text"
     chunk_embeddings = "chunk_embeddings"
@@ -51,7 +50,6 @@ class SCORED_CHUNKS_DF(ParentPandasModel):
     schema = pa.DataFrameSchema(
         {
             chunk_id: Column(str, nullable=True),
-            cv_id: Column(str, nullable=True),
             collab_id: Column(str, nullable=True),
             chunk_text: Column(str, nullable=True),
             chunk_embeddings: Column(list[float], nullable=True),
