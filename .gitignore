@@ -20,3 +20,4 @@ data/
 data_dev/
 tests/data_test/
 qodana.yaml
+_profiling.py
