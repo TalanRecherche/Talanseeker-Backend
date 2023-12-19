@@ -19,6 +19,8 @@ data/
 .env_backup
 data_dev/
 tests/data_test/
+qodana.yaml
+_profiling.py
 /.pytest_cache/
 /.ruff_cache/
 /.legacy/
