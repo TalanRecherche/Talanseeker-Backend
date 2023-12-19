@@ -164,9 +164,9 @@ def profile_chatbot_business(chatbot_request: ChatbotRequest) -> Response:
         profiler.stop()
         profiler.write_html(file_name)
 
-        with Path(file_name).open() as file:
+        with Path(file_name).open("rb") as file:
             return Response(
                 status_code=200,
-                content=file,
+                content=file.read(),
                 media_type="application/octet-stream",
             )
