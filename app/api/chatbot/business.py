@@ -1,4 +1,3 @@
-import cProfile
 import logging
 import tempfile
 import time
@@ -6,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 from fastapi import Response
+from pyinstrument import Profiler
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
@@ -173,10 +173,15 @@ def chatbot_business_helper(
 
 def profile_chatbot_business(chatbot_request: ChatbotRequest) -> Response:
     with tempfile.TemporaryDirectory() as dir_:
-        file_name = Path(dir_) / "profiling.prof"
-        cProfile.runctx("chatbot_business(chatbot_request)",
-                        globals(), locals(), str(file_name))
-        with Path(file_name).open("rb") as file:
+        file_name = Path(dir_) / "profiling.html"
+        # profile process
+        profiler = Profiler()
+        profiler.start()
+        chatbot_business(chatbot_request)
+        profiler.stop()
+        profiler.write_html(file_name)
+
+        with Path(file_name).open() as file:
             return Response(
                 status_code=200,
                 content=file,
