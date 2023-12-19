@@ -9,7 +9,6 @@ from pyinstrument import Profiler
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
-from app.core.chatbot_features.dataviz import get_skills_table
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.chatbot_features.pg_fetcher import PGfetcher
 from app.core.chatbot_features.queryrouter import QueryRouter
@@ -19,22 +18,20 @@ from app.schema.chatbot import (
     ChatbotRequest,
     ChatbotResponse,
     GeneralInformation,
-    SkillsTable,
 )
 from app.schema.search import CvsInformation
 from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
-        profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: dict
+        profiles_data: pd.DataFrame, cvs: pd.DataFrame
 ) -> list[Candidate]:
     candidates = []
     profiles_data.apply(
         row_to_candidate_schema,
         axis=1,
         candidates=candidates,
-        cvs=cvs,
-        skills_table=skills_table,
+        cvs=cvs
     )
     return candidates
 
@@ -42,8 +39,7 @@ def df_to_candidate_schema(
 def row_to_candidate_schema(
         row: pd.Series,
         candidates: list[Candidate],
-        cvs: pd.DataFrame,
-        skills_table: pd.DataFrame,
+        cvs: pd.DataFrame
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
@@ -81,14 +77,6 @@ def row_to_candidate_schema(
         for cv in collab_cvs
     ]
 
-    skills = skills_table[row[CollabPg.email]]
-    skill_table = SkillsTable(
-        global_skill=skills["competence"].to_list(),
-        score=skills["n_occurence"].to_list(),
-        skills=skills["skills"].to_list(),
-    )
-
-    candidate.skills_table = skill_table
     candidates.append(candidate)
 
 
@@ -142,18 +130,13 @@ def chatbot_business_helper(
     logging.info(f"CandidatesSelector: {time.time() - t}")
 
     t = time.time()
-    skills_table = get_skills_table(chunks, collabs, cvs, profiles)
-    logging.info(f"SkillsTable: {time.time() - t}")
-
-    t = time.time()
     profiles_data = collabs.merge(profiles, on="collab_id")
     logging.info(f"profiles_data: {time.time() - t}")
 
     t = time.time()
     chatbot_response.candidates = df_to_candidate_schema(
         profiles_data,
-        cvs,
-        skills_table,
+        cvs
     )
     logging.info(f"Make candidates: {time.time() - t}")
 

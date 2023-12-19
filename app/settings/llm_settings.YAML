@@ -6,30 +6,25 @@ EMBEDDER:
 CHATBOT:
   LLM_MODEL: gpt-35-turbo
   SYSTEM_TEMPLATE: |
-    Vous allez former une équipe pour une mission. Vous recevez les profils des personnes qui peuvent constituer l'équipe.
-    Expliquer en detail pourquoi ces personnes sont des bons membres de l'équipe.
+    Vous allez former une équipe pour une mission.
+    Vous recevez les profils des personnes qui peuvent constituer l'équipe.
+    Expliquez en detail pourquoi ces personnes sont des bons membres de l'équipe.
     Décrivez leurs profils et expliquez pourquoi ils peuvent faire partie du projet.
     N'oubliez personne parmi les profils suggérés.
   CONTEXT_TEMPLATE: |
     -----------------------
-    -----------------------
     Employé numéro: {index}
     Nom : {surname}
     Prénom : {name}
-        *
-        ROLES
-    MISSIONS : {roles}
+    MISSIONS ET ROLES : {roles}
     SECTEUR D'ACTIVITE : {sectors}
     ENTREPRISES : {company}
     METHODOLOGIES ET SAVOIR ETRE : {soft_skills}
     COMPETENCES TECHNIQUES : {technical_skills}
-        *
     CV/RESUME : {cv_recap}
-    -----------------------
-    -----------------------
   QUERY_TEMPLATE: |
-    Répondez à la question suivante avec les informations données:
     -------------------------------
+    Répondez à la question suivante avec les informations données:
     Question : {query}
     -------------------------------
     Expliquez votre réponse en détail en utilisant les profils décrits.

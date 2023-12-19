@@ -1,12 +1,9 @@
 """Created by agarc at 01/10/2023
 Features:
 """
-import tiktoken
 
 
 class TokenHandler:
-    # saves the encoding to avoid loading it every time
-    _encoding_cache = {}
 
     @staticmethod
     def count_tokens_from_string(
@@ -18,11 +15,12 @@ class TokenHandler:
         if not isinstance(string, str):
             return 0
 
-        # cache encoding to avoid loading it every time
-        if encoding_name not in TokenHandler._encoding_cache:
-            TokenHandler._encoding_cache[encoding_name] = tiktoken.get_encoding(encoding_name)
+        # TODO(antoine): fix this, this is too slow
+        # encoding = tiktoken.get_encoding(encoding_name)  # this takes 2 seconds !!! # noqa: ERA001
+        # encoding = TokenHandler.fetch_encoding(encoding_name)  # noqa: ERA001
+        # num_tokens = len(encoding.encode(string))  # noqa: ERA001
 
-        num_tokens = len(TokenHandler._encoding_cache[encoding_name].encode(string))
+        num_tokens = int(len(string)/4)
 
         return num_tokens
 

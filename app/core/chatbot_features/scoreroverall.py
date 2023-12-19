@@ -23,11 +23,11 @@ class ScorerOverall:
     # =============================================================================
 
     def get_overall_scores(
-        self,
-        df_chunks: pd.DataFrame,
-        df_profiles: pd.DataFrame,
-        keywords_query: list[str],
-        embedded_semantic_query: list[float],
+            self,
+            df_chunks: pd.DataFrame,
+            df_profiles: pd.DataFrame,
+            keywords_query: list[str],
+            embedded_semantic_query: list[float],
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Scores all profiles and returns their scored dataframe (chunk and
         profiles)
@@ -52,7 +52,6 @@ class ScorerOverall:
             df_chunks_semantic_scored,
         )
 
-
         # average keyword/embedding scores
         df_profiles_scored[ScoredProfilesDF.overall_score] = self._average_scores(
             df_profiles_scored,
@@ -69,7 +68,7 @@ class ScorerOverall:
         alpha = 1 - beta
 
         average_col = (
-            alpha * df_profiles_scored[ScoredProfilesDF.keywords_score_normalized]
-            + beta * df_profiles_scored[ScoredProfilesDF.semantic_score_normalized]
+                alpha * df_profiles_scored[ScoredProfilesDF.keywords_score_normalized]
+                + beta * df_profiles_scored[ScoredProfilesDF.semantic_score_normalized]
         )
         return average_col

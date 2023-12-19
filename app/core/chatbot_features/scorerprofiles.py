@@ -3,10 +3,10 @@
 @author: agarc
 
 """
-import difflib
 
 import numpy as np
 import pandas as pd
+from Levenshtein import distance
 
 from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
 from app.core.models.scoredprofiles_pandasmodels import (
@@ -14,8 +14,6 @@ from app.core.models.scoredprofiles_pandasmodels import (
     ScoredProfilesDF,
 )
 from app.core.shared_modules.listhandler import ListHandler
-from app.models import sql_to_pd
-from app.models.chunks import ChunkModel
 
 
 class ScorerProfiles:
@@ -31,20 +29,26 @@ class ScorerProfiles:
             keywords_query: list[str],
     ) -> pd.DataFrame:
         """Keyword scoring using the profile dataframe"""
-        scored_df = df_profiles
-        # add a keyword_score column by scoring profiles one by one
-        scored_df[ScoredProfilesDF.keywords_score] = scored_df.apply(
-            self._score_by_keywords_single_profile,
-            axis=1,
-            args=(keywords_query,),
-        )
-        return scored_df
+        # add a keyword_score column containing the score for each profile
 
-    def score_score_by_semantic_pg_vector(self, embedded_query: list[float]) -> pd.DataFrame:
-        query = ChunkModel.similarity_query(embedded_query)
-        df_chunks = sql_to_pd(query)
-        df_chunks[ScoredChunksDF.semantic_score] = 1 - df_chunks[ScoredChunksDF.semantic_score]
-        return df_chunks
+        # columns to use for scoring
+        fields_to_check = [
+            ProfilePg.diplomas_certifications,
+            ProfilePg.roles,
+            ProfilePg.sectors,
+            ProfilePg.companies,
+            ProfilePg.soft_skills,
+            ProfilePg.technical_skills,
+        ]
+
+        # Use vectorized operations to flatten, remove duplicates and compute the score
+        df_profiles[ScoredProfilesDF.keywords_score] = (
+            df_profiles[fields_to_check]
+            .apply(lambda x: ListHandler.flatten_list(x.values.tolist()), axis=1)
+            .apply(lambda x: list(set(x)))
+            .apply(lambda x: self._distance_levenshtein(keywords_query, x))
+        )
+        return df_profiles
 
     def score_by_semantic(
             self,
@@ -125,31 +129,27 @@ class ScorerProfiles:
     # internal functions
     # =============================================================================
 
-    def _score_by_keywords_single_profile(self, row: pd.DataFrame, query: list[str]) -> float:
-        """Similarity scoring using keywords"""
-        threshold = 0.8
-        # prepare data to check
-        fields_to_check = [
-            ProfilePg.diplomas_certifications,
-            ProfilePg.roles,
-            ProfilePg.sectors,
-            ProfilePg.companies,
-            ProfilePg.soft_skills,
-            ProfilePg.technical_skills,
-        ]
-        # place data in a list
-        relevant_data = row[fields_to_check].values.tolist()
-        relevant_data = ListHandler.flatten_list(relevant_data)
-        # make unique
-        relevant_data = list(set(relevant_data))
+    def _distance_levenshtein(self, query: list[str], relevant_data: list[str]) -> float:
+        """ uses the levenstein distance to calculate the similarity between two list of strings """
+        threshold = 0.65 # minimum similarity to consider a match
+        cutoff = 14 #avoid computing distance for strings that are too different
 
-        # loops through all query words and check if they are in the relevant consultant profile
         score = 0
-        for query_keyword in query:
-            # find number of fuzzy occurrences
-            ii = difflib.get_close_matches(query_keyword, relevant_data, cutoff=threshold)
-            # add to score
-            score += len(ii)
+        # Calculate similarity scores for each pair of strings
+        for str1 in query:
+            # check if exact match exists in the relevant_data
+            if str1 in relevant_data:
+                score += 1
+            # else check if fuzzy match exists in the query
+            else:
+                for str2 in relevant_data:
+                    # calculate the levenstein distance between the two strings, cut off at 14
+                    dist = distance(str1, str2, score_cutoff=cutoff) / max(len(str1), len(str2))
+                    similarity = 1 - dist
+                    if similarity > threshold:
+                        score += 1
+                        # exit the loop and move to next part of query if a match is found
+                        break
 
         return score
 
