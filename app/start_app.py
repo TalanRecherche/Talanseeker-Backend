@@ -5,25 +5,25 @@ import logging
 from fastapi import FastAPI
 
 from app.exceptions.handlers import exception_handler
+from app.middleware import add_middleware
+from app.models import create_all
 
 from .api import router as api_router
-
-logging.basicConfig(
-    format="%(levelname) -10s %(asctime)s %(module)s:%(lineno)s "
-    "%(funcName)s %(message)s",
-    level=logging.INFO,
-)
-logging.basicConfig(level=logging.DEBUG)
-
 
 
 def init_app() -> FastAPI:
     """Initialize the FastAPI application.
     Load all the routes and exception handlers.
     """
+    log_file_path = "logging.conf"
+
+    logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
+    logging.getLogger().setLevel(level=logging.WARN)
     fastapi_app = FastAPI()
     fastapi_app.include_router(api_router)
     exception_handler(fastapi_app)
+    add_middleware(fastapi_app)
+    create_all()
 
     return fastapi_app
 

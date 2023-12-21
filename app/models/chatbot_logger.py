@@ -11,11 +11,18 @@ class ChatbotLogs(Base):
     __tablename__ = "chatbot_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String)
+    user_id = Column(String)
     request_time = Column(DateTime, default=func.now())
-    request_issuer = Column(String)
-    query = Column(Text)
-    response = Column(Text)
-    candidates = Column(Text)
+    user_query = Column(Text)
+    chatbot_response = Column(Text)
+    region = Column(Text, default = None)
+    city = Column(Text, default = None)
+    grade = Column(Text, default = None)
+    assigned_until = Column(Text, default = None)
+    availability_score = Column(Text, default = None)
+    question_valid = Column(Text, default = None)
+    candidates = Column(Text, default = None)
 
     def __repr__(self) -> str:
         return f"{self.request_issuer} {self.request} {self.response}"

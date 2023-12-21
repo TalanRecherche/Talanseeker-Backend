@@ -8,7 +8,7 @@ from app.core.azure_modules.models import UpsertPolicies
 from app.core.models.etl_pandasmodels import StructCvDF
 from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
 from app.models import Base, con_string, engine
-from app.models.chunks import PgChunks
+from app.models.chunks import ChunkModel
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.models.profiles import PG_Profiles
@@ -85,8 +85,8 @@ class AzurePGManager:
                    where(PgCvs.collab_id == kwargs["collab_id"]))
         elif req_target == "cv_chunks":
             req = (select(kwargs["table"]).
-                   where(and_(PgChunks.collab_id == kwargs["collab_id"],
-                              PgChunks.chunk_id == kwargs["chunk_id"])))
+                   where(and_(ChunkModel.collab_id == kwargs["collab_id"],
+                              ChunkModel.chunk_id == kwargs["chunk_id"])))
         elif req_target == "check_existence":
             req = (select(kwargs["table"]).
                    where(PgCollabs.collab_id == kwargs["collab_id"]))
@@ -215,7 +215,7 @@ class AzurePGManager:
         )
         AzurePGManager.save_to_db(PgCvs, pg_cvs, UpsertPolicies.APPEND)
         AzurePGManager.save_to_db(
-            PgChunks,
+            ChunkModel,
             pg_chunks,
             UpsertPolicies.CHUNK_UPDATE,
         )

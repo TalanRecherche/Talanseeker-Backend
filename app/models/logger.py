@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import Column, DateTime, Integer, String, Text
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
@@ -12,10 +12,10 @@ class Logs(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     request_time = Column(DateTime, default=func.now())
-    request_issuer = Column(String)
-    request_func = Column(Text)
-    request_args = Column(Text)
-    request_kwargs = Column(Text)
+    user_id = Column(String)
+    session_id = Column(String, default=None)
+    url_path = Column(String)
+    status_code = Column(Integer)
 
     def log(self) -> None:
         try:

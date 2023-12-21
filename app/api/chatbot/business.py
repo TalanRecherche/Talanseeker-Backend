@@ -1,8 +1,14 @@
+import logging
+import tempfile
+import time
+from pathlib import Path
+
 import pandas as pd
+from fastapi import Response
+from pyinstrument import Profiler
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
-from app.core.chatbot_features.dataviz import get_skills_table
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.chatbot_features.pg_fetcher import PGfetcher
 from app.core.chatbot_features.queryrouter import QueryRouter
@@ -12,31 +18,28 @@ from app.schema.chatbot import (
     ChatbotRequest,
     ChatbotResponse,
     GeneralInformation,
-    SkillsTable,
 )
 from app.schema.search import CvsInformation
 from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
-    profiles_data: pd.DataFrame, cvs: pd.DataFrame, skills_table: dict
+        profiles_data: pd.DataFrame, cvs: pd.DataFrame
 ) -> list[Candidate]:
     candidates = []
     profiles_data.apply(
         row_to_candidate_schema,
         axis=1,
         candidates=candidates,
-        cvs=cvs,
-        skills_table=skills_table,
+        cvs=cvs
     )
     return candidates
 
 
 def row_to_candidate_schema(
-    row: pd.Series,
-    candidates: list[Candidate],
-    cvs: pd.DataFrame,
-    skills_table: pd.DataFrame,
+        row: pd.Series,
+        candidates: list[Candidate],
+        cvs: pd.DataFrame
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
@@ -74,14 +77,6 @@ def row_to_candidate_schema(
         for cv in collab_cvs
     ]
 
-    skills = skills_table[row[CollabPg.email]]
-    skill_table = SkillsTable(
-        global_skill=skills["competence"].to_list(),
-        score=skills["n_occurence"].to_list(),
-        skills=skills["skills"].to_list(),
-    )
-
-    candidate.skills_table = skill_table
     candidates.append(candidate)
 
 
@@ -106,10 +101,11 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
 
 
 def chatbot_business_helper(
-    chatbot_request: ChatbotRequest,
-    settings: Settings,
-    chatbot_response: ChatbotResponse,
+        chatbot_request: ChatbotRequest,
+        settings: Settings,
+        chatbot_response: ChatbotResponse,
 ) -> None:
+    t = time.time()
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder(settings)
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
@@ -119,7 +115,9 @@ def chatbot_business_helper(
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
+    logging.info(f"IntentionFinder: {time.time() - t}")
 
+    t = time.time()
     # Select best candidates
     selector = CandidatesSelector(settings)
     chunks, collabs, cvs, profiles = selector.select_candidates(
@@ -129,15 +127,20 @@ def chatbot_business_helper(
         df_profiles,
         guess_intention_query,
     )
-    skills_table = get_skills_table(chunks, collabs, cvs, profiles)
+    logging.info(f"CandidatesSelector: {time.time() - t}")
 
+    t = time.time()
     profiles_data = collabs.merge(profiles, on="collab_id")
+    logging.info(f"profiles_data: {time.time() - t}")
 
+    t = time.time()
     chatbot_response.candidates = df_to_candidate_schema(
         profiles_data,
-        cvs,
-        skills_table,
+        cvs
     )
+    logging.info(f"Make candidates: {time.time() - t}")
+
+    t = time.time()
     # Send candidates data to chatbot and get answer
     chatbot = Chatbot(settings)
     response, query_sent = chatbot.get_chatbot_response(
@@ -146,4 +149,24 @@ def chatbot_business_helper(
         collabs,
         profiles,
     )
+    logging.info(f"Chatbot response: {time.time() - t}")
+
     chatbot_response.chatbot_response = response
+
+
+def profile_chatbot_business(chatbot_request: ChatbotRequest) -> Response:
+    with tempfile.TemporaryDirectory() as dir_:
+        file_name = Path(dir_) / "profiling.html"
+        # profile process
+        profiler = Profiler()
+        profiler.start()
+        chatbot_business(chatbot_request)
+        profiler.stop()
+        profiler.write_html(file_name)
+
+        with Path(file_name).open("rb") as file:
+            return Response(
+                status_code=200,
+                content=file.read(),
+                media_type="application/octet-stream",
+            )

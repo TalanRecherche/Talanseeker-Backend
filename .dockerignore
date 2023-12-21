@@ -13,3 +13,4 @@ tests/data_test/
 /.ruff_cache/
 /.pytest_cache/
 .env
+_profiling.py
