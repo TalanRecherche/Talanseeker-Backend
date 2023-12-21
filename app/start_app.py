@@ -1,6 +1,6 @@
 """Used to start the FastAPI application."""
 
-import logging
+import logging.config
 
 from fastapi import FastAPI
 
@@ -8,19 +8,16 @@ from app.exceptions.handlers import exception_handler
 
 from .api import router as api_router
 
-logging.basicConfig(
-    format="%(levelname) -10s %(asctime)s %(module)s:%(lineno)s "
-           "%(funcName)s %(message)s",
-    level=logging.INFO,
-)
-logging.basicConfig(level=logging.DEBUG)
-
 
 def init_app() -> FastAPI:
     """Initialize the FastAPI application.
     Load all the routes and exception handlers.
     """
-    fastapi_app = FastAPI()
+    log_file_path = "logging.conf"
+
+    logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
+
+    fastapi_app = FastAPI(debug=True)
     fastapi_app.include_router(api_router)
     exception_handler(fastapi_app)
 
