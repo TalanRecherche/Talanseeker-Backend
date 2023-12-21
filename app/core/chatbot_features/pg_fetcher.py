@@ -12,6 +12,7 @@ import pandas as pd
 from sqlalchemy import select
 
 from app.core.models.pg_pandasmodels import CollabPg, CvPg, ProfilePg
+from app.core.models.scoredprofilescols import ScoredChunksDF
 from app.exceptions.exceptions import InvalidColumnsError
 from app.models import con_string
 from app.models.chunks import ChunkModel
@@ -174,6 +175,13 @@ class PGfetcher:
         if req_target == "collab_chunks":
             req = select(ChunkModel).where(
                 ChunkModel.collab_id.in_(kwargs["collab_ids_string"]))
+        elif req_target == "select_collab_chunks":
+                req = select(ChunkModel.chunk_id, ChunkModel.chunk_embeddings).where(
+                    ChunkModel.collab_id.in_(kwargs["collab_ids_string"]))
+        elif req_target == "selected_collab_chunks":
+                req = select(ChunkModel.collab_id, ChunkModel.chunk_text,
+                             ChunkModel.chunk_id).where(
+                    ChunkModel.chunk_id.in_(kwargs["selected_chunk_ids"]))
         elif req_target == "collab_cvs":
             req = select(PgCvs).where(
                 PgCvs.collab_id.in_(kwargs["collab_ids_string"]))
@@ -199,6 +207,35 @@ class PGfetcher:
             # Execute the query and fetch the result as a DataFrame
             df_chunks = pd.read_sql(query, con_string)
             return df_chunks
+
+        except InvalidColumnsError as e:
+            logging.error(e)
+            raise
+
+        except Exception as e:
+            log_string = f"An error occurred while executing the query: {e}"
+            logging.error(log_string)
+            raise
+
+    @staticmethod
+    def fetch_selected_chunks(selected_chunks:pd.DataFrame)->pd.DataFrame | None:
+        try:
+            """Create the SQL query using the formatted collab_ids_str
+            query = f"select * from chunks where collab_id in ({collab_ids_string})"
+
+            """
+            chunk_ids = selected_chunks[ScoredChunksDF.chunk_id].to_list()
+            query = PGfetcher._sql_request_builder("selected_collab_chunks",
+                                                   selected_chunk_ids=tuple(
+                                                       chunk_ids))
+
+            logging.info(query)
+            # Execute the query and fetch the result as a DataFrame
+            df_chunks = pd.read_sql(query, con_string)
+
+            selected_chunks = selected_chunks.merge(df_chunks)
+
+            return selected_chunks
 
         except InvalidColumnsError as e:
             logging.error(e)
@@ -265,13 +302,3 @@ class PGfetcher:
             log_string = f"An error occurred while parsing collab_ids: {e}"
             logging.error(log_string)
             raise
-
-
-if __name__ == "__main__":
-    settings = Settings()
-    fetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
-    print(df_chunks)  # noqa: T201
-    print(df_collabs)  # noqa: T201
-    print(df_cvs)  # noqa: T201
-    print(df_profiles)  # noqa: T201

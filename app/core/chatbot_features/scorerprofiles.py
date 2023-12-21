@@ -14,6 +14,8 @@ from app.core.models.scoredprofiles_pandasmodels import (
     ScoredProfilesDF,
 )
 from app.core.shared_modules.listhandler import ListHandler
+from app.models import sql_to_pd
+from app.models.chunks import ChunkModel
 
 
 class ScorerProfiles:
@@ -124,6 +126,13 @@ class ScorerProfiles:
         )
 
         return df_profiles_scored
+
+    def score_by_semantic_pg_vector(self, embedded_query: list[float]) -> pd.DataFrame:
+        query = ChunkModel.similarity_query(embedded_query)
+        df_chunks = sql_to_pd(query)
+        df_chunks[ScoredChunksDF.semantic_score] = 1 - df_chunks[
+            ScoredChunksDF.semantic_score]
+        return df_chunks
 
     # =============================================================================
     # internal functions

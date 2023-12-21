@@ -20,3 +20,7 @@ def get_db() -> SessionLocal:
 
 def sql_to_pd(query: str) -> pd.DataFrame:
     return pd.read_sql(query, con_string)
+
+
+def create_all() -> None:
+    Base.metadata.create_all(engine)
