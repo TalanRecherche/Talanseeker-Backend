@@ -6,6 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from app.models.chatbot_logger import ChatbotLogs
+from app.models.logger import Logs
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
@@ -14,18 +15,23 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         response = await call_next(request)
+
+        self.general_logger(request, response)
+
         response_body = b""
         async for chunk in response.body_iterator:
             response_body += chunk
 
         if request.url.path == "/api/v1/chatbot":
-            await self.chatbot_logger(request, response_body)
+            self.chatbot_logger(request, response_body)
 
         return Response(content=response_body, status_code=response.status_code,
                         headers=dict(response.headers), media_type=response.media_type)
 
-    async def chatbot_logger(self, request: Request, response: bytes) -> None:
-
+    def chatbot_logger(self, request: Request, response: bytes) -> None:
+        """
+        log chatbot calls : request and reponse
+        """
         logger = ChatbotLogs()
         logger.user_query = request.query_params.get(ChatbotLogs.user_query.key)
         logger.region = request.query_params.get(ChatbotLogs.region.key)
@@ -38,4 +44,13 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.chatbot_response = response[ChatbotLogs.chatbot_response.key]
         logger.question_valid = response[ChatbotLogs.question_valid.key]
         logger.candidates = str(response[ChatbotLogs.candidates.key])
+        logger.log()
+
+    def general_logger(self, request: Request, response: Response) -> None:
+        """
+        log all api calls with their status code
+        """
+        logger = Logs()
+        logger.url_path = request.url.path
+        logger.status_code = response.status_code
         logger.log()
