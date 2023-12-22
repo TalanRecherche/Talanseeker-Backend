@@ -3,6 +3,7 @@ from json import loads as json_loader
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import StreamingResponse
 from starlette.types import ASGIApp
 
 from app.models.chatbot_logger import ChatbotLogs
@@ -18,9 +19,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         self.general_logger(request, response)
 
-        response_body = b""
-        async for chunk in response.body_iterator:
-            response_body += chunk
+        response_body = await self._build_request_body(response)
 
         if request.url.path == "/api/v1/chatbot":
             self.chatbot_logger(request, response_body)
@@ -28,7 +27,13 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         return Response(content=response_body, status_code=response.status_code,
                         headers=dict(response.headers), media_type=response.media_type)
 
-    def chatbot_logger(self, request: Request, response: bytes) -> None:
+    async def _build_request_body(self, response: StreamingResponse) -> str:
+        response_body = b""
+        async for chunk in response.body_iterator:
+            response_body += chunk
+        return response_body.decode()
+
+    def chatbot_logger(self, request: Request, response: str) -> None:
         """
         log chatbot calls : request and reponse
         """
@@ -39,11 +44,12 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.availability_score = (
             request.query_params.get(ChatbotLogs.availability_score.key))
 
-        response = json_loader(response.decode())
+        response = json_loader(response)
 
         logger.chatbot_response = response[ChatbotLogs.chatbot_response.key]
         logger.question_valid = response[ChatbotLogs.question_valid.key]
-        logger.candidates = str(response[ChatbotLogs.candidates.key])
+        logger.candidates = ",".join([elem["general_information"]["collab_id"] for
+                                      elem in response[ChatbotLogs.candidates.key]])
         logger.log()
 
     def general_logger(self, request: Request, response: Response) -> None:
