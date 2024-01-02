@@ -1,15 +1,14 @@
 """Created by agarc at 11/10/2023
 Features:
 """
-from pathlib import Path
 
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings.settings import Settings
+from app.settings import settings
 
 
 class QueryRouter:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         # engine
         self.engine = settings.query_router_settings.query_router_llm_model
         # get query and system template
@@ -160,28 +159,3 @@ class QueryRouter:
     def _get_llm_response(self, query_string: str, system_string: str) -> str:
         response = self.llm_backend.send_receive_message(query_string, system_string)
         return response
-
-
-if __name__ == "__main__":
-    import json
-
-    def load_queries_from_json(json_file: json) -> dict:
-        with Path.open(json_file, encoding="utf-8") as file:
-            data = json.load(file)
-
-        queries = {}
-        for entry in data["questions"]:
-            queries[entry["query"]] = entry["label"]
-
-        return queries
-
-    queries = load_queries_from_json("tests/data_test/queryrouter_json/testset.JSON")
-
-    settings = Settings()
-    router = QueryRouter(settings)
-
-    for query, label in queries.items():
-        response = router.get_router_response(query)
-        print("---")  # noqa: T201
-        print(query)  # noqa: T201
-        print("réponse:", response, "label:", label)  # noqa: T201

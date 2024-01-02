@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 from app.core.models.etl_pandasmodels import ChunkDF, EmbeddingDF
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.settings.settings import Settings
 
 
 class ChunkEmbedder:
@@ -19,9 +18,9 @@ class ChunkEmbedder:
     Adds a new columns chunk_embeddings
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         # set up embedder backend
-        self.embedder = EmbedderBackend(settings)
+        self.embedder = EmbedderBackend()
 
     # =============================================================================
     #     user functions
@@ -112,33 +111,3 @@ class ChunkEmbedder:
 
         string_to_embed = global_context_string + cleaned_text
         return string_to_embed
-
-
-# %%
-if __name__ == "__main__":
-    directory = r"data_dev/data_1"
-    # prepare {filenames : collab_id} map from the main
-    from app.core.shared_modules.pathexplorer import PathExplorer
-
-    files = PathExplorer.get_all_paths_with_extension_name(directory)
-    collab_ids = {
-        files[ii]["file_full_name"]: str(ii * 1231) for ii in range(len(files))
-    }
-
-    # extract text from CVs
-    from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-
-    extractor = FileMassExtractor()
-    text_df = extractor.read_all_documents(directory, collab_ids)
-
-    # make chunks, One row per chunks
-    from app.core.cv_information_retrieval.chunker import Chunker
-
-    chunker = Chunker()
-    df_chunks = chunker.chunk_documents(text_df)
-
-    # make embeddings
-    from app.settings.settings import Settings
-
-    embedder = ChunkEmbedder(Settings())
-    df_embeddings = embedder.embed_chunk_dataframe(df_chunks)

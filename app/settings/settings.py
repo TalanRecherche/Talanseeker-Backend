@@ -1,10 +1,11 @@
 """Settings script. Every settings is called from here."""
+import logging
 import os
 
 import openai
 from dotenv import load_dotenv
 
-from app.exceptions.exceptions import VarEnvError
+from app.exceptions.exceptions import SettingsError
 from app.settings.load_llm_settings import load_llm_settings
 
 
@@ -194,8 +195,11 @@ class DbSettings:
 
     @staticmethod
     def validate() -> None:
-        if DbSettings.name is None :
-            raise VarEnvError
+        if (DbSettings.name is None or DbSettings.username is None
+                or DbSettings.pwd is None or DbSettings.host is None
+                or DbSettings.port is None):
+            logging.error("Missing Variables")
+            raise SettingsError
 
 class EmbedderSettings:
     """Embedder settings."""
@@ -309,6 +313,5 @@ class Settings:
         """Database settings."""
         return DbSettings()
 
-
-# run once to load env variables.
-env = Settings()
+    def validate(self) -> None:
+        self.db_settings.validate()
