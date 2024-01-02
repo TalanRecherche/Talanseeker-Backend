@@ -4,6 +4,7 @@ import os
 import openai
 from dotenv import load_dotenv
 
+from app.exceptions.exceptions import VarEnvError
 from app.settings.load_llm_settings import load_llm_settings
 
 
@@ -162,6 +163,40 @@ class OpenAISettings:
         return os.environ.get("OPENAI__API_TYPE")
 
 
+class DbSettings:
+    """Database variables."""
+
+    @property
+    def name(self) -> str:  # noqa: N802
+        """database name"""
+        return os.environ.get("DB__NAME")
+
+    @property
+    def username(self) -> str:  # noqa: N802
+        """database username"""
+        return os.environ.get("DB__USER_NAME")
+
+    @property
+    def pwd(self) -> str:  # noqa: N802
+        """database password
+        make sure to encode the password"""
+        return os.environ.get("DB__PWD")
+
+    @property
+    def host(self) -> str:  # noqa: N802
+        """database host url"""
+        return os.environ.get("DB__HOST")
+
+    @property
+    def port(self) -> str:  # noqa: N802
+        """database port"""
+        return os.environ.get("DB__PORT")
+
+    @staticmethod
+    def validate() -> None:
+        if DbSettings.name is None :
+            raise VarEnvError
+
 class EmbedderSettings:
     """Embedder settings."""
 
@@ -268,6 +303,11 @@ class Settings:
     def query_router_settings(self) -> QueryRouterSettings:
         """Query router settings."""
         return QueryRouterSettings()
+
+    @property
+    def db_settings(self) -> DbSettings:
+        """Database settings."""
+        return DbSettings()
 
 
 # run once to load env variables.

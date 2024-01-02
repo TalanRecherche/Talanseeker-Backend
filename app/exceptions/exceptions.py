@@ -7,3 +7,9 @@ class UserIntegrityError(Exception):
 
 class CvExceptionError(Exception):
     pass
+
+class DbError(Exception):
+    pass
+
+class VarEnvError(Exception):
+    pass

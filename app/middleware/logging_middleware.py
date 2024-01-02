@@ -60,3 +60,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.url_path = request.url.path
         logger.status_code = response.status_code
         logger.log()
+
+    def cv_manager_logger(self, request: Request, response: str) -> None:
+        pass

@@ -24,3 +24,7 @@ class ExceptionConfig:
         status_code=404,
         message="!!!",
     )
+    db_exception = ExceptionMetaData(
+        status_code=500,
+        message="DB Error",
+    )
