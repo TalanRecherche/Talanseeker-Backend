@@ -32,7 +32,7 @@ def setup_data():
     )
 
     # select best candidates
-    selector = CandidatesSelector(settings)
+    selector = CandidatesSelector()
     (
         candidates_chunks,
         candidates_collabs,
@@ -40,7 +40,7 @@ def setup_data():
         candidates_profiles,
     ) = selector.select_candidates(df_chunks, df_collabs, df_cvs, df_profiles, df_query)
     # get chatbot response
-    chatbot = Chatbot(settings)
+    chatbot = Chatbot()
     response, query_sent = chatbot.get_chatbot_response(
         df_query,
         candidates_chunks,

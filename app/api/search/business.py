@@ -9,7 +9,6 @@ from app.schema.search import (
     SearchRequest,
     SearchResponse,
 )
-from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
@@ -66,8 +65,7 @@ def row_to_candidate_schema(
 
 def search_business(request: SearchRequest) -> SearchResponse:
     response = SearchResponse()
-    settings = Settings()
-    fetcher = PGfetcher(settings)
+    fetcher = PGfetcher()
     chunks, collabs, cvs, profiles = fetcher.fetch_all(filters=request)
 
     profiles_data = collabs.merge(profiles, on="collab_id")

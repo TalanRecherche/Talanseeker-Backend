@@ -28,3 +28,11 @@ class ExceptionConfig:
         status_code=500,
         message="DB Error",
     )
+    settings_exception = ExceptionMetaData(
+        status_code=500,
+        message="Settings Error",
+    )
+    blob_storage_exception = ExceptionMetaData(
+        status_code=500,
+        message="BS Error",
+    )

@@ -15,7 +15,7 @@ settings = Settings()
 
 @pytest.fixture(scope="module")
 def setup_data():
-    fetcher = PGfetcher(settings)
+    fetcher = PGfetcher()
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all()
     return df_chunks, df_collabs, df_cvs, df_profiles
 

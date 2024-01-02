@@ -11,5 +11,7 @@ class CvExceptionError(Exception):
 class DbError(Exception):
     pass
 
-class VarEnvError(Exception):
+class SettingsError(Exception):
+    pass
+class BlobStorageError(Exception):
     pass

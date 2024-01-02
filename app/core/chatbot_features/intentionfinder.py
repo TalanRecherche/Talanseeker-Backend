@@ -8,7 +8,7 @@ from langchain.llms import AzureOpenAI
 
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings.settings import Settings
+from app.settings import settings
 
 
 class IntentionFinder:
@@ -37,7 +37,7 @@ class IntentionFinder:
         #>>> res_to_send_to_cvranker.to_csv("test_guessintention1.csv", index=None)
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         """Initializes the class.
 
         Args:
@@ -356,15 +356,3 @@ class IntentionFinder:
             err = f"format {_format} not implemented"
             raise NotImplementedError(err)
         return output_prepared
-
-
-if __name__ == "__main__":
-    settings = Settings()
-    QUERY_EXAMPLE = "Trouve moi deux data scientists"
-    intention_finder = IntentionFinder(settings)
-    result = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(result)  # noqa: T201
-    QueryStruct.validate_dataframe(result)
-    from app.core.shared_modules.dataframehandler import DataFrameHandler
-
-    DataFrameHandler.save_df(result, "tests/data_testdf_struct_query.pkl")
