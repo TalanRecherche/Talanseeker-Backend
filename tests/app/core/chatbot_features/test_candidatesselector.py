@@ -35,7 +35,7 @@ def setup_data():
     )
 
     # select best candidates
-    selector = CandidatesSelector(settings)
+    selector = CandidatesSelector()
     (
         candidates_chunks,
         candidates_collabs,

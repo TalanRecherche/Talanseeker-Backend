@@ -32,7 +32,7 @@ def setup_data():
     chunker = Chunker()
     df_chunks = chunker.chunk_documents(text_df)
     # parse the chunks
-    parser = LLMParser(settings)
+    parser = LLMParser()
     parsed_chunks = parser.parse_all_chunks(df_chunks)
     return parsed_chunks
 

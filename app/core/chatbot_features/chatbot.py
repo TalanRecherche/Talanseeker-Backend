@@ -16,7 +16,7 @@ from app.core.models.query_pandasmodels import QueryStruct
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.tokenshandler import TokenHandler
-from app.settings.settings import Settings
+from app.settings import settings
 
 
 def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:
@@ -29,7 +29,7 @@ def _make_final_query_string(query_footer: str, query_contexts: dict) -> str:
 
 
 class Chatbot:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         self.system_string = settings.chatbot_settings.chatbot_system_template
         self.context_string = settings.chatbot_settings.chatbot_context_template
         self.query_string = settings.chatbot_settings.chatbot_query_template

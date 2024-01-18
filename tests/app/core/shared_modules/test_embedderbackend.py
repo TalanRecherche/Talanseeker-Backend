@@ -4,10 +4,8 @@ Features:
 import pytest
 
 from app.core.shared_modules.embedderbackend import EmbedderBackend
-from app.settings.settings import Settings
 
-settings = Settings()
-embedder = EmbedderBackend(settings)
+embedder = EmbedderBackend()
 
 
 @pytest.mark.skip_this(

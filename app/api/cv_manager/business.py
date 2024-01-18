@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 
 from fastapi import HTTPException, Response, UploadFile
 
-from app.core import azure_blob_manager, azure_pg_manager
+from app.core.azure_modules import azure_blob_manager, azure_pg_manager
 from app.core.shared_modules.stringhandler import StringHandler
 from app.exceptions.exceptions import CvExceptionError
 from app.models.collabs import PgCollabs
@@ -36,6 +36,7 @@ class CVManagerBusiness:
                 logging.info(log_string)
                 CVManagerBusiness.start_etl(temp_dir, cv_names)
             else:
+                logging.warning("Collab doesn't exist")
                 raise HTTPException(status_code=412, detail="Collaborateur introuvable")
 
         return {
@@ -53,6 +54,8 @@ class CVManagerBusiness:
             file = azure_blob_manager.download_file(file_name)
             return Response(
                 status_code=200,
+                headers={
+                    "Content-Disposition": f"attachment; filename={file_name}"},
                 content=file,
                 media_type="application/octet-stream",
             )
@@ -82,9 +85,7 @@ class CVManagerBusiness:
 
     @staticmethod
     def start_etl(data_path: str, collab_ids: dict) -> None:
-        from app.settings.settings import Settings
 
-        settings = Settings()
         # =============================================================================
         # # extract text
         # =============================================================================
@@ -115,14 +116,14 @@ class CVManagerBusiness:
         # =============================================================================
         from app.core.cv_information_retrieval.chunkembedder import ChunkEmbedder
 
-        embedder = ChunkEmbedder(settings=settings)
+        embedder = ChunkEmbedder()
         df_embeddings = embedder.embed_chunk_dataframe(df_chunks)
         # =============================================================================
         # # parse the chunks
         # =============================================================================
         from app.core.cv_information_retrieval.llm_parser import LLMParser
 
-        parser = LLMParser(settings=settings)
+        parser = LLMParser()
         parsed_chunks = parser.parse_all_chunks(df_chunks)
         # =============================================================================
         # # consolidate CVs

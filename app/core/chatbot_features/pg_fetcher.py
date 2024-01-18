@@ -19,13 +19,14 @@ from app.models.chunks import ChunkModel
 from app.models.collabs import PgCollabs
 from app.models.cvs import PgCvs
 from app.schema.chatbot import ChatbotRequest, Filters
-from app.settings.settings import Settings
+from app.schema.search import SearchRequest
+from app.settings import settings
 
 
 class PGfetcher:
     """Connects to postgres and fetches tables after filtering"""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         self.settings = settings
 
     # =============================================================================
@@ -33,7 +34,7 @@ class PGfetcher:
     # =============================================================================
     def fetch_all(
             self,
-            filters: ChatbotRequest = None,
+            filters: ChatbotRequest | SearchRequest = None,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Fetch all profiles from the PostGres db.
         The other tables (chunks, cvs, collabs) are only fetched

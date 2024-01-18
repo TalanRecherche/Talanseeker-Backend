@@ -28,7 +28,7 @@ def setup_data():
     structured_query = pd.read_pickle(query_structured_path)
 
     # prepare query
-    transformer = QueryTransformer(settings)
+    transformer = QueryTransformer()
     query_row = structured_query.iloc[[0]]
     query_keywords = transformer.get_keywords_query(query_row)
     query_embeddings = transformer.get_embedded_query(query_row)

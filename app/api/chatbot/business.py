@@ -20,7 +20,6 @@ from app.schema.chatbot import (
     GeneralInformation,
 )
 from app.schema.search import CvsInformation
-from app.settings.settings import Settings
 
 
 def df_to_candidate_schema(
@@ -82,13 +81,12 @@ def row_to_candidate_schema(
 
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     chatbot_response = ChatbotResponse()
-    settings = Settings()
 
     # check if query is meaningful and related to staffing
-    router = QueryRouter(settings)
+    router = QueryRouter()
     query_valid_bool = router.get_router_response(chatbot_request.user_query)
     if query_valid_bool:
-        chatbot_business_helper(chatbot_request, settings, chatbot_response)
+        chatbot_business_helper(chatbot_request, chatbot_response)
 
     else:
         chatbot_response.question_valid = False
@@ -102,16 +100,15 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
 
 def chatbot_business_helper(
         chatbot_request: ChatbotRequest,
-        settings: Settings,
         chatbot_response: ChatbotResponse,
 ) -> None:
     t = time.time()
     # Structure Query using IntentionFinderSettings
-    intention_finder = IntentionFinder(settings)
+    intention_finder = IntentionFinder()
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
 
     # Fetch data from postgres
-    fetcher = PGfetcher(settings)
+    fetcher = PGfetcher()
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
@@ -119,7 +116,7 @@ def chatbot_business_helper(
 
     t = time.time()
     # Select best candidates
-    selector = CandidatesSelector(settings)
+    selector = CandidatesSelector()
     chunks, collabs, cvs, profiles = selector.select_candidates(
         df_chunks,
         df_collabs,
@@ -142,7 +139,7 @@ def chatbot_business_helper(
 
     t = time.time()
     # Send candidates data to chatbot and get answer
-    chatbot = Chatbot(settings)
+    chatbot = Chatbot()
     response, query_sent = chatbot.get_chatbot_response(
         guess_intention_query,
         chunks,

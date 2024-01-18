@@ -1,3 +1,3 @@
-"""Created by agarc the 21/11/2023.
-Features:
-"""
+from app.settings.settings import Settings
+
+settings = Settings()
