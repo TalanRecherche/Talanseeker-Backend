@@ -19,14 +19,15 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         self.general_logger(request, response)
 
-        response_body = await self._build_request_body(response)
 
         if request.url.path == "/api/v1/chatbot":
+            response_body = await self._build_request_body(response)
             self.chatbot_logger(request, response_body)
 
-        return Response(content=response_body, status_code=response.status_code,
+            return Response(content=response_body, status_code=response.status_code,
                         headers=dict(response.headers), media_type=response.media_type)
 
+        return response
     async def _build_request_body(self, response: StreamingResponse) -> str:
         response_body = b""
         async for chunk in response.body_iterator:

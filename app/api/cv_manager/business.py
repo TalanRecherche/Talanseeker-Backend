@@ -54,6 +54,8 @@ class CVManagerBusiness:
             file = azure_blob_manager.download_file(file_name)
             return Response(
                 status_code=200,
+                headers={
+                    "Content-Disposition": f"attachment; filename={file_name}"},
                 content=file,
                 media_type="application/octet-stream",
             )
