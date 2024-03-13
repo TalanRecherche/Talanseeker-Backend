@@ -9,6 +9,7 @@ from langchain.llms import AzureOpenAI
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
+from datetime import date
 
 
 class IntentionFinder:
@@ -85,6 +86,7 @@ class IntentionFinder:
         roles_dict = self._process_roleseeker_answer(output_roleseeker_llm)
         # extract infos with llm for each role
         res = self._extract_infos_per_role(user_query, _format, roles_dict)
+        print(res)
         return res
 
     def _prepare_roleseeker_template(self, uquery: str) -> str:
@@ -175,7 +177,9 @@ class IntentionFinder:
                 strict=False):
             # prepare prompt for llm
             uquery_template = self._prepare_template(user_query, role)
+            uquery_template = uquery_template.replace('DATETOSUBSITUTE', date.today().strftime("%Y-%m-%d"))
             # calling llm with prompt
+            print('uquery : ', type(uquery_template), uquery_template)
             output_llm = self.llm(uquery_template)
             # process output of llm
             ans = self._process_answer(output_llm, user_query, role, n_role)
@@ -299,6 +303,9 @@ class IntentionFinder:
         """
         ans = {}
         ans[QueryStruct.user_query] = self._wrap_txt_with_list(uquery)
+        ans[QueryStruct.start_date] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "Date de début"),
+        )
         ans[QueryStruct.simplified_query] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "simplified_mission"),
         )
