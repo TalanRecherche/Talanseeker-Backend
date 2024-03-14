@@ -304,7 +304,7 @@ QUERY_ROUTER:
     agent: non
 
     Utilisateur: Quel est le taux de placement de vos consultants ?
-    agent: non
+    agent: non 
 
     Utilisateur: Consultant data scientists pour mission chez EDF ?
     agent: oui
