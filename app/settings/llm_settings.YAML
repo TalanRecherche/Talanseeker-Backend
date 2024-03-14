@@ -307,7 +307,7 @@ QUERY_ROUTER:
     agent: non 
 
     Utilisateur: Consultant data scientists pour mission chez EDF ?
-    agent: oui
+    agent: oui 
 
     Utilisateur: {query}
     agent:
