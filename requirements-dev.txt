@@ -1,5 +1,5 @@
 pytest~=7.4.3
 pytest-dotenv==0.5.2
 pre-commit==3.5.0
-ruff==0.1.6
+ruff==0.3.2
 snakeviz

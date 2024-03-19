@@ -83,11 +83,11 @@ line-ending = "auto"
 max-line-length = 100
 
 # define immutables like fastapi.Depends
-[flake8-bugbear]
+[lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends",
     "fastapi.File", "fastapi.params.File",
     "fastapi.Query", "fastapi.params.Query"]
 
 # ignore built in python keywords
-[flake8-builtins]
+[lint.flake8-builtins]
 builtins-ignorelist = ["id", "type"]
