@@ -1,15 +1,16 @@
 """This module is used to process the user query
 and extract the intention of the user.
 """
+import datetime
 import logging
 
 import pandas as pd
+import pytz
 from langchain.llms import AzureOpenAI
 
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
-from datetime import date
 
 
 class IntentionFinder:
@@ -86,7 +87,6 @@ class IntentionFinder:
         roles_dict = self._process_roleseeker_answer(output_roleseeker_llm)
         # extract infos with llm for each role
         res = self._extract_infos_per_role(user_query, _format, roles_dict)
-        print(res)
         return res
 
     def _prepare_roleseeker_template(self, uquery: str) -> str:
@@ -177,9 +177,12 @@ class IntentionFinder:
                 strict=False):
             # prepare prompt for llm
             uquery_template = self._prepare_template(user_query, role)
-            uquery_template = uquery_template.replace('DATETOSUBSITUTE', date.today().strftime("%Y-%m-%d"))
+            # Obtenir la date et l'heure actuelles de Paris
+            tz_paris = pytz.timezone("Europe/Paris")
+            paris_date_time = datetime.datetime.now(tz=tz_paris)
+            curent_date_str = paris_date_time.strftime("%Y-%m-%d")
+            uquery_template = uquery_template.replace("DATETOSUBSITUTE", curent_date_str)
             # calling llm with prompt
-            print('uquery : ', type(uquery_template), uquery_template)
             output_llm = self.llm(uquery_template)
             # process output of llm
             ans = self._process_answer(output_llm, user_query, role, n_role)

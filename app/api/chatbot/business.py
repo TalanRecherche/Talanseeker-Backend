@@ -13,6 +13,7 @@ from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.chatbot_features.pg_fetcher import PGfetcher
 from app.core.chatbot_features.queryrouter import QueryRouter
 from app.core.models.pg_pandasmodels import CollabPg, CvPg, ProfilePg
+from app.core.models.query_pandasmodels import QueryStruct
 from app.schema.chatbot import (
     Candidate,
     ChatbotRequest,
@@ -20,7 +21,6 @@ from app.schema.chatbot import (
     GeneralInformation,
 )
 from app.schema.search import CvsInformation
-from app.core.models.query_pandasmodels import QueryStruct
 
 
 def df_to_candidate_schema(
