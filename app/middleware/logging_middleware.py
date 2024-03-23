@@ -38,19 +38,24 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         """
         log chatbot calls : request and reponse
         """
+        #initiate log
         logger = ChatbotLogs()
+        #log arguments from endpoint chatbot
         logger.user_query = request.query_params.get(ChatbotLogs.user_query.key)
         logger.region = request.query_params.get(ChatbotLogs.region.key)
         logger.assigned_until = request.query_params.get(ChatbotLogs.assigned_until.key)
         logger.availability_score = (
             request.query_params.get(ChatbotLogs.availability_score.key))
-
+        #log response from ednpoint chatbot
         response = json_loader(response)
-
         logger.chatbot_response = response[ChatbotLogs.chatbot_response.key]
         logger.question_valid = response[ChatbotLogs.question_valid.key]
-        logger.candidates = ",".join([elem["general_information"]["collab_id"] for
-                                      elem in response[ChatbotLogs.candidates.key]])
+        if logger.question_valid:
+            logger.candidates = ",".join([elem["general_information"]["collab_id"] for
+                                        elem in response[ChatbotLogs.candidates.key]])
+        else:
+            logger.candidates = "0" #if the query is not about staffing there is no candidates
+        #create the log
         logger.log()
 
     def general_logger(self, request: Request, response: Response) -> None:
