@@ -27,3 +27,4 @@ _profiling.py
 tests/
 profile
 profile.prof
+.ipynb_checkpoints
