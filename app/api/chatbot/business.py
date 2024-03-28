@@ -109,7 +109,7 @@ def chatbot_business_helper(
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
 
     # Fetch data from postgres
-    chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date][0][0]
+    chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0] #get the
     fetcher = PGfetcher()
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
