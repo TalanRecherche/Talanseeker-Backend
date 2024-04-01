@@ -15,7 +15,7 @@ from unidecode import unidecode
 from app.core.models.etl_pandasmodels import ChunkDF, ParsedDF
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings.settings import Settings
+from app.settings import settings
 
 
 class LLMParser:
@@ -26,7 +26,7 @@ class LLMParser:
     This information is appended to a new dataframe one row per chunk
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         # set up openai environment
         # setup backend llm
         self.engine = settings.ETL_settings.ETL_llm_model
@@ -276,33 +276,3 @@ class LLMParser:
     def _make_system(self) -> str:
         """Place holder for future updates"""
         return self.system_template_string
-
-
-if __name__ == "__main__":
-    settings = Settings()
-    directory = r"./tests/data_test/PeterTille.docx"
-    # prepare {filenames : collab_id} map from the main
-    from app.core.shared_modules.pathexplorer import PathExplorer
-
-    files = PathExplorer.get_all_paths_with_extension_name(directory)
-    collab_ids = {
-        files[ii]["file_full_name"]: str(ii * 1231) for ii in range(len(files))
-    }
-
-    # extract text from CVs
-    from app.core.cv_information_retrieval.filemassextractor import FileMassExtractor
-
-    extractor = FileMassExtractor()
-    text_df = extractor.read_all_documents(directory, collab_ids)
-
-    # chunks documents
-    from app.core.cv_information_retrieval.chunker import Chunker
-
-    chunker = Chunker()
-    df_chunks = chunker.chunk_documents(text_df)
-
-    # parse the chunks
-    parser = LLMParser(settings)
-    parsed_chunks = parser.parse_all_chunks(df_chunks)
-
-    print(parsed_chunks)  # noqa: T201

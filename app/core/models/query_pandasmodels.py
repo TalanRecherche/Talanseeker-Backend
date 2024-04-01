@@ -14,6 +14,7 @@ class QueryStruct(ParentPandasModel):
 
     # keys of the dataframe
     user_query = "user_query"  # appears on all rows
+    start_date = "start_date"
     simplified_query = "simplified_query"  # appears on all rows
     nb_profiles = "nb_profiles"  # number of row-wise profile to get
     years = "years"

@@ -3,6 +3,7 @@ from json import loads as json_loader
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import StreamingResponse
 from starlette.types import ASGIApp
 
 from app.models.chatbot_logger import ChatbotLogs
@@ -18,32 +19,43 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         self.general_logger(request, response)
 
+
+        if request.url.path == "/api/v1/chatbot":
+            response_body = await self._build_request_body(response)
+            self.chatbot_logger(request, response_body)
+
+            return Response(content=response_body, status_code=response.status_code,
+                        headers=dict(response.headers), media_type=response.media_type)
+
+        return response
+    async def _build_request_body(self, response: StreamingResponse) -> str:
         response_body = b""
         async for chunk in response.body_iterator:
             response_body += chunk
+        return response_body.decode()
 
-        if request.url.path == "/api/v1/chatbot":
-            self.chatbot_logger(request, response_body)
-
-        return Response(content=response_body, status_code=response.status_code,
-                        headers=dict(response.headers), media_type=response.media_type)
-
-    def chatbot_logger(self, request: Request, response: bytes) -> None:
+    def chatbot_logger(self, request: Request, response: str) -> None:
         """
         log chatbot calls : request and reponse
         """
+        #initiate log
         logger = ChatbotLogs()
+        #log arguments from endpoint chatbot
         logger.user_query = request.query_params.get(ChatbotLogs.user_query.key)
         logger.region = request.query_params.get(ChatbotLogs.region.key)
         logger.assigned_until = request.query_params.get(ChatbotLogs.assigned_until.key)
         logger.availability_score = (
             request.query_params.get(ChatbotLogs.availability_score.key))
-
-        response = json_loader(response.decode())
-
+        #log response from ednpoint chatbot
+        response = json_loader(response)
         logger.chatbot_response = response[ChatbotLogs.chatbot_response.key]
         logger.question_valid = response[ChatbotLogs.question_valid.key]
-        logger.candidates = str(response[ChatbotLogs.candidates.key])
+        if logger.question_valid:
+            logger.candidates = ",".join([elem["general_information"]["collab_id"] for
+                                        elem in response[ChatbotLogs.candidates.key]])
+        else:
+            logger.candidates = "0" #if the query is not about staffing there is no candidates
+        #create the log
         logger.log()
 
     def general_logger(self, request: Request, response: Response) -> None:
@@ -54,3 +66,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.url_path = request.url.path
         logger.status_code = response.status_code
         logger.log()
+
+    def cv_manager_logger(self, request: Request, response: str) -> None:
+        pass

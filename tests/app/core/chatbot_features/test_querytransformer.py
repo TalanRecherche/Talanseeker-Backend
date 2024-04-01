@@ -7,7 +7,6 @@ import pandas as pd
 import pytest
 
 from app.core.chatbot_features.querytransformer import QueryTransformer
-from app.core.shared_modules.dataframehandler import DataFrameHandler
 from app.settings.settings import Settings
 
 settings = Settings()
@@ -22,7 +21,7 @@ def setup_data():
 
 def test_keywords_retrieval_output_format(setup_data):
     structured_query = setup_data
-    transformer = QueryTransformer(settings)
+    transformer = QueryTransformer()
     for _, row in structured_query.iterrows():
         query_row = pd.DataFrame(row).T
         keywords = transformer.get_keywords_query(query_row)
@@ -34,7 +33,7 @@ def test_keywords_retrieval_output_format(setup_data):
 )
 def test_embeddings_retrieval_output_format(setup_data):
     structured_query = setup_data
-    transformer = QueryTransformer(settings)
+    transformer = QueryTransformer()
     for _, row in structured_query.iterrows():
         query_row = pd.DataFrame(row).T
         embeddings = transformer.get_embedded_query(query_row)

@@ -17,7 +17,7 @@ import pandas as pd
 def test_01_structured_query_format():
     settings = Settings()
     user_query = "Trouve moi deux data scientists"
-    intention_finder = IntentionFinder(settings)
+    intention_finder = IntentionFinder()
     structured_query = intention_finder.guess_intention(user_query)
 
     assert QueryStruct.validate_dataframe(structured_query)

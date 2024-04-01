@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from app.core.azure_modules.azure_pg_manager import AzurePGManager
+from app.core.azure_modules import azure_pg_manager
 from app.core.azure_modules.models import UpsertPolicies
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.shared_modules.stringhandler import StringHandler
@@ -116,7 +116,7 @@ class KimbleUpdater:
             logging.warning("Start updating Kimble")
             data = pd.read_excel(file)
             data = KimbleUpdater.process_data(data)
-            AzurePGManager.save_to_db(PgCollabs, data, UpsertPolicies.ERASE)
+            azure_pg_manager.save_to_db(PgCollabs, data, UpsertPolicies.ERASE)
             KimbleUpdater.clean_db()
             logging.warning("Update Kimble finished")
         except Exception as e:
@@ -132,4 +132,4 @@ class KimbleUpdater:
             PgCvs.__tablename__,
             PG_Profiles.__tablename__,
         ]:
-            AzurePGManager.execute_raw_req(req.format(table_name))
+            azure_pg_manager.execute_raw_req(req.format(table_name))

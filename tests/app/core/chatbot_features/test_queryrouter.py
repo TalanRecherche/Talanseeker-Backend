@@ -29,7 +29,7 @@ def test_queryrouter(setup_data):
     queries = setup_data
 
     settings = Settings()
-    router = QueryRouter(settings)
+    router = QueryRouter()
 
     for query, label in queries.items():
         response = router.get_router_response(query)

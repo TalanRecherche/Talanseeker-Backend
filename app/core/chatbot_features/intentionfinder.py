@@ -1,14 +1,16 @@
 """This module is used to process the user query
 and extract the intention of the user.
 """
+import datetime
 import logging
 
 import pandas as pd
+import pytz
 from langchain.llms import AzureOpenAI
 
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings.settings import Settings
+from app.settings import settings
 
 
 class IntentionFinder:
@@ -37,7 +39,7 @@ class IntentionFinder:
         #>>> res_to_send_to_cvranker.to_csv("test_guessintention1.csv", index=None)
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         """Initializes the class.
 
         Args:
@@ -175,6 +177,11 @@ class IntentionFinder:
                 strict=False):
             # prepare prompt for llm
             uquery_template = self._prepare_template(user_query, role)
+            # Obtenir la date et l'heure actuelles de Paris
+            tz_paris = pytz.timezone("Europe/Paris")
+            paris_date_time = datetime.datetime.now(tz=tz_paris)
+            curent_date_str = paris_date_time.strftime("%Y-%m-%d")
+            uquery_template = uquery_template.replace("DATETOSUBSITUTE", curent_date_str)
             # calling llm with prompt
             output_llm = self.llm(uquery_template)
             # process output of llm
@@ -299,6 +306,9 @@ class IntentionFinder:
         """
         ans = {}
         ans[QueryStruct.user_query] = self._wrap_txt_with_list(uquery)
+        ans[QueryStruct.start_date] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "Date de début"),
+        )
         ans[QueryStruct.simplified_query] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "simplified_mission"),
         )
@@ -356,15 +366,3 @@ class IntentionFinder:
             err = f"format {_format} not implemented"
             raise NotImplementedError(err)
         return output_prepared
-
-
-if __name__ == "__main__":
-    settings = Settings()
-    QUERY_EXAMPLE = "Trouve moi deux data scientists"
-    intention_finder = IntentionFinder(settings)
-    result = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(result)  # noqa: T201
-    QueryStruct.validate_dataframe(result)
-    from app.core.shared_modules.dataframehandler import DataFrameHandler
-
-    DataFrameHandler.save_df(result, "tests/data_testdf_struct_query.pkl")

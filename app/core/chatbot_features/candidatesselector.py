@@ -13,7 +13,6 @@ from app.core.chatbot_features.scoreroverall import ScorerOverall
 from app.core.models.pg_pandasmodels import CollabPg, CvPg
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
-from app.settings.settings import Settings
 
 
 class CandidatesSelector:
@@ -21,8 +20,8 @@ class CandidatesSelector:
     It then finds best candidates and returns their dataframes
     """
 
-    def __init__(self, settings: Settings) -> None:
-        self.queryTransformer = QueryTransformer(settings)
+    def __init__(self) -> None:
+        self.queryTransformer = QueryTransformer()
         self.scorer = ScorerOverall()
 
     # =============================================================================
@@ -205,30 +204,3 @@ class CandidatesSelector:
             df_candidates_cvs,
             df_candidates_profiles,
         )
-
-
-# %%
-if __name__ == "__main__":
-    settings = Settings()
-    # get fake Jordan query
-    from app.core.chatbot_features.intentionfinder import IntentionFinder
-
-    QUERY_EXAMPLE = "Trouve moi 3 consultants pour une mission dans la banque"
-    intention_finder = IntentionFinder(settings)
-    df_query = intention_finder.guess_intention(QUERY_EXAMPLE)
-    print(df_query)  # noqa: T201
-
-    # fetch from postgres with filters based on query
-    from app.core.chatbot_features.pg_fetcher import PGfetcher
-
-    PGfetcher = PGfetcher(settings)
-    df_chunks, df_collabs, df_cvs, df_profiles = PGfetcher.fetch_all()
-
-    # select best candidates
-    selector = CandidatesSelector(settings)
-    (
-        candidates_chunks,
-        candidates_collabs,
-        candidates_cvs,
-        candidates_profiles,
-    ) = selector.select_candidates(df_chunks, df_collabs, df_cvs, df_profiles, df_query)

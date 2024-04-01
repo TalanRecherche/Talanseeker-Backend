@@ -11,15 +11,14 @@ from app.core.models.query_pandasmodels import QueryKeywords, QueryStruct
 from app.core.shared_modules.embedderbackend import EmbedderBackend
 from app.core.shared_modules.listhandler import ListHandler
 from app.core.shared_modules.stringhandler import StringHandler
-from app.settings.settings import Settings
 
 
 class QueryTransformer:
     """This class generate the keywords/semantic queries to compute similarities."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         # initialize embedder to vectorized query for semantic search
-        self.embedder = EmbedderBackend(settings)
+        self.embedder = EmbedderBackend()
 
     # =============================================================================
     # user functions
