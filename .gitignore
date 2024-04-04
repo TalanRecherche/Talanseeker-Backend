@@ -28,3 +28,4 @@ tests/
 profile
 profile.prof
 .ipynb_checkpoints
+.DS_Store
