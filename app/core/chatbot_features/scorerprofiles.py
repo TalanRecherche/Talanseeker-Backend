@@ -4,6 +4,8 @@
 
 """
 
+import logging
+
 import numpy as np
 import pandas as pd
 from Levenshtein import distance
@@ -63,8 +65,16 @@ class ScorerProfiles:
         # normalise
         embedded_query_norm = embedded_query_np / np.linalg.norm(embedded_query_np)
 
-        # Extract the chunk embeddings as a NumPy array
-        chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
+        try:
+            chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
+        except Exception:
+            #get the list of NaN chunks
+            idx_to_check = df_chunks[df_chunks.isna().any(axis=1)][ChunkPg.chunk_id].index.to_list()
+            #delete NaN
+            df_chunks.dropna(inplace=True) #solution temporelle
+            logging.exception(f"Msg : NaN chunks, chunk_id : \n {idx_to_check}")
+            chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
+
         # normalise
         chunk_embeddings_norm = chunk_embeddings / np.linalg.norm(
             chunk_embeddings,
@@ -72,12 +82,15 @@ class ScorerProfiles:
             keepdims=True,
         )
 
+
         # Compute the cosine similarity using vectorized operations
         dot_product = np.dot(chunk_embeddings_norm, embedded_query_norm)
+
         cosine_similarity = dot_product
 
         # Assign the computed cosine similarity to the DataFrame
         df_chunks[ScoredChunksDF.semantic_score] = cosine_similarity
+
         return df_chunks
 
     def assign_scores_to_profiles(
