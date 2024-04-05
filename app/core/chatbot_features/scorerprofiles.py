@@ -4,9 +4,10 @@
 
 """
 
+import logging
+
 import numpy as np
 import pandas as pd
-import logging
 from Levenshtein import distance
 
 from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
@@ -66,30 +67,30 @@ class ScorerProfiles:
 
         try:
             chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
-        except:
+        except Exception:
             #get the list of NaN chunks
             idx_to_check = df_chunks[df_chunks.isna().any(axis=1)][ChunkPg.chunk_id].index.to_list()
-            #delete NaN 
+            #delete NaN
             df_chunks.dropna(inplace=True) #solution temporelle
-            logging.warning(f"Msg : There are some NaN in df_chunks. List of chunk_id : \n {idx_to_check}")
+            logging.exception(f"Msg : NaN chunks, chunk_id : \n {idx_to_check}")
             chunk_embeddings = np.stack(df_chunks[ChunkPg.chunk_embeddings].values)
-        
+
         # normalise
         chunk_embeddings_norm = chunk_embeddings / np.linalg.norm(
             chunk_embeddings,
             axis=1,
             keepdims=True,
         )
-        
+
 
         # Compute the cosine similarity using vectorized operations
         dot_product = np.dot(chunk_embeddings_norm, embedded_query_norm)
-        
+
         cosine_similarity = dot_product
 
         # Assign the computed cosine similarity to the DataFrame
         df_chunks[ScoredChunksDF.semantic_score] = cosine_similarity
-        
+
         return df_chunks
 
     def assign_scores_to_profiles(
