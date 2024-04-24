@@ -94,12 +94,12 @@ class Chatbot:
         #2 init
         response = ""
 
-        #2 iteration through all profiles 
+        #3 iteration through all profiles 
         for index,row in profiles_collabs.iterrows():
 
             #1 structured profile inforamtion
             #get prenom nom
-            prenom, nom = row["name"], row["surname"]
+            name, surname = row["name"], row["surname"]
 
             #get collab_id
             collab_id = row["collab_id"]
@@ -114,37 +114,27 @@ class Chatbot:
             #get cv
             cv_full_name = self._get_cv_candidate(candidates_cvs, collab_id)
 
-            #2 call llm to indentify the strength of the profile
+            #2 indentify the strength of the profile
             list_top_chunks = self._get_top_chunks(candidates_chunks,
                                                    collab_id,
                                                    top_k=3)
             
-            #on récupère la user_query
-            query_user = guessintention_query["user_query"].values[0][0]
-            prompt = f"""
-            Vous êtes un assistant d'aide au staffing.
-            Vous répondez de manière courte.
-            Expliquez en une phrase pourquoi {prenom} {nom} et un bon candidat pour la requête suivante {query_user}.
-            Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {prenom} {nom} :
-            {list_top_chunks}
-            """
-
-            relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt, system_function="")
-
-            #3 create profile info to display to user
+            relevant_qualities_str = self._get_relevant_skills(guessintention_query,
+                                                               name, surname, list_top_chunks)
+            
+            #3 create the response for the user
             profile_info_str = f"""
-            {prenom} {nom} \n
+            {name} {surname} \n
             \tDisponible à partir du {availability_date}
-            \tManager : {manager}
+            \tManager à contacter : {manager} 
             \tCV : {cv_full_name}\n
             \tQualités :{relevant_qualities_str}
             \n\n
             """
-
             #add to response
             response += profile_info_str
-        #LLM
-        #self._relevant_skills(guessintention_query, candidates_chunks, candidate_collabs, candidates_profiles)
+        
+        #temporary
         query_string = ""
          
 
@@ -204,6 +194,37 @@ class Chatbot:
 
         return list_top_chunks
 
+    def _get_relevant_skills(self,
+                            guessintention_query: pd.DataFrame,
+                            name: str,
+                            surname: str, 
+                            list_top_chunks: list[str]) -> str:
+        """
+        Call the llm to determine a list of relevant skills based on a list of chunks to reply to the user query
+
+        Args:
+            guessintention_query (pd.DataFrame)
+            name (str)
+            surname (str)
+            list_top_chunks (list[str])
+
+        Returns:
+            str : response from llm
+
+        """
+
+        query_user = guessintention_query["user_query"].values[0][0]
+        prompt = f"""
+        Vous êtes un assistant d'aide au staffing.
+        Vous répondez de manière courte.
+        Expliquez en une phrase pourquoi {name} {surname} et un bon candidat pour la requête suivante {query_user}.
+        Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {name} {surname} :
+        {list_top_chunks}
+        """
+
+        relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt, system_function="")
+
+        return relevant_qualities_str
 
     def _relevant_skills(self, 
                         guessintention_query: pd.DataFrame,
