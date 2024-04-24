@@ -2,6 +2,15 @@ EMBEDDER:
   EMBEDDER_MODEL: text-embedding-ada-002
   ENCODING_NAME: cl100k_base
 
+CHATBOT_CANDIDATE_QUALITIES:
+  LLM_MODEL: gpt-35-turbo
+  SYSTEM_TEMPLATE: |
+    Vous êtes un assistant d'aide au staffing.
+    Vous répondez de manière courte.
+  QUERY_TEMPLATE: |
+    Expliquez en une phrase pourquoi {name} {surname} et un bon candidat pour la requête suivante {query_user}.
+    Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {name} {surname} :
+    {list_top_chunks}
 
 CHATBOT:
   LLM_MODEL: gpt-35-turbo

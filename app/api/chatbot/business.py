@@ -107,6 +107,7 @@ def chatbot_business_helper(
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder()
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
+    logging.info(f"IntentionFinder: {time.time() - t}")
 
     # Fetch data from postgres
     chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0] #get the
@@ -114,7 +115,7 @@ def chatbot_business_helper(
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
-    logging.info(f"IntentionFinder: {time.time() - t}")
+    logging.info(f"PGfetcher: {time.time() - t}")
 
     t = time.time()
     # Select best candidates
@@ -139,14 +140,16 @@ def chatbot_business_helper(
     )
     logging.info(f"Make candidates: {time.time() - t}")
 
+
     t = time.time()
     # Send candidates data to chatbot and get answer
     chatbot = Chatbot()
-    response, query_sent = chatbot.get_chatbot_response(
+    response = chatbot.get_chatbot_response(
         guess_intention_query,
         chunks,
         collabs,
         profiles,
+        cvs
     )
     logging.info(f"Chatbot response: {time.time() - t}")
 
