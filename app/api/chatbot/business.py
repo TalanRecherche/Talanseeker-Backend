@@ -149,6 +149,7 @@ def chatbot_business_helper(
         chunks,
         collabs,
         profiles,
+        cvs
     )
     logging.info(f"Chatbot response: {time.time() - t}")
     #dev à supprimer
@@ -156,6 +157,7 @@ def chatbot_business_helper(
     chunks.to_parquet("_dev/chunks.parquet")
     collabs.to_parquet("_dev/collabs.parquet")
     profiles.to_parquet("_dev/profiles.parquet")
+    cvs.to_parquet("_dev/cvs.parquet")
 
     chatbot_response.chatbot_response = response
 

@@ -72,6 +72,7 @@ class Chatbot:
         candidates_chunks: pd.DataFrame,
         candidate_collabs: pd.DataFrame,
         candidates_profiles: pd.DataFrame,
+        candidates_cvs: pd.DataFrame
     ) -> tuple[str, str] | None:
         """Format queries to fit chunks and information into template.
         Send system and query to the llm
@@ -114,9 +115,10 @@ class Chatbot:
             #get dispo 
             availability_score = row["availability_score"]
             availability_date = row["assigned_until"]
-            print("availability_date")
-            print(type(availability_date))
-            print(availability_date)
+
+            #get cv
+            candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
+            cv_full_name = candidate_cvs.iloc[-1,2] #pour l'instant on prend le dernier cv du candidate ajouté à la base de donnée
 
             #2 call llm to indentify the strength of the profile
             #get top k chunk
@@ -139,23 +141,20 @@ class Chatbot:
             Vous êtes un assistant d'aide au staffing.
             Vous répondez de manière courte.
             Expliquez en une phrase pourquoi {prenom} {nom} et un bon candidat pour la requête suivante {query_user}.
-            Pour expliquer votre réponse vous pouvez vous appuyer sur les 5 passages du cv de {prenom} {nom} :
+            Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {prenom} {nom} :
             {list_top_chunks}
             """
             relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt, system_function="")
 
             #3 create profile info
             profile_info_str = f"""
-            {profile_compte} :
             {prenom} {nom} \n
-            disponibilité kimble : {availability_score} %
-            disponible à partir du {availability_date}
-            manager : {manager}
-            cv : 2023-11-09 13_31_47 MOLLIEN Mathieu - CV - 202209.docx
-
-            Qualités :
-            {relevant_qualities_str}
-            -------------------------------"""
+            \tDisponible à partir du {availability_date}
+            \tManager : {manager}
+            \tCV : {cv_full_name}\n
+            \tQualités :{relevant_qualities_str}
+            \n\n
+            """
 
             #add to response
             response += profile_info_str
