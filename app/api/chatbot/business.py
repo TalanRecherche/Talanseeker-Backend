@@ -139,6 +139,7 @@ def chatbot_business_helper(
         cvs
     )
     logging.info(f"Make candidates: {time.time() - t}")
+    
 
     t = time.time()
     # Send candidates data to chatbot and get answer
@@ -150,6 +151,11 @@ def chatbot_business_helper(
         profiles,
     )
     logging.info(f"Chatbot response: {time.time() - t}")
+    #dev à supprimer
+    guess_intention_query.to_parquet("_dev/guess_intention_query.parquet")
+    chunks.to_parquet("_dev/chunks.parquet")
+    collabs.to_parquet("_dev/collabs.parquet")
+    profiles.to_parquet("_dev/profiles.parquet")
 
     chatbot_response.chatbot_response = response
 

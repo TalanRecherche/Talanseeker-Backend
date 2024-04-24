@@ -85,25 +85,115 @@ class Chatbot:
 
         """
         self.current_nb_tokens = 0
+        #Script
+        #1 join profile and collabs info
+        profiles_collabs = pd.merge(candidate_collabs, candidates_profiles, on="collab_id")
 
-        # make system function string (contains chunks)
-        system_string = self._make_system_string()
-        # make query string
-        user_query = guessintention_query.iloc[0][QueryStruct.user_query][0]
-        query_string = self._make_query_string(
-            user_query,
-            candidates_chunks,
-            candidate_collabs,
-            candidates_profiles,
-        )
+        #2 init
+        response = ""
+        compteur = 0
 
-        # get chatbot response
-        response = self.llm_backend.send_receive_message(query_string, system_string)
+        #2 iteration through all profiles 
+        for index,row in profiles_collabs.iterrows():
+
+            #1 structured profile inforamtion
+            #compte
+            compteur += 1
+            profile_compte = f"profile {compteur}"
+
+            #get prenom nom
+            prenom = row["name"]
+            nom = row["surname"]
+
+            #get collab_id
+            collab_id = row["collab_id"]
+
+            #get manager
+            manager = row["manager"]
+
+            #get dispo 
+            availability_score = row["availability_score"]
+            availability_date = row["assigned_until"]
+            print("availability_date")
+            print(type(availability_date))
+            print(availability_date)
+
+            #2 call llm to indentify the strength of the profile
+            #get top k chunk
+            #combien de chunk voulons nous pour construire la réponse du llm
+            top_k = 3
+            #df du des chunks du candidat
+            candidate_chunks = candidates_chunks.loc[candidates_chunks["collab_id"] == collab_id]
+
+            #on extrait les top_k chunks si cela est possible
+            if candidate_chunks.shape[0] >= top_k:#pas de souci il y a plus de chunks que le top_k
+                top_chunks = candidate_chunks["chunk_text"][:top_k]
+            else:#problème il y a moins de chunks que le top_k alors on prend tout
+                top_chunks = candidate_chunks["chunk_text"][:]
+
+            #on transforme en liste
+            list_top_chunks = top_chunks.to_list()
+            #on récupère la user_query
+            query_user = guessintention_query["user_query"].values[0][0]
+            prompt = f"""
+            Vous êtes un assistant d'aide au staffing.
+            Vous répondez de manière courte.
+            Expliquez en une phrase pourquoi {prenom} {nom} et un bon candidat pour la requête suivante {query_user}.
+            Pour expliquer votre réponse vous pouvez vous appuyer sur les 5 passages du cv de {prenom} {nom} :
+            {list_top_chunks}
+            """
+            relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt, system_function="")
+
+            #3 create profile info
+            profile_info_str = f"""
+            {profile_compte} :
+            {prenom} {nom} \n
+            disponibilité kimble : {availability_score} %
+            disponible à partir du {availability_date}
+            manager : {manager}
+            cv : 2023-11-09 13_31_47 MOLLIEN Mathieu - CV - 202209.docx
+
+            Qualités :
+            {relevant_qualities_str}
+            -------------------------------"""
+
+            #add to response
+            response += profile_info_str
+        #LLM
+        #self._relevant_skills(guessintention_query, candidates_chunks, candidate_collabs, candidates_profiles)
+        query_string = ""
+         
+
         return response, query_string
 
     # =============================================================================
     # internal functions
     # =============================================================================
+    def _relevant_skills(self, 
+                        guessintention_query: pd.DataFrame,
+                        candidates_chunks: pd.DataFrame,
+                        candidate_collabs: pd.DataFrame,
+                        candidates_profiles: pd.DataFrame) -> str:
+            # make system function string (contains chunks)
+            system_string = self._make_system_string()
+            print("")
+            print(f"{system_string =}")
+            # make query string
+            user_query = guessintention_query.iloc[0][QueryStruct.user_query][0]
+            query_string = self._make_query_string(
+                user_query,
+                candidates_chunks,
+                candidate_collabs,
+                candidates_profiles,
+            )
+            print("")
+            print(f"{query_string =}")
+
+            # get chatbot response
+            response = self.llm_backend.send_receive_message(query_string, system_string)
+            print("")
+            print(f"{response =}")
+
     def _make_system_string(self) -> str:
         system_string = self.system_string
         # increment number of tokens in context
