@@ -186,7 +186,6 @@ class Chatbot:
         Returns:
             str
         """
-        #url = https://talanseeker-dev.azurewebsites.net/api/v1/cv_manager/download?cv_id=4853a9ab2f5b0180febdb53e89a8c5feb59c196237d899c36779fe1499748de5&type=file
         try:
             candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
             #pour l'instant on prend le dernier cv du candidate ajouté à la base de données
