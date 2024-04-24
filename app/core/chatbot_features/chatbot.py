@@ -9,8 +9,10 @@ TDL:
 """
 import logging
 import re
+from datetime import datetime
 
 import pandas as pd
+import pytz
 
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
@@ -86,18 +88,18 @@ class Chatbot:
 
         """
         self.current_nb_tokens = 0
-        #Script
+
         #1 join profile and collabs info
         profiles_collabs = pd.merge(candidate_collabs, candidates_profiles, on="collab_id")
 
-        #2 init
+        #2 init output response
         response = ""
 
-        #3 iteration through all profiles
+        #3 iteration through all candidates
         for _,row in profiles_collabs.iterrows():
 
             #1 structured profile inforamtion
-            #get prenom nom
+            #get name surname
             name, surname = row["name"], row["surname"]
 
             #get collab_id
@@ -106,13 +108,13 @@ class Chatbot:
             #get manager
             manager = row["manager"]
 
-            #get dispo
-            availability_date = row["assigned_until"]
+            #get availability
+            availability_date = self._get_availability_date(row)
 
-            #get cv
+            #get latest cv
             cv_full_name = self._get_cv_candidate(candidates_cvs, collab_id)
 
-            #2 indentify the strength of the profile
+            #2 indentify the quality of the candidate from top chunks
             list_top_chunks = self._get_top_chunks(candidates_chunks,
                                                    collab_id,
                                                    top_k=3)
@@ -120,7 +122,7 @@ class Chatbot:
             relevant_qualities_str = self._get_relevant_skills(guessintention_query,
                                                                name, surname, list_top_chunks)
 
-            #3 create the response for the user
+            #3 aggregate all information for the user
             profile_info_str = f"""
             {name} {surname} \n
             \tDisponible à partir du {availability_date}
@@ -129,18 +131,40 @@ class Chatbot:
             \tQualités :{relevant_qualities_str}
             \n\n
             """
-            #add to response
+            #add to the output response
             response += profile_info_str
 
-        #temporary
-        query_string = ""
-
-
-        return response, query_string
+        return response
 
     # =============================================================================
     # internal functions
     # =============================================================================
+
+    def _get_availability_date(self, row: pd.Series) -> str:
+        """Retrieve and format the availability date of an item from the given series.
+
+        Args:
+            row (pd.Series): A series containing the data, typically a row from a pandas DataFrame.
+
+        Returns:
+            str: The formatted availability date in 'DD/MM/YYYY' format if available,
+            else 'Not provided'.
+        """
+        #get availibility date
+        availability_date_str = row["assigned_until"]
+
+        try:
+            tz_paris = pytz.timezone("Europe/Paris")
+            # Convert availability_date_str to datetime object
+            date_obj = datetime.strptime(availability_date_str,
+                                         "%Y-%m-%d").astimezone(tz_paris)
+            # Convert datetime obj to str with th following format 'DD/MM/YYYY'
+            availability_date = date_obj.strftime("%d/%m/%Y")
+        except Exception as e:
+            availability_date = "Non communiqué"
+            logging.exception("Cannot extract date from assigned_until %s", e)
+
+        return availability_date
 
     def _get_cv_candidate(self,
                           candidates_cvs: pd.DataFrame,
@@ -148,10 +172,10 @@ class Chatbot:
         """return cv file name based on the collab_id of the candidate
 
         Args:
-            candidates_cvs (pd.DataFrame): _description_
+            candidates_cvs (pd.DataFrame)
 
         Returns:
-            str: _description_
+            str
         """
         try:
             candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
