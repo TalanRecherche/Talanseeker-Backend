@@ -105,8 +105,14 @@ class Chatbot:
             #get collab_id
             collab_id = row["collab_id"]
 
+            #get city
+            city = row["city"].capitalize()
+
             #get manager
             manager = row["manager"]
+
+            #get BU
+            bu_secondary = row["bu_secondary"]
 
             #get availability
             availability_date = self._get_availability_date(row)
@@ -126,6 +132,8 @@ class Chatbot:
             profile_info_str = f"""
             {name} {surname} \n
             \tDisponible à partir du {availability_date}
+            \tLocalisation : {city}
+            \tBU : {bu_secondary}
             \tManager à contacter : {manager}
             \tCV : {cv_full_name}\n
             \tQualités :{relevant_qualities_str}
