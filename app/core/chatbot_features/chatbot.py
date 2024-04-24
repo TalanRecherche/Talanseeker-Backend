@@ -226,30 +226,9 @@ class Chatbot:
 
         return relevant_qualities_str
 
-    def _relevant_skills(self, 
-                        guessintention_query: pd.DataFrame,
-                        candidates_chunks: pd.DataFrame,
-                        candidate_collabs: pd.DataFrame,
-                        candidates_profiles: pd.DataFrame) -> str:
-            # make system function string (contains chunks)
-            system_string = self._make_system_string()
-            print("")
-            print(f"{system_string =}")
-            # make query string
-            user_query = guessintention_query.iloc[0][QueryStruct.user_query][0]
-            query_string = self._make_query_string(
-                user_query,
-                candidates_chunks,
-                candidate_collabs,
-                candidates_profiles,
-            )
-            print("")
-            print(f"{query_string =}")
-
-            # get chatbot response
-            response = self.llm_backend.send_receive_message(query_string, system_string)
-            print("")
-            print(f"{response =}")
+    # =============================================================================
+    # legacy functions
+    # =============================================================================
 
     def _make_system_string(self) -> str:
         system_string = self.system_string
