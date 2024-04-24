@@ -10,6 +10,7 @@ TDL:
 import re
 
 import pandas as pd
+import logging
 
 from app.core.models.pg_pandasmodels import CollabPg
 from app.core.models.query_pandasmodels import QueryStruct
@@ -92,19 +93,13 @@ class Chatbot:
 
         #2 init
         response = ""
-        compteur = 0
 
         #2 iteration through all profiles 
         for index,row in profiles_collabs.iterrows():
 
             #1 structured profile inforamtion
-            #compte
-            compteur += 1
-            profile_compte = f"profile {compteur}"
-
             #get prenom nom
-            prenom = row["name"]
-            nom = row["surname"]
+            prenom, nom = row["name"], row["surname"]
 
             #get collab_id
             collab_id = row["collab_id"]
@@ -117,24 +112,13 @@ class Chatbot:
             availability_date = row["assigned_until"]
 
             #get cv
-            candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
-            cv_full_name = candidate_cvs.iloc[-1,2] #pour l'instant on prend le dernier cv du candidate ajouté à la base de donnée
+            cv_full_name = self._get_cv_candidate(candidates_cvs, collab_id)
 
             #2 call llm to indentify the strength of the profile
-            #get top k chunk
-            #combien de chunk voulons nous pour construire la réponse du llm
-            top_k = 3
-            #df du des chunks du candidat
-            candidate_chunks = candidates_chunks.loc[candidates_chunks["collab_id"] == collab_id]
-
-            #on extrait les top_k chunks si cela est possible
-            if candidate_chunks.shape[0] >= top_k:#pas de souci il y a plus de chunks que le top_k
-                top_chunks = candidate_chunks["chunk_text"][:top_k]
-            else:#problème il y a moins de chunks que le top_k alors on prend tout
-                top_chunks = candidate_chunks["chunk_text"][:]
-
-            #on transforme en liste
-            list_top_chunks = top_chunks.to_list()
+            list_top_chunks = self._get_top_chunks(candidates_chunks,
+                                                   collab_id,
+                                                   top_k=3)
+            
             #on récupère la user_query
             query_user = guessintention_query["user_query"].values[0][0]
             prompt = f"""
@@ -144,9 +128,10 @@ class Chatbot:
             Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {prenom} {nom} :
             {list_top_chunks}
             """
+
             relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt, system_function="")
 
-            #3 create profile info
+            #3 create profile info to display to user
             profile_info_str = f"""
             {prenom} {nom} \n
             \tDisponible à partir du {availability_date}
@@ -168,6 +153,58 @@ class Chatbot:
     # =============================================================================
     # internal functions
     # =============================================================================
+
+    def _get_cv_candidate(self, 
+                          candidates_cvs: pd.DataFrame,
+                          collab_id: str) -> str:
+        """return cv file name based on the collab_id of the candidate
+
+        Args:
+            candidates_cvs (pd.DataFrame): _description_
+
+        Returns:
+            str: _description_
+        """
+        try:
+            candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
+            cv_full_name = candidate_cvs.iloc[-1,2] #pour l'instant on prend le dernier cv du candidate ajouté à la base de données
+        except Exception as e:
+            cv_full_name = "aucun CV n'a été trouvé dans la base de données de Talan Seeker"
+            logging.exception("get CV candidate %s", e)
+
+        return cv_full_name
+    
+    def _get_top_chunks(self,
+                        candidates_chunks: pd.DataFrame,
+                        collab_id: str,
+                        top_k: int):
+        """return a list of top chunks for a specific collab_id candidate from the dataframe candidates_chunks.
+        this list will serve as relevant information to build candidate qualities based on the user_query
+
+        Args:
+            candidates_chunks (pd.DataFrame)
+            collab_id (str)
+            top_k (int)
+
+        Returns:
+            _type_: list of string
+        """
+        
+        #df du des chunks du candidat
+        candidate_chunks = candidates_chunks.loc[candidates_chunks["collab_id"] == collab_id]
+
+        #on extrait les top_k chunks si cela est possible
+        if candidate_chunks.shape[0] >= top_k:#pas de souci il y a plus de chunks que le top_k
+            top_chunks = candidate_chunks["chunk_text"][:top_k]
+        else:#problème il y a moins de chunks que le top_k alors on prend tout
+            top_chunks = candidate_chunks["chunk_text"][:]
+
+        #on transforme en liste
+        list_top_chunks = top_chunks.to_list()
+
+        return list_top_chunks
+
+
     def _relevant_skills(self, 
                         guessintention_query: pd.DataFrame,
                         candidates_chunks: pd.DataFrame,
