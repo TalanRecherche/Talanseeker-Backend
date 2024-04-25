@@ -94,7 +94,8 @@ class Chatbot:
         n_candidates = profiles_collabs.shape[0]
 
         #2 init output response
-        response = f"Voici une liste de {n_candidates} profils qui semblent correspondre à votre requête : \n"
+        response = f"""Voici une liste de {n_candidates} profils
+        qui semblent correspondre à votre requête : \n"""
 
         #3 iteration through all candidates
         for _,row in profiles_collabs.iterrows():
