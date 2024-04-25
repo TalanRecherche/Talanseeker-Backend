@@ -93,7 +93,7 @@ class Chatbot:
         profiles_collabs = pd.merge(candidate_collabs, candidates_profiles, on="collab_id")
 
         #2 init output response
-        response = ""
+        response = "Voici une liste de profils qui semblent correspondre à votre requête : \n"
 
         #3 iteration through all candidates
         for _,row in profiles_collabs.iterrows():
@@ -131,10 +131,10 @@ class Chatbot:
             #3 aggregate all information for the user
             parts = [
                 f"- {name} {surname}",
-                f"CV : {cv_weblink}",
-                f"Disponible à partir du {availability_date}",
-                f"Localisation : {city} | BU : {bu_secondary}",
-                f"Manager à contacter : {manager}",
+                f"CV : {cv_weblink}\n\n",
+                f"Disponible à partir du {availability_date} | ",
+                f"Localisation : {city} | BU : {bu_secondary}\n\n",
+                f"Manager à contacter : {manager}\n\n",
                 f"Qualités : {relevant_qualities_str}",
                 "\n"
             ]
