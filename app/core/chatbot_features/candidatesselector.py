@@ -51,7 +51,7 @@ class CandidatesSelector:
             try:
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
             except Exception as e:
-                nb_profiles = 3
+                nb_profiles = 6
                 logging.exception(e)
 
             # find best profiles for this subquery, NOT in already_selected_profiles_ids
