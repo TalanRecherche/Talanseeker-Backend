@@ -118,7 +118,7 @@ class Chatbot:
             availability_date = self._get_availability_date(row)
 
             #get latest cv
-            cv_full_name = self._get_cv_candidate(candidates_cvs, collab_id)
+            cv_weblink = self._get_cv_candidate(candidates_cvs, collab_id)
 
             #2 indentify the quality of the candidate from top chunks
             list_top_chunks = self._get_top_chunks(candidates_chunks,
@@ -129,16 +129,17 @@ class Chatbot:
                                                                name, surname, list_top_chunks)
 
             #3 aggregate all information for the user
-            profile_info_str = f"""
-            {name} {surname} \n
-            \tDisponible à partir du {availability_date}
-            \tLocalisation : {city}
-            \tBU : {bu_secondary}
-            \tManager à contacter : {manager}
-            \tCV : {cv_full_name}\n
-            \tQualités :{relevant_qualities_str}
-            \n\n
-            """
+            parts = [
+                f"- {name} {surname}",
+                f"CV : {cv_weblink}",
+                f"Disponible à partir du {availability_date}",
+                f"Localisation : {city} | BU : {bu_secondary}",
+                f"Manager à contacter : {manager}",
+                f"Qualités : {relevant_qualities_str}",
+                "\n"
+            ]
+            profile_info_str = "\n".join(parts)
+
             #add to the output response
             response += profile_info_str
 
@@ -188,12 +189,13 @@ class Chatbot:
         try:
             candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
             #pour l'instant on prend le dernier cv du candidate ajouté à la base de données
-            cv_full_name = candidate_cvs.iloc[-1,2]
+            cv_id = candidate_cvs.iloc[-1,0]
+            cv_weblink = f"https://talanseeker-dev.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
         except Exception as e:
-            cv_full_name = "aucun CV n'a été trouvé dans la base de données de Talan Seeker"
+            cv_weblink = "aucun CV n'a été trouvé dans la base de données de Talan Seeker"
             logging.exception("get CV candidate %s", e)
 
-        return cv_full_name
+        return cv_weblink
 
     def _get_top_chunks(self,
                         candidates_chunks: pd.DataFrame,
