@@ -129,16 +129,16 @@ class Chatbot:
                                                                name, surname, list_top_chunks)
 
             #3 aggregate all information for the user
-            profile_info_str = f"""
-            {name} {surname} \n
-            \tDisponible à partir du {availability_date}
-            \tLocalisation : {city}
-            \tBU : {bu_secondary}
-            \tManager à contacter : {manager}
-            \tCV : {cv_weblink}\n
-            \tQualités :{relevant_qualities_str}
-            \n\n
-            """
+            parts = [
+                f"- {name} {surname}",
+                f"CV : {cv_weblink}",
+                f"Disponible à partir du {availability_date}",
+                f"Localisation : {city} | BU : {bu_secondary}",
+                f"Manager à contacter : {manager}",
+                f"Qualités : {relevant_qualities_str}",
+                "\n"
+            ]
+            profile_info_str = "\n".join(parts)
 
             #add to the output response
             response += profile_info_str
