@@ -91,9 +91,11 @@ class Chatbot:
 
         #1 join profile and collabs info
         profiles_collabs = pd.merge(candidate_collabs, candidates_profiles, on="collab_id")
+        n_candidates = profiles_collabs.shape[0]
 
         #2 init output response
-        response = "Voici une liste de profils qui semblent correspondre à votre requête : \n"
+        response = f"""Voici une liste de {n_candidates} profils
+        qui semblent correspondre à votre requête : \n"""
 
         #3 iteration through all candidates
         for _,row in profiles_collabs.iterrows():
