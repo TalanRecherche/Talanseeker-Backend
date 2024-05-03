@@ -287,6 +287,8 @@ class IntentionFinder:
             'simplified_query': 'mission développement banque',
             'soft_skills': ['Non renseigné'],
             'start_mission': 'Non renseigné',
+            'region' : 'Non renseigné',
+            'city' : 'Non renseigné',
             'technical_skills': ['développement'],
             'user_query': 'Trouve moi une équipe de développeurs pour une mission
             banque',
@@ -308,6 +310,12 @@ class IntentionFinder:
         ans[QueryStruct.user_query] = self._wrap_txt_with_list(uquery)
         ans[QueryStruct.start_date] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Date de début"),
+        )
+        ans[QueryStruct.region] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "Pays"),
+        )
+        ans[QueryStruct.city] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "Ville"),
         )
         ans[QueryStruct.simplified_query] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "simplified_mission"),

@@ -111,6 +111,8 @@ def chatbot_business_helper(
 
     # Fetch data from postgres
     chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0] #get the
+    chatbot_request.region = guess_intention_query[QueryStruct.region].min()
+    chatbot_request.city = guess_intention_query[QueryStruct.city].min()
     fetcher = PGfetcher()
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
