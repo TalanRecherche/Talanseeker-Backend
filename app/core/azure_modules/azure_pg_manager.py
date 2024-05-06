@@ -203,6 +203,21 @@ class AzurePGManager:
         return len(pd.read_sql(req, con_string)) != 0
 
     @staticmethod
+    def check_existence_email(table_name: str, id_value: str) -> bool:
+        """req = text(f"SELECT * FROM {table_name} WHERE {id_tag} = '{id_value}'")"""
+        req = (select(PgCollabs).
+                   where(PgCollabs.email == id_value))
+
+        return len(pd.read_sql(req, con_string)) != 0
+
+    @staticmethod
+    def get_collabs_associated_email(table_name: str, id_value: str) -> bool:
+        """req = text(f"SELECT * FROM {table_name} WHERE {id_tag} = '{id_value}'")"""
+        req = (select(PgCollabs).
+                   where(PgCollabs.email == id_value))
+        return (pd.read_sql(req, con_string))["collab_id"].values[0]
+
+    @staticmethod
     def save(
             pg_profiles: pd.DataFrame,
             pg_chunks: pd.DataFrame,
