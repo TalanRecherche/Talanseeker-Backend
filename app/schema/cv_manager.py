@@ -13,6 +13,7 @@ from pydantic import BaseModel
 class CVUploadRequest(BaseModel):
     f_name: str
     l_name: str
+    mail: Optional[str] = None
 
 
 class CVDownloadRequest(BaseModel):
