@@ -93,6 +93,13 @@ class CVManagerBusiness:
         )
 
     @staticmethod
+    def check_collab_exist_email(email_id: str) -> bool:
+        return azure_pg_manager.check_existence_email(
+            PgCollabs.__tablename__,
+            email_id,
+        )
+
+    @staticmethod
     def start_etl(data_path: str, collab_ids: dict) -> None:
 
         # =============================================================================
