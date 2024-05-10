@@ -13,12 +13,79 @@ from app.models.profiles import PG_Profiles
 
 
 class KimbleUpdater:
+
     @staticmethod
     def process_data(data: pd.DataFrame) -> pd.DataFrame:
         """Process kimble folder
         split name column
         rename column
         """
+
+        traductions_pays = {
+            "NULL": "null",
+            "Hungary": "hongrie",
+            "Tunisie": "tunisie",
+            "Luxembourg": "luxembourg",
+            "Morocco": "maroc",
+            "Espana": "espagne",
+            "USA": "usa",
+            "France": "france",
+            "Suisse": "suisse",
+            "Peru": "pérou",
+            "Poland": "pologne",
+            "UK": "uk",
+            "Mauritius": "île maurice",
+            "Singapore": "singapour",
+            "Canada": "canada",
+            "Belgique": "belgique"
+        }
+
+        traductions_villes = {
+            "NULL": "null",
+            "MONTPELLIER": "montpellier",
+            "LYON": "lyon",
+            "SGP": "singapour",
+            "SUNDERLAND": "sunderland",
+            "BORDEAUX": "bordeaux",
+            "TOULOUSE": "toulouse",
+            "WARSAW": "varsovie",
+            "Rennes": "rennes",
+            "Home (North West)": "nord-ouest",
+            "EDINBURGH": "édimbourg",
+            "NEW-YORK": "new-york",
+            "MONTREAL": "montréal",
+            "GENEVA": "genève",
+            "NANTES": "nantes",
+            "DALLAS": "dallas",
+            "BUD": "bud",
+            "LISBONNE": "lisbonne",
+            "AMIENS": "amiens",
+            "lyon": "lyon",
+            "LONDON": "londres",
+            "MUS": "mus",
+            "MADRID": "madrid",
+            "BRUXELLES": "bruxelles",
+            "Remote_Location": "lieu distant",
+            "LAUSANNE": "lausanne",
+            "PLATTSBURG": "plattsburg",
+            "LUXEMBOURG": "luxembourg",
+            "Home (North East)": "nord-est",
+            "Home (London)": "londres",
+            "MALAGA": "malaga",
+            "AIX-EN-PROVENCE": "aix-en-provence",
+            "COURBEVOIE": "courbevoie",
+            "PARIS": "paris",
+            "LILLE": "lille",
+            "TUNIS": "tunis",
+            "CASABLANCA": "casablanca",
+            "CALGARY": "calgary",
+            "RENNES": "rennes",
+            "CHICAGO": "chicago",
+            "Home (Edinburgh)": "édimbourg",
+            "SAINT OUEN SUR SEINE": "saint-ouen-sur-seine",
+            "Arequipa": "arequipa",
+            "L-8832 Rombach-Martelange": "l-8832 rombach-martelange"
+        }
         logging.info("Start processing Kimble file")
         # split full name into name and surname
         data[CollabPg.name] = ""
@@ -61,6 +128,9 @@ class KimbleUpdater:
         }
         data.rename(columns=renaming_dict, inplace=True)
         data = data[renaming_dict.values()]
+
+        data[CollabPg.region] = data[CollabPg.region].replace(traductions_pays)
+        data[CollabPg.city] = data[CollabPg.city].replace(traductions_villes)
 
         # format date
         data = data.apply(KimbleUpdater.format_date, axis=1)

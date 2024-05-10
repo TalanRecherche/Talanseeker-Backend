@@ -84,10 +84,11 @@ class PGfetcher:
         """
         if filters:
             regions = filters.region
-            if regions:
+            if regions != ["Non renseigné"]:
+                regions = [r.lower() for r in regions]
                 query += f"and c.{CollabPg.region} in {tuple(regions)} "
             cities = filters.city
-            if cities:
+            if cities != ["Non renseigné"]:
                 cities = [elem.lower() for elem in cities]
                 query += f"and lower(c.{CollabPg.city}) in {tuple(cities)} "
             grades = filters.grade
@@ -97,7 +98,7 @@ class PGfetcher:
             date = filters.assigned_until
             availability_score = filters.availability_score
 
-            if date or availability_score:
+            if date != "Non renseigné" or availability_score:
                 query += " and (false "
                 if date:
                     query += f" or c.assigned_until <= '{date}' "

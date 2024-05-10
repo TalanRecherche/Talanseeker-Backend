@@ -53,11 +53,15 @@ INTENTIONFINDER:
     Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et un role et tu dois extraire les informations nécessaires dans un format attendu.
     Tu devras aussi simplifier la mission en retirant les mots inutiles ainsi que le nombres de personnes recherchées si ils sont indiqués.
     Selon le type de mission, tu peux ajouter deux mots-clés maximum pour les compétences techniques et non techniques si elles ne sont pas mentionnées.
-    Il est aussi important de repérer une date de début de mission si une temporalité est indiquée. Le format de la date est YYYY-MM-DD.
+    Tu dois aussi indiquer si une localisation des collaborateurs est mentionnée. Pour cela, tu dois compléter les champs "Pays" et "Ville".
+    Pour "Pays", utilise uk pour le royaume-uni et usa pour les état-unis. Dans les 2 cas, je veux les noms français sans majuscule. 
+    Il est également très important de repérer une date de début de mission si une temporalité est indiquée. Le format de la date est YYYY-MM-DD.
     Si une temporalité relative est renseigné (semaine prochaine, mois prochain, pour le 26 etc...) calcul la bonne date sachant que l'on est le DATETOSUBSITUTE
     Format attendu :
     simplified_mission : -
     Date de début : -
+    Pays : -
+    Ville : -
     Années d'expérience : -
     Certifications : -,-
     Compétences non techniques : -,-
@@ -78,13 +82,15 @@ INTENTIONFINDER:
     {role}
   GUESS_INTENTION_QUERY_EXAMPLES: |
     Exemple de mission :
-    Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.
+    Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque à Paris.
     Exemple de role :
     data scientist
 
     Exemple de réponse attendue :
     simplified_mission : mission data science banque
     Date de début : Non renseigné
+    Pays : france
+    Ville : paris
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
     Compétences non techniques : esprit critique,autonome
@@ -101,6 +107,8 @@ INTENTIONFINDER:
     Exemple de réponse attendue :
     simplified_mission : 5 ans d'expérience développement java L'Oréal
     Date de début : 2029-12-01
+    Pays : Non renseigné
+    Ville : Non renseigné
     Années d'expérience : 5
     Certifications : Non renseigné
     Compétences non techniques : organisé, bon communiquant
@@ -110,13 +118,15 @@ INTENTIONFINDER:
     Compagnie : L'Oréal
     --
     Exemple de mission :
-    Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence le 5 Juillet 2025. Il me faut un manager et des ingénieurs.
+    Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence le 5 Juillet 2025. Il me faut un manager et des ingénieurs et la mission à lieu en Angleterre.
     Exemple de role :
     manager
 
     Exemple de réponse attendue :
     simplified_mission : transformation digitale BTP manager ingénieur
     Date de début : 2025-07-05
+    Pays : uk
+    Ville : Non renseigné
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
     Compétences non techniques : bon relationnel, prise de décision
@@ -126,13 +136,15 @@ INTENTIONFINDER:
     Compagnie : Non renseigné
     --
     Exemple de mission :
-    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024.
+    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024 et se trouver à Bruxelles.
     Exemple de role :
     data analyst
 
     Exemple de réponse attendue :
     simplified_mission : mission data analytics assureur
     Date de début : 2024-03-01
+    Pays : belgique
+    Ville : bruxelles
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
     Compétences non techniques : esprit critique,curieux
