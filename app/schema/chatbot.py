@@ -35,7 +35,10 @@ class ChatbotRequest(BaseModel):
 
 
 class GeneralInformation(BaseModel):
+    description: Optional[str] = None
     collab_id: Optional[str] = None
+    bu: Optional[str] = None
+    bu_secondary: Optional[str] = None
     manager: Optional[str] = None
     name: Optional[str] = None
     surname: Optional[str] = None
@@ -58,6 +61,7 @@ class GeneralInformation(BaseModel):
 class CvsInformation(BaseModel):
     cv_name: Optional[str] = None
     cv_id: Optional[str] = None
+    cv_link: Optional[str] = None
 
 
 class Candidate(BaseModel):
