@@ -158,7 +158,7 @@ def chatbot_business_helper(
     t = time.time()
     chatbot = Chatbot()
     profiles_data = collabs.merge(profiles, on="collab_id")
-    profiles_data = chatbot.make_candidates_description(profiles_data,
+    profiles_data = chatbot.add_candidates_description(profiles_data,
                                                         guess_intention_query,
                                                         chunks)
     logging.info(f"profiles_data: {time.time() - t}")
