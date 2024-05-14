@@ -123,8 +123,11 @@ class PGfetcher:
 
         #Si df_profiles_ est vide cela veut dire que l'un des filtres n'a pas fonctionné
         if df_profiles_.shape[0] == 0:
-            #l'erreur peut être du à une ville, region, grade ou date qui n'existent pas dans la jointure profiles et collabs
-            logging.error(f"the following SQL request fail to return at least 1 profile : \n{query_with_filters}\nTo avoid a crash app we negligate the following filters : {filters}")
+            #l'erreur peut être du à une ville, region, grade ou date qui n'existent pas
+            #dans la jointure profiles et collabs
+            logging.error(f"""the following SQL request fail to return at least 1 profile :
+                          {query_with_filters}
+                          To avoid a crash app we negligate the following filters : {filters}""")
             logging.info(query_all_profiles)
             df_profiles_ = pd.read_sql(query_all_profiles, con_string)
 

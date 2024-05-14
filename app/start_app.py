@@ -18,7 +18,7 @@ def init_app() -> FastAPI:
     log_file_path = "logging.conf"
 
     logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
-    logging.getLogger().setLevel(level=logging.WARN)
+    logging.getLogger().setLevel(level=logging.ERROR)
 
     fastapi_app = FastAPI()
     fastapi_app.include_router(api_router)
