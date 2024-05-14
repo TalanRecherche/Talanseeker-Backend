@@ -84,10 +84,11 @@ class PGfetcher:
         """
         if filters:
             regions = filters.region
-            if regions:
-                query += f"and c.{CollabPg.region} in {tuple(regions)} "
+            if regions != ["Non renseigné"]:
+                regions = [r.lower() for r in regions]
+                query += f"and lower(c.{CollabPg.region}) in {tuple(regions)} "
             cities = filters.city
-            if cities:
+            if cities != ["Non renseigné"]:
                 cities = [elem.lower() for elem in cities]
                 query += f"and lower(c.{CollabPg.city}) in {tuple(cities)} "
             grades = filters.grade
@@ -97,7 +98,7 @@ class PGfetcher:
             date = filters.assigned_until
             availability_score = filters.availability_score
 
-            if date or availability_score:
+            if date != "Non renseigné" or availability_score:
                 query += " and (false "
                 if date:
                     query += f" or c.assigned_until <= '{date}' "
@@ -111,14 +112,25 @@ class PGfetcher:
         return query
 
     def _fetch_profiles(self, filters: Optional[Filters] = None) -> pd.DataFrame:
-        query = (
+        query_all_profiles = (
             "select p.* from profiles p left join collabs c on p.collab_id = "
             "c.collab_id where true "
         )
-        query = PGfetcher._build_filtered_request(query, filters)
+        query_with_filters = PGfetcher._build_filtered_request(query_all_profiles, filters)
         """ fetch the entire profile table"""
-        logging.info(query)
-        df_profiles_ = pd.read_sql(query, con_string)
+        logging.info(query_with_filters)
+        df_profiles_ = pd.read_sql(query_with_filters, con_string)
+
+        #Si df_profiles_ est vide cela veut dire que l'un des filtres n'a pas fonctionné
+        if df_profiles_.shape[0] == 0:
+            #l'erreur peut être du à une ville, region, grade ou date qui n'existent pas
+            #dans la jointure profiles et collabs
+            logging.error(f"""the following SQL request fail to return at least 1 profile :
+                          {query_with_filters}
+                          To avoid a crash app we negligate the following filters : {filters}""")
+            logging.info(query_all_profiles)
+            df_profiles_ = pd.read_sql(query_all_profiles, con_string)
+
         return df_profiles_
 
     def filter_collabs(self, filters: Optional[Filters] = None) -> pd.DataFrame:

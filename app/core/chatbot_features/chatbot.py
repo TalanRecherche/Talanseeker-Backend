@@ -7,12 +7,14 @@ TDL:
     - add logging error while doing it
     -
 """
+import logging
 import re
+from datetime import datetime
 
 import pandas as pd
+import pytz
 
 from app.core.models.pg_pandasmodels import CollabPg
-from app.core.models.query_pandasmodels import QueryStruct
 from app.core.models.scoredprofiles_pandasmodels import ScoredChunksDF, ScoredProfilesDF
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.tokenshandler import TokenHandler
@@ -72,6 +74,7 @@ class Chatbot:
         candidates_chunks: pd.DataFrame,
         candidate_collabs: pd.DataFrame,
         candidates_profiles: pd.DataFrame,
+        candidates_cvs: pd.DataFrame
     ) -> tuple[str, str] | None:
         """Format queries to fit chunks and information into template.
         Send system and query to the llm
@@ -86,24 +89,187 @@ class Chatbot:
         """
         self.current_nb_tokens = 0
 
-        # make system function string (contains chunks)
-        system_string = self._make_system_string()
-        # make query string
-        user_query = guessintention_query.iloc[0][QueryStruct.user_query][0]
-        query_string = self._make_query_string(
-            user_query,
-            candidates_chunks,
-            candidate_collabs,
-            candidates_profiles,
-        )
+        #1 join profile and collabs info
+        profiles_collabs = pd.merge(candidate_collabs, candidates_profiles, on="collab_id")
+        n_candidates = profiles_collabs.shape[0]
 
-        # get chatbot response
-        response = self.llm_backend.send_receive_message(query_string, system_string)
-        return response, query_string
+        #2 init output response
+        response = f"""Voici une liste de {n_candidates} profils
+        qui semblent correspondre à votre requête : \n"""
+
+        #3 iteration through all candidates
+        for _,row in profiles_collabs.iterrows():
+
+            #1 structured profile inforamtion
+            #get name surname
+            name, surname = row["name"], row["surname"]
+
+            #get collab_id
+            collab_id = row["collab_id"]
+
+            #get city
+            city = row["city"].capitalize()
+
+            #get manager
+            manager = row["manager"]
+
+            #get BU
+            bu_secondary = row["bu_secondary"]
+
+            #get availability
+            availability_date = self._get_availability_date(row)
+
+            #get latest cv
+            cv_weblink = self._get_cv_candidate(candidates_cvs, collab_id)
+
+            #2 indentify the quality of the candidate from top chunks
+            list_top_chunks = self._get_top_chunks(candidates_chunks,
+                                                   collab_id,
+                                                   top_k=3)
+
+            relevant_qualities_str = self._get_relevant_skills(guessintention_query,
+                                                               name, surname, list_top_chunks)
+
+            #3 aggregate all information for the user
+            parts = [
+                f"- {name} {surname}",
+                f"CV : {cv_weblink}\n\n",
+                f"Disponible à partir du {availability_date} | ",
+                f"Localisation : {city} | BU : {bu_secondary}\n\n",
+                f"Manager à contacter : {manager}\n\n",
+                f"Qualités : {relevant_qualities_str}",
+                "\n"
+            ]
+            profile_info_str = "\n".join(parts)
+
+            #add to the output response
+            response += profile_info_str
+
+        return response
 
     # =============================================================================
     # internal functions
     # =============================================================================
+
+    def _get_availability_date(self, row: pd.Series) -> str:
+        """Retrieve and format the availability date of an item from the given series.
+
+        Args:
+            row (pd.Series): A series containing the data, typically a row from a pandas DataFrame.
+
+        Returns:
+            str: The formatted availability date in 'DD/MM/YYYY' format if available,
+            else 'Not provided'.
+        """
+        #get availibility date
+        availability_date_str = row["assigned_until"]
+
+        try:
+            tz_paris = pytz.timezone("Europe/Paris")
+            # Convert availability_date_str to datetime object
+            date_obj = datetime.strptime(availability_date_str,
+                                         "%Y-%m-%d").astimezone(tz_paris)
+            # Convert datetime obj to str with th following format 'DD/MM/YYYY'
+            availability_date = date_obj.strftime("%d/%m/%Y")
+        except Exception as e:
+            availability_date = "Non communiqué"
+            logging.exception("Cannot extract date from assigned_until %s", e)
+
+        return availability_date
+
+    def _get_cv_candidate(self,
+                          candidates_cvs: pd.DataFrame,
+                          collab_id: str) -> str:
+        """return cv file name based on the collab_id of the candidate
+
+        Args:
+            candidates_cvs (pd.DataFrame)
+
+        Returns:
+            str
+        """
+        try:
+            candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
+            #pour l'instant on prend le dernier cv du candidate ajouté à la base de données
+            cv_id = candidate_cvs.iloc[-1,0]
+            cv_weblink = f"https://talanseeker-prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
+        except Exception as e:
+            cv_weblink = "aucun CV n'a été trouvé dans la base de données de Talan Seeker"
+            logging.exception("get CV candidate %s", e)
+
+        return cv_weblink
+
+    def _get_top_chunks(self,
+                        candidates_chunks: pd.DataFrame,
+                        collab_id: str,
+                        top_k: int) -> list[str]:
+        """return a list of top chunks for a specific collab_id candidate
+        from the dataframe candidates_chunks.
+        This list will serve as relevant information to build the response
+
+        Args:
+            candidates_chunks (pd.DataFrame)
+            collab_id (str)
+            top_k (int)
+
+        Returns:
+            _type_: list of string
+        """
+
+        #df du des chunks du candidat
+        candidate_chunks = candidates_chunks.loc[candidates_chunks["collab_id"] == collab_id]
+
+        #on extrait les top_k chunks si cela est possible
+        if candidate_chunks.shape[0] >= top_k:#pas de souci il y a plus de chunks que le top_k
+            top_chunks = candidate_chunks["chunk_text"][:top_k]
+        else:#problème il y a moins de chunks que le top_k alors on prend tout
+            top_chunks = candidate_chunks["chunk_text"][:]
+
+        #on transforme en liste
+        list_top_chunks = top_chunks.to_list()
+
+        return list_top_chunks
+
+    def _get_relevant_skills(self,
+                            guessintention_query: pd.DataFrame,
+                            name: str,
+                            surname: str,
+                            list_top_chunks: list[str]) -> str:
+        """
+        Call the llm to determine a list of relevant skills based on a list of chunks
+        to reply to the user query
+
+        Args:
+            guessintention_query (pd.DataFrame)
+            name (str)
+            surname (str)
+            list_top_chunks (list[str])
+
+        Returns:
+            str : response from llm
+
+        """
+
+        query_user = guessintention_query["user_query"].values[0][0]
+        prompt = f"""
+        Vous êtes un assistant d'aide au staffing.
+        Vous répondez de manière courte.
+        Expliquez en une phrase pourquoi {name} {surname} est un bon candidat
+        pour la requête suivante {query_user}.
+        Pour expliquer votre réponse vous pouvez vous appuyer
+        sur les passages du cv de {name} {surname} :
+        {list_top_chunks}
+        """
+
+        relevant_qualities_str = self.llm_backend.send_receive_message(query=prompt,
+                                                                       system_function="")
+
+        return relevant_qualities_str
+
+    # =============================================================================
+    # legacy functions
+    # =============================================================================
+
     def _make_system_string(self) -> str:
         system_string = self.system_string
         # increment number of tokens in context

@@ -30,3 +30,4 @@ profile.prof
 .ipynb_checkpoints
 .DS_Store
 test_logs/
+*.ipynb

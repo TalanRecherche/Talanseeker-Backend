@@ -19,12 +19,21 @@ class CVManagerBusiness:
         cv_names = {}
         with TemporaryDirectory() as temp_dir:
             new_name = f"{CVManagerBusiness.get_time_stamp()} {file.filename}"
-            hash_name = StringHandler.generate_unique_id(
-                StringHandler.normalize_string(
+            mail = request.mail
+            # Before checking the user, verify the mail
+            if request.mail is not None and CVManagerBusiness.check_collab_exist_email(mail):
+                hash_name = azure_pg_manager.get_collabs_associated_email(
+                    PgCollabs.__tablename__,
+                    mail,
+                )
+            else:
+                hash_name = StringHandler.generate_unique_id(
+                    StringHandler.normalize_string(
                     f"{request.f_name}{request.l_name}",
-                    remove_special_chars=True,
-                ),
+                        remove_special_chars=True,
+                    ),
             )
+            # Check if the collab exist
             if CVManagerBusiness.check_collab_exist(hash_name):
                 cv_names[new_name] = hash_name
                 binary_data = file.file.read()
@@ -81,6 +90,13 @@ class CVManagerBusiness:
         return azure_pg_manager.check_existence(
             PgCollabs.__tablename__,
             collab_id,
+        )
+
+    @staticmethod
+    def check_collab_exist_email(email_id: str) -> bool:
+        return azure_pg_manager.check_existence_email(
+            PgCollabs.__tablename__,
+            email_id,
         )
 
     @staticmethod
