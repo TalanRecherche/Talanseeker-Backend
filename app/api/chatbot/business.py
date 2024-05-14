@@ -53,6 +53,7 @@ def row_to_candidate_schema(
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
+        description=row["description"], #c'est ajouté en dur car c'est le LLM qui génère la description à la volet
         collab_id=row[CollabPg.collab_id],
         bu=row[CollabPg.bu],
         bu_secondary=row[CollabPg.bu_secondary],
@@ -155,7 +156,11 @@ def chatbot_business_helper(
     logging.info(f"CandidatesSelector: {time.time() - t}")
 
     t = time.time()
+    chatbot = Chatbot()
     profiles_data = collabs.merge(profiles, on="collab_id")
+    profiles_data = chatbot.make_candidates_description(profiles_data,
+                                                        guess_intention_query,
+                                                        chunks)
     logging.info(f"profiles_data: {time.time() - t}")
 
     t = time.time()
@@ -168,7 +173,6 @@ def chatbot_business_helper(
 
     t = time.time()
     # Send candidates data to chatbot and get answer
-    chatbot = Chatbot()
     response = chatbot.get_chatbot_response(
         guess_intention_query,
         chunks,

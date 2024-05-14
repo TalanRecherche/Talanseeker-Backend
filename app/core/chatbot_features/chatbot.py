@@ -68,7 +68,63 @@ class Chatbot:
     # user functions
     # =============================================================================
 
+    def add_candidates_description(self,
+                                    profiles_data:pd.DataFrame,
+                                    guessintention_query: pd.DataFrame,
+                                    candidates_chunks: pd.DataFrame):
+        #on crée une description personnalisée selon la requête utilisateur sur la base des chunks
+        
+        descriptions = [] #will store each decription (relevant_qualities_str)
+        for _, row in profiles_data.iterrows():
+            #get name surname
+            name, surname = row["name"], row["surname"]
+
+            #get collab_id
+            collab_id = row["collab_id"]
+
+            #indentify the quality of the candidate from top chunks
+            list_top_chunks = self._get_top_chunks(candidates_chunks,
+                                                   collab_id,
+                                                   top_k=3)
+
+            #ask the LLM to identify relevant skills based on the top_k chunks and the user_query
+            relevant_qualities_str = self._get_relevant_skills(guessintention_query,
+                                                               name, surname, list_top_chunks)
+
+            
+            #store the candidate description based on LLM
+            descriptions.append(relevant_qualities_str)
+
+        #update the dataframe
+        profiles_data['description'] = descriptions
+
+        return profiles_data
+        
+
     def get_chatbot_response(
+        self,
+        guessintention_query: pd.DataFrame,
+        candidates_chunks: pd.DataFrame,
+        candidate_collabs: pd.DataFrame,
+        candidates_profiles: pd.DataFrame,
+        candidates_cvs: pd.DataFrame
+    ) -> tuple[str, str] | None:
+        """Format queries to fit chunks and information into template.
+        Send system and query to the llm
+        Args:
+            guessintention_query: pd.DataFrame
+            candidates_chunks: pd.DataFrame
+            candidate_collabs: pd.DataFrame
+            candidates_profiles: pd.DataFrame
+
+        Returns: pd.DataFrame
+
+        """
+        response = "Placeholder"
+
+        return response
+
+    def get_chatbot_response_old_2024_05(
         self,
         guessintention_query: pd.DataFrame,
         candidates_chunks: pd.DataFrame,
