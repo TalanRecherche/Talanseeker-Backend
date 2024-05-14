@@ -42,6 +42,7 @@ class GeneralInformation(BaseModel):
 class CvsInformation(BaseModel):
     cv_name: Optional[str] = None
     cv_id: Optional[str] = None
+    cv_link: Optional[str] = None
 
 
 class Candidate(BaseModel):
