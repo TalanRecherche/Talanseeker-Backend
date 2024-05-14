@@ -35,7 +35,7 @@ def df_to_candidate_schema(
     )
     return candidates
 
-def _create_cv_link(cv_id):
+def _create_cv_link(cv_id:str) -> str:
     """create the url request to download a cv for a given cv_id on talanseeker-PROD
 
     Args:
@@ -53,7 +53,7 @@ def row_to_candidate_schema(
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
-        description=row["description"], #c'est ajouté en dur car c'est le LLM qui génère la description à la volet
+        description=row["description"], #ajouté en dur car c'est le LLM qui génère la description.
         collab_id=row[CollabPg.collab_id],
         bu=row[CollabPg.bu],
         bu_secondary=row[CollabPg.bu_secondary],
@@ -92,10 +92,10 @@ def row_to_candidate_schema(
         cv_id = cv[CvPg.cv_id]
         cv_name = cv[CvPg.file_full_name]
         cv_link = _create_cv_link(cv[CvPg.cv_id])
-        
+
         CvsInformation()
         cvs_info = CvsInformation(cv_id=cv_id, cv_name=cv_name, cv_link=cv_link)
-        
+
         candidate.cvs_information.append(cvs_info)
 
 

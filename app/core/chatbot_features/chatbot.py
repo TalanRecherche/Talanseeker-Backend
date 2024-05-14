@@ -71,9 +71,9 @@ class Chatbot:
     def add_candidates_description(self,
                                     profiles_data:pd.DataFrame,
                                     guessintention_query: pd.DataFrame,
-                                    candidates_chunks: pd.DataFrame):
+                                    candidates_chunks: pd.DataFrame) -> pd.DataFrame:
         #on crée une description personnalisée selon la requête utilisateur sur la base des chunks
-        
+
         descriptions = [] #will store each decription (relevant_qualities_str)
         for _, row in profiles_data.iterrows():
             #get name surname
@@ -91,15 +91,14 @@ class Chatbot:
             relevant_qualities_str = self._get_relevant_skills(guessintention_query,
                                                                name, surname, list_top_chunks)
 
-            
+
             #store the candidate description based on LLM
             descriptions.append(relevant_qualities_str)
 
         #update the dataframe
-        profiles_data['description'] = descriptions
+        profiles_data["description"] = descriptions
 
         return profiles_data
-        
 
     def get_chatbot_response(
         self,
@@ -120,7 +119,8 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        response = "Placeholder"
+        response = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
+        Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor."""
 
         return response
 
