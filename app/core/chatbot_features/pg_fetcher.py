@@ -86,7 +86,7 @@ class PGfetcher:
             regions = filters.region
             if regions != ["Non renseigné"]:
                 regions = [r.lower() for r in regions]
-                query += f"and c.{CollabPg.region} in {tuple(regions)} "
+                query += f"and lower(c.{CollabPg.region}) in {tuple(regions)} "
             cities = filters.city
             if cities != ["Non renseigné"]:
                 cities = [elem.lower() for elem in cities]
