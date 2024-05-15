@@ -35,6 +35,16 @@ def df_to_candidate_schema(
     )
     return candidates
 
+def _create_cv_link(cv_id:str) -> str:
+    """create the url request to download a cv for a given cv_id on talanseeker-PROD
+
+    Args:
+        cv_id (str): cv_id from sql tables CVS
+
+    Returns:
+        str: url to download the CV from talanseeker-PROD
+    """
+    return f"https://talanseeker-prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
 
 def row_to_candidate_schema(
         row: pd.Series,
@@ -43,7 +53,10 @@ def row_to_candidate_schema(
 ) -> None:
     candidate = Candidate()
     candidate.general_information = GeneralInformation(
+        description=row["description"], #ajouté en dur car c'est le LLM qui génère la description.
         collab_id=row[CollabPg.collab_id],
+        bu=row[CollabPg.bu],
+        bu_secondary=row[CollabPg.bu_secondary],
         manager=row[CollabPg.manager],
         name=row[CollabPg.name],
         surname=row[CollabPg.surname],
@@ -71,13 +84,24 @@ def row_to_candidate_schema(
         .T.to_dict()
         .values(),
     )
+
     # adjust naming file_full_name => cv_name
-    candidate.cvs_information = [
-        CvsInformation(cv_id=cv[CvPg.cv_id], cv_name=cv[CvPg.file_full_name])
-        for cv in collab_cvs
-    ]
+    candidate.cvs_information = []
+
+    for cv in collab_cvs:
+        cv_id = cv[CvPg.cv_id]
+        cv_name = cv[CvPg.file_full_name]
+        cv_link = _create_cv_link(cv[CvPg.cv_id])
+
+        CvsInformation()
+        cvs_info = CvsInformation(cv_id=cv_id, cv_name=cv_name, cv_link=cv_link)
+
+        candidate.cvs_information.append(cvs_info)
+
 
     candidates.append(candidate)
+
+    return candidates
 
 
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
@@ -132,7 +156,11 @@ def chatbot_business_helper(
     logging.info(f"CandidatesSelector: {time.time() - t}")
 
     t = time.time()
+    chatbot = Chatbot()
     profiles_data = collabs.merge(profiles, on="collab_id")
+    profiles_data = chatbot.add_candidates_description(profiles_data,
+                                                        guess_intention_query,
+                                                        chunks)
     logging.info(f"profiles_data: {time.time() - t}")
 
     t = time.time()
@@ -145,7 +173,6 @@ def chatbot_business_helper(
 
     t = time.time()
     # Send candidates data to chatbot and get answer
-    chatbot = Chatbot()
     response = chatbot.get_chatbot_response(
         guess_intention_query,
         chunks,
