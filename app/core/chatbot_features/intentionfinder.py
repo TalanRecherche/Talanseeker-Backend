@@ -317,6 +317,12 @@ class IntentionFinder:
         ans[QueryStruct.city] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Ville"),
         )
+        ans[QueryStruct.bu] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "BU"),
+        )
+        ans[QueryStruct.bu_secondary] = self._wrap_txt_with_list(
+            self._extract_text_from_llmoutput(output_llm, "BU secondaire"),
+        )
         ans[QueryStruct.simplified_query] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "simplified_mission"),
         )
