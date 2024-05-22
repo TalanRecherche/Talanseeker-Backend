@@ -105,38 +105,31 @@ class Chatbot:
         profiles_data:pd.DataFrame,
         guessintention_query: pd.DataFrame,
     ) -> tuple[str, str] | None:
-        """Ask the LLM to make a 1 sentecne to summurize the answer.
+        """Ask the LLM to make a 1 sentecne to summurize the candidates list.
         Args:
+            profiles_data: pd.DataFrame
             guessintention_query: pd.DataFrame
-            candidates_chunks: pd.DataFrame
-            candidate_collabs: pd.DataFrame
-            candidates_profiles: pd.DataFrame
 
-        Returns: pd.DataFrame
-
+        Returns: str
         """
 
-        #1 extract number of profile
+        #1 extract simplified user query
         query_user = guessintention_query["simplified_query"].values[0][0]
 
-
-        summury_str = ""
-        #2 create a summury to submit to the LLM
+        #2 create a summary of all candidates
+        summary_str = ""
         for _,row in profiles_data.iterrows():
-            name = row["name"]
-            surname = row["surname"]
             description = row["description"]
-
             parts = [
                 f"{description}",
                 "\n"
             ]
             profile_info_str = "\n".join(parts)
 
-            #add to the output response
-            summury_str += profile_info_str
+            #add to summary
+            summary_str += profile_info_str
 
-        #ask the LLM
+        #3 prompt to send to the LLM
         prompt = f"""
         Ton rôle est d'aider au staffing de consultants pour Talan.
         Répond en 2 phrases. 
@@ -144,10 +137,11 @@ class Chatbot:
         sont pertinent pour la requête suivante {query_user}.
         voici les profils :
         """
-        prompt = prompt + summury_str #on ajoute les résumés des n_candidates
+        prompt = prompt + summary_str #on ajoute les résumés des n_candidates
+
+        #4 ask the LLM
         response = self.llm_backend.send_receive_message(query=prompt, system_function="")
         
-
         return response
 
     def get_chatbot_response_old_2024_05(

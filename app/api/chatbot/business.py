@@ -172,7 +172,7 @@ def chatbot_business_helper(
 
 
     t = time.time()
-    # Send candidates data to chatbot and get answer
+    # Send candidates data to chatbot and get a short answer
     response = chatbot.get_chatbot_response(
         profiles_data,
         guess_intention_query,
