@@ -57,8 +57,8 @@ INTENTIONFINDER:
     Pour "Pays", utilise uk pour le royaume-uni et usa pour les état-unis. Dans les 2 cas, je veux les noms français sans majuscule. 
     Il est également très important de repérer une date de début de mission si une temporalité est indiquée. Le format de la date est YYYY-MM-DD.
     Si une temporalité relative est renseigné (semaine prochaine, mois prochain, pour le 26 etc...) calcul la bonne date sachant que l'on est le DATETOSUBSITUTE
-    Tu dois aussi voir si une BU (Buisness Unit) ainsi qu'une BU secondaire sont renseignés.
-    La valeur de BU est comprise STRICTEMENT dans ("Non renseigné", "Spain", "Corporate North America", "Switzerland", "COE Corporate", "Data & Technologies (FR)", "COE Hungary", "Luxembourg", "Belgium", "Corporate Groupe", "GEMSERV", "COE Tunisia", "Data & Technologies (NAM)", "Consulting et Innovation", "Cloud and Applications services", "Insum", "UK", "Poland", "Digital Impulse", "Singapore", "Supply Chain", "COE Mauritius", "Régions", "Corporate EMEA-APAC", "Licences", "Corporate France")
+    Tu dois aussi voir si une BU principale (Buisness Unit) ainsi qu'une BU secondaire sont renseignés.
+    La valeur de BU principale est comprise STRICTEMENT dans ("Non renseigné", "Spain", "Corporate North America", "Switzerland", "COE Corporate", "Data & Technologies (FR)", "COE Hungary", "Luxembourg", "Belgium", "Corporate Groupe", "GEMSERV", "COE Tunisia", "Data & Technologies (NAM)", "Consulting et Innovation", "Cloud and Applications services", "Insum", "UK", "Poland", "Digital Impulse", "Singapore", "Supply Chain", "COE Mauritius", "Régions", "Corporate EMEA-APAC", "Licences", "Corporate France")
     La valeur de BU secondaire est comprise STRICTEMENT dans ("Non renseigné", "SPA_OUT", "SCH_SC Morocco", "DTN_USA", "DIM_Structure", "DTF_Cyber", "POL_Warsaw", "MUS_Cloud & Application Services", "BEL_EUROPEAN Union & Co", "REG_Sud-Est", "REG_Structure", "CNA_Marketing Communication", "C&I_Structure", "MUS_Data & Technologies", "TUN_Emerging", "SPA_General", "CAS_Structure", "CGR_DATA", "DIM_SMAC", "C&I_Régions", "C&I_People & Culture", "CGR_Sales", "SCH_SC France", "DTF_Structure", "DTF_Tech for Business", "MUS_Structure", "CGR_DSI", "CFR_SGE France", "CGR_Finance & Admin", "LIC_Sales", "HUN_Cloud & Application Services", "SIN_Singapore", "C&I_Finance", "LUX_CLOUD & Applications Services", "CGR_General Management", "CFR_DSI France", "INS_Insum Canada", "CNA_Sales", "CFR_Commerce France", "C&I_IDEA", "DTF_Tech for Data", "DTN_Canada", "LUX_Cyber Security & Infrastructure", "REG_Hauts-de-France", "CNA_Finance & Admin", "CFR_Juridique France", "SWI_OPERATIONS", "CGR_Marketing Communication", "CEA_Finance & Admin", "C&I_Fonctions RH", "CFR_DAF France", "CFR_Delivery France", "C&I_Energie & Industrie", "LUX_EUROPEAN Union & Co", "LUX_Consulting", "C&I_Transport & Mobilités", "CNA_Management", "TUN_CCSR", "TUN_Digital", "REG_Nouvelle-Aquitaine", "CEA_Sales", "CGR_HROD", "UKG_TUK", "CFR_Marketing Communication France", "GEM_Low Carbon France", "BEL_CLOUD & Applications Services", "REG_Ouest", "CEA_Recruitment", "C&I_Assurance & Santé", "CGR_Delivery", "DTF_Tech Digital et plateform", "CFR_HRD France", "CGR_Juridique", "CEC_Corporate Tunisia", "UKG_BDP", "REG_Occitanie", "CNA_Delivery", "CEA_HRD", "CFR_Recrutement France", "TUN_Data & ERP", "CAS_Digital Experience", "CEA_Management", "SWI_DATA", "CFR_Achats France", "CNA_Recruitment", "CFR_Direction Générale France", "CAS_Digital Core", "INS_Insum Peru", "LUX_DATA & TECHNOLOGIES", "CEA_Digital & Marketing", "INS_Insum USA", "CFR_Recherche & Innovation France")
 
     Format attendu :
@@ -66,7 +66,7 @@ INTENTIONFINDER:
     Date de début : -
     Pays : -
     Ville : -
-    BU : -
+    BU principale : -
     BU secondaire : -
     Années d'expérience : -
     Certifications : -,-
@@ -97,7 +97,7 @@ INTENTIONFINDER:
     Date de début : Non renseigné
     Pays : france
     Ville : paris
-    BU : Data & Technologies (FR)
+    BU principale : Data & Technologies (FR)
     BU secondaire : Non renseigné
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
@@ -117,7 +117,7 @@ INTENTIONFINDER:
     Date de début : 2029-12-01
     Pays : Non renseigné
     Ville : Non renseigné
-    BU : Digital Impulse
+    BU principale : Digital Impulse
     BU secondaire : Non renseigné
     Années d'expérience : 5
     Certifications : Non renseigné
@@ -137,7 +137,7 @@ INTENTIONFINDER:
     Date de début : 2025-07-05
     Pays : uk
     Ville : Non renseigné
-    BU : Corporate France
+    BU principale : Corporate France
     BU secondaire : CFR_Recherche & Innovation France
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
@@ -157,8 +157,28 @@ INTENTIONFINDER:
     Date de début : 2024-03-01
     Pays : belgique
     Ville : bruxelles
-    BU : Data & Technologies (FR)
+    BU principale : Data & Technologies (FR)
     BU secondaire : DTF_Tech for Data
+    Années d'expérience : Non renseigné
+    Certifications : Non renseigné
+    Compétences non techniques : esprit critique,curieux
+    Compétences techniques : data vizualisation, data cleaning
+    Objectif mission : data analytics
+    Secteurs d'activité : assurances
+    Compagnie : Non renseigné
+     --
+    Exemple de mission :
+    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024 et se trouver à Bruxelles.
+    Exemple de role :
+    data analyst
+
+    Exemple de réponse attendue :
+    simplified_mission : mission data analytics assureur
+    Date de début : 2024-03-01
+    Pays : belgique
+    Ville : bruxelles
+    BU principale : Non renseigné
+    BU secondaire : Non renseigné
     Années d'expérience : Non renseigné
     Certifications : Non renseigné
     Compétences non techniques : esprit critique,curieux

@@ -318,7 +318,7 @@ class IntentionFinder:
             self._extract_text_from_llmoutput(output_llm, "Ville"),
         )
         ans[QueryStruct.bu] = self._wrap_txt_with_list(
-            self._extract_text_from_llmoutput(output_llm, "BU"),
+            self._extract_text_from_llmoutput(output_llm, "BU principale"),
         )
         ans[QueryStruct.bu_secondary] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "BU secondaire"),

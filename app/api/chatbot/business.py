@@ -135,7 +135,7 @@ def chatbot_business_helper(
 
     # Fetch data from postgres
     if chatbot_request.assigned_until is None :
-        chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0] #get the
+        chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0]
     if chatbot_request.region is None :
         chatbot_request.region = guess_intention_query[QueryStruct.region].min()
     if chatbot_request.city is None :
