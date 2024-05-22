@@ -132,8 +132,8 @@ class Chatbot:
         #3 prompt to send to the LLM
         prompt = f"""
         Ton rôle est d'aider au staffing de consultants pour Talan.
-        Répond en 2 phrases. 
-        Tu dois juger si la liste des profils suivants 
+        Répond en 2 phrases.
+        Tu dois juger si la liste des profils suivants
         sont pertinent pour la requête suivante {query_user}.
         voici les profils :
         """
@@ -141,7 +141,7 @@ class Chatbot:
 
         #4 ask the LLM
         response = self.llm_backend.send_receive_message(query=prompt, system_function="")
-        
+
         return response
 
     def get_chatbot_response_old_2024_05(
