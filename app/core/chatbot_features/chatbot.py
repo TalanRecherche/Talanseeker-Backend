@@ -102,14 +102,10 @@ class Chatbot:
 
     def get_chatbot_response(
         self,
+        profiles_data:pd.DataFrame,
         guessintention_query: pd.DataFrame,
-        candidates_chunks: pd.DataFrame,
-        candidate_collabs: pd.DataFrame,
-        candidates_profiles: pd.DataFrame,
-        candidates_cvs: pd.DataFrame
     ) -> tuple[str, str] | None:
-        """Format queries to fit chunks and information into template.
-        Send system and query to the llm
+        """Ask the LLM to make a 1 sentecne to summurize the answer.
         Args:
             guessintention_query: pd.DataFrame
             candidates_chunks: pd.DataFrame
@@ -119,10 +115,38 @@ class Chatbot:
         Returns: pd.DataFrame
 
         """
-        #temporary for the dev
-        response = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus"
-        response += "Suspendisse lectus tortor, dignissim sit amet,"
-        response += ", adipiscing nec, ultricies sed, dolor."
+
+        #1 extract number of profile
+        query_user = guessintention_query["simplified_query"].values[0][0]
+
+
+        summury_str = ""
+        #2 create a summury to submit to the LLM
+        for _,row in profiles_data.iterrows():
+            name = row["name"]
+            surname = row["surname"]
+            description = row["description"]
+
+            parts = [
+                f"{description}",
+                "\n"
+            ]
+            profile_info_str = "\n".join(parts)
+
+            #add to the output response
+            summury_str += profile_info_str
+
+        #ask the LLM
+        prompt = f"""
+        Ton rôle est d'aider au staffing de consultants pour Talan.
+        Répond en 2 phrases. 
+        Tu dois juger si la liste des profils suivants 
+        sont pertinent pour la requête suivante {query_user}.
+        voici les profils :
+        """
+        prompt = prompt + summury_str #on ajoute les résumés des n_candidates
+        response = self.llm_backend.send_receive_message(query=prompt, system_function="")
+        
 
         return response
 
