@@ -30,6 +30,12 @@ class ChatbotRequest(BaseModel):
     grade: Optional[list[str]] = Field(
         Query(None, description="Séléctionner des grades"),
     )
+    bu: Optional[list[str]] = Field(
+        Query(None, description="Sélectionner des BU"),
+    )
+    bu_secondary: Optional[list[str]] = Field(
+        Query(None, description="Sélectionner des BU secondaires"),
+    )
     assigned_until: Optional[str] = Field(Query(None))
     availability_score: Optional[int] = Field(Query(None))
 
