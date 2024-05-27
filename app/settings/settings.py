@@ -117,8 +117,30 @@ class IntentionFinderSettings:
     @property
     def guess_intention_llm_model(self) -> str:
         """LLM model for the guess intention module."""
-        return os.environ.get("INTENTIONFINDER__LLM_MODEL")
+        model_name = os.environ.get("INTENTIONFINDER__LLM_MODEL")
+        model_version = os.environ.get("INTENTIONFINDER__LLM_VERSION")
+        return f"models:/{model_name}/{model_version}"
 
+class AzureMlSettings:
+    """Azure Ml settings."""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def subscription_id(self) -> str:
+        """Azure ml subscription id."""
+        return os.environ.get("AZURE_ML__SUBSCRIPTION_ID")
+
+    @property
+    def resource_group_name(self) -> str:
+        """Azure ml resource group."""
+        return os.environ.get("AZURE_ML__RESOURCE_GROUP_NAME")
+
+    @property
+    def workspace_name(self) -> str:
+        """Azure ml workspace name."""
+        return os.environ.get("AZURE_ML__WORKSPACE_NAME")
 
 class AzureStorageSettings:
     """Azure storage settings."""
@@ -267,6 +289,11 @@ class Settings:
         openai.api_base = os.environ["OPENAI_API_BASE"]
         openai.api_version = os.environ["OPENAI_API_VERSION"]
         openai.api_type = os.environ["OPENAI_API_TYPE"]
+
+    @property
+    def azure_ml(self) -> AzureMlSettings:
+        """Azure machine learning settings."""
+        return AzureMlSettings()
 
     @property
     def azure_storage(self) -> AzureStorageSettings:

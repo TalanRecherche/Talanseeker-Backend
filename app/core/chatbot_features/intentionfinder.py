@@ -6,8 +6,8 @@ import logging
 
 import pandas as pd
 import pytz
-from langchain.llms import AzureOpenAI
 
+from app.core.azure_modules import azure_ml_manager
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
@@ -48,7 +48,8 @@ class IntentionFinder:
         """
         self.settings = settings
         llm_model = self.settings.guess_intention_settings.guess_intention_llm_model
-        self.llm = AzureOpenAI(deployment_name=llm_model, temperature=0)
+
+        self.llm = azure_ml_manager.load_model(llm_model).predict
 
         self.query_samples = (
             self.settings.guess_intention_settings.guess_intention_query_template

@@ -8,8 +8,6 @@ import pytest
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.models.query_pandasmodels import QueryStruct
 from app.settings.settings import Settings
-import pandas as pd
-
 
 @pytest.mark.skip_this(
     reason="Skipping test from running because it is calling OpenAI-API",
@@ -19,7 +17,7 @@ def test_01_structured_query_format():
     user_query = "Trouve moi deux data scientists"
     intention_finder = IntentionFinder()
     structured_query = intention_finder.guess_intention(user_query)
-
+    print(structured_query.to_json(orient='records',force_ascii=False))
     assert QueryStruct.validate_dataframe(structured_query)
 
 
