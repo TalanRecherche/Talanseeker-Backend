@@ -134,9 +134,16 @@ def chatbot_business_helper(
     logging.info(f"IntentionFinder: {time.time() - t}")
 
     # Fetch data from postgres
-    chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0] #get the
-    chatbot_request.region = guess_intention_query[QueryStruct.region].min()
-    chatbot_request.city = guess_intention_query[QueryStruct.city].min()
+    if chatbot_request.assigned_until is None :
+        chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0]
+    if chatbot_request.region is None :
+        chatbot_request.region = guess_intention_query[QueryStruct.region].min()
+    if chatbot_request.city is None :
+        chatbot_request.city = guess_intention_query[QueryStruct.city].min()
+    if chatbot_request.bu is None :
+        chatbot_request.bu = guess_intention_query[QueryStruct.bu].min()
+    if chatbot_request.bu_secondary is None :
+        chatbot_request.bu_secondary = guess_intention_query[QueryStruct.bu_secondary].min()
     fetcher = PGfetcher()
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
