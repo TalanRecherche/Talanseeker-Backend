@@ -3,6 +3,7 @@ import logging
 import mlflow
 from azure.ai.ml import MLClient
 from azure.identity import EnvironmentCredential
+from azure.identity import DefaultAzureCredential, InteractiveBrowserCredential
 
 from app.settings import settings
 
@@ -16,9 +17,12 @@ class AzureMLManager:
 
     def load_model(self, model_uri: str) -> mlflow.pyfunc.model:
         try:
-            credential = EnvironmentCredential()
+            credential = DefaultAzureCredential()
+            # Check if given credential can get token successfully.
+            credential.get_token("https://management.azure.com/.default")
         except Exception as ex:
-            logging.exception("Azure credential exception %s", ex)
+            # Fall back to InteractiveBrowserCredential in case DefaultAzureCredential not work
+            credential = InteractiveBrowserCredential()
 
         try:
             ml_client = MLClient(
