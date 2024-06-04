@@ -28,7 +28,7 @@ h11==0.14.0
 httpcore==0.18.0
 httptools==0.6.1
 httpx==0.25.0
-idna==3.4
+idna==3.7
 isodate==0.6.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
@@ -97,5 +97,5 @@ pyinstrument==4.6.1
 levenshtein~=0.23.0
 mlflow==2.13.0
 azure-ai-ml==1.16.0
-azure-identity==1.14.0
 azureml-mlflow==1.56.0
+langfuse==2.34.1

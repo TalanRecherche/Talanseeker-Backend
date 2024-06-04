@@ -12,6 +12,7 @@ from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
 
+from langfuse.decorators import observe, langfuse_context
 
 class IntentionFinder:
     """Class used to process the user query and extract the intention of the user. It
@@ -64,6 +65,7 @@ class IntentionFinder:
             self.settings.guess_intention_settings.roleseeker_query_template
         )
 
+    @observe()
     def guess_intention(
         self, user_query: str, _format: str = "dataframe"
     ) -> pd.DataFrame:
@@ -88,8 +90,14 @@ class IntentionFinder:
         roles_dict = self._process_roleseeker_answer(output_roleseeker_llm)
         # extract infos with llm for each role
         res = self._extract_infos_per_role(user_query, _format, roles_dict)
+
+        langfuse_context.update_current_observation(
+            model=self.llm,
+            output=res.to_dict()
+        )
         return res
 
+    @observe()
     def _prepare_roleseeker_template(self, uquery: str) -> str:
         """Prepares the complete prompt to call the llm for the roleseeker.
 
@@ -107,6 +115,7 @@ class IntentionFinder:
         ).replace("{query}", uquery)
         return uquery_template
 
+    @observe()
     def _process_roleseeker_answer(self, output_llm: str) -> dict:
         """Process the output of the roleseeker llm and extract the
             roles and number of required collabs per role.
@@ -150,6 +159,7 @@ class IntentionFinder:
         )
         return ans
 
+    @observe()
     def _extract_infos_per_role(
         self, user_query: str, _format: str, roles: dict
     ) -> pd.DataFrame:
@@ -194,6 +204,10 @@ class IntentionFinder:
         else:
             err = f"format {_format} not implemented. Use dataframe."
             raise NotImplementedError(err)
+        
+        langfuse_context.update_current_observation(
+            output=out.to_dict(orient='records')
+        )
         return out
 
     def _extract_text_from_llmoutput(self, output_llm: str, field: str) -> str:
@@ -245,6 +259,7 @@ class IntentionFinder:
         """
         return [text]
 
+    @observe()
     def _prepare_template(self, uquery: str, role: str) -> str:
         """Prepares the complete prompt to call the llm.
         To apply prompt engineering, assemble here:
@@ -267,6 +282,7 @@ class IntentionFinder:
         )
         return uquery_template
 
+    @observe()
     def _process_answer(
         self, output_llm: str, uquery: str, role: str, n_role: int
     ) -> dict:
@@ -352,6 +368,7 @@ class IntentionFinder:
         )
         return ans
 
+    @observe()
     def _prepare_output(self, output: dict, _format: str) -> pd.DataFrame:
         """Prepares the output of the process in the format specified.
 
@@ -374,4 +391,9 @@ class IntentionFinder:
         else:
             err = f"format {_format} not implemented"
             raise NotImplementedError(err)
+        
+        langfuse_context.update_current_observation(
+            output=output_prepared.to_dict(orient='records')
+        )
+
         return output_prepared
