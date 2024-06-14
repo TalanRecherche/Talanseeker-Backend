@@ -96,5 +96,6 @@ Cette section guide à travers les étapes pour démarrer l'API localement et in
 * **Rizk Ait Brik** - *développement du POC et du MVP* 
 * **Youness Boumalek** - *développement du MVP* 
 * **Steve Bellart** - *développement du MVP* 
-* **Arnaud Deleruyelle** - *développement du MVP* 
+* **Arnaud Deleruyelle** - *développement du MVP*
+* **Léo Hanifi** - *développement au MVP*
 
