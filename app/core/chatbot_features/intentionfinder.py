@@ -6,13 +6,13 @@ import logging
 
 import pandas as pd
 import pytz
+from langfuse.decorators import langfuse_context, observe
 
 from app.core.azure_modules import azure_ml_manager
 from app.core.models.query_pandasmodels import QueryStruct
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
 
-from langfuse.decorators import observe, langfuse_context
 
 class IntentionFinder:
     """Class used to process the user query and extract the intention of the user. It
@@ -204,9 +204,9 @@ class IntentionFinder:
         else:
             err = f"format {_format} not implemented. Use dataframe."
             raise NotImplementedError(err)
-        
+
         langfuse_context.update_current_observation(
-            output=out.to_dict(orient='records')
+            output=out.to_dict(orient="records")
         )
         return out
 
@@ -391,9 +391,9 @@ class IntentionFinder:
         else:
             err = f"format {_format} not implemented"
             raise NotImplementedError(err)
-        
+
         langfuse_context.update_current_observation(
-            output=output_prepared.to_dict(orient='records')
+            output=output_prepared.to_dict(orient="records")
         )
 
         return output_prepared
