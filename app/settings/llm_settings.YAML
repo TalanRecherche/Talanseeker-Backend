@@ -47,7 +47,7 @@ CHATBOT:
 
 
 INTENTIONFINDER:
-  LLM_MODEL: davinci003
+  LLM_MODEL: gpt-35-turbo
   GUESS_INTENTION_SYSTEM_TEMPLATE: |
     '''
     Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et un role et tu dois extraire les informations nécessaires dans un format attendu.
