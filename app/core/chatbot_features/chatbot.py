@@ -68,7 +68,83 @@ class Chatbot:
     # user functions
     # =============================================================================
 
+    def add_candidates_description(self,
+                                    profiles_data:pd.DataFrame,
+                                    guessintention_query: pd.DataFrame,
+                                    candidates_chunks: pd.DataFrame) -> pd.DataFrame:
+        #on crée une description personnalisée selon la requête utilisateur sur la base des chunks
+
+        descriptions = [] #will store each decription (relevant_qualities_str)
+        for _, row in profiles_data.iterrows():
+            #get name surname
+            name, surname = row["name"], row["surname"]
+
+            #get collab_id
+            collab_id = row["collab_id"]
+
+            #indentify the quality of the candidate from top chunks
+            list_top_chunks = self._get_top_chunks(candidates_chunks,
+                                                   collab_id,
+                                                   top_k=3)
+
+            #ask the LLM to identify relevant skills based on the top_k chunks and the user_query
+            relevant_qualities_str = self._get_relevant_skills(guessintention_query,
+                                                               name, surname, list_top_chunks)
+
+
+            #store the candidate description based on LLM
+            descriptions.append(relevant_qualities_str)
+
+        #update the dataframe
+        profiles_data["description"] = descriptions
+
+        return profiles_data
+
     def get_chatbot_response(
+        self,
+        profiles_data:pd.DataFrame,
+        guessintention_query: pd.DataFrame,
+    ) -> tuple[str, str] | None:
+        """Ask the LLM to make a 1 sentecne to summurize the candidates list.
+        Args:
+            profiles_data: pd.DataFrame
+            guessintention_query: pd.DataFrame
+
+        Returns: str
+        """
+
+        #1 extract simplified user query
+        query_user = guessintention_query["simplified_query"].values[0][0]
+
+        #2 create a summary of all candidates
+        summary_str = ""
+        for _,row in profiles_data.iterrows():
+            description = row["description"]
+            parts = [
+                f"{description}",
+                "\n"
+            ]
+            profile_info_str = "\n".join(parts)
+
+            #add to summary
+            summary_str += profile_info_str
+
+        #3 prompt to send to the LLM
+        prompt = f"""
+        Ton rôle est d'aider au staffing de consultants pour Talan.
+        Répond en 2 phrases.
+        Tu dois juger si la liste des profils suivants
+        sont pertinent pour la requête suivante {query_user}.
+        voici les profils :
+        """
+        prompt = prompt + summary_str #on ajoute les résumés des n_candidates
+
+        #4 ask the LLM
+        response = self.llm_backend.send_receive_message(query=prompt, system_function="")
+
+        return response
+
+    def get_chatbot_response_old_2024_05(
         self,
         guessintention_query: pd.DataFrame,
         candidates_chunks: pd.DataFrame,
