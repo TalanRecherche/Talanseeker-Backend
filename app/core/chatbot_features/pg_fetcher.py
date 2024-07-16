@@ -117,6 +117,7 @@ class PGfetcher:
                 query += ")"
             query += ";"
             query = query.replace(",)", ")")
+            print(query)
         return query
 
     def _fetch_profiles(self, filters: Optional[Filters] = None) -> pd.DataFrame:
@@ -124,8 +125,10 @@ class PGfetcher:
             "select p.* from profiles p left join collabs c on p.collab_id = "
             "c.collab_id where true "
         )
+        print(filters)
         query_with_filters = PGfetcher._build_filtered_request(query_all_profiles, filters)
         """ fetch the entire profile table"""
+        print(query_with_filters)
         logging.info(query_with_filters)
         df_profiles_ = pd.read_sql(query_with_filters, con_string)
 
