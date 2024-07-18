@@ -1,19 +1,24 @@
+import datetime
 import logging
 import tempfile
 import time
 from pathlib import Path
 
 import pandas as pd
+import pytz
 from fastapi import Response
 from pyinstrument import Profiler
 
 from app.core.chatbot_features.candidatesselector import CandidatesSelector
 from app.core.chatbot_features.chatbot import Chatbot
+from app.core.chatbot_features.conversationmanager import ConversationManager
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.chatbot_features.pg_fetcher import PGfetcher
 from app.core.chatbot_features.queryrouter import QueryRouter
 from app.core.models.pg_pandasmodels import CollabPg, CvPg, ProfilePg
 from app.core.models.query_pandasmodels import QueryStruct
+from app.models import con_string
+from app.models.conversations import Conversations
 from app.schema.chatbot import (
     Candidate,
     ChatbotRequest,
@@ -106,11 +111,12 @@ def row_to_candidate_schema(
 
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     chatbot_response = ChatbotResponse()
-
+    logging.warning(chatbot_request)
     # check if query is meaningful and related to staffing
     router = QueryRouter()
     query_valid_bool = router.get_router_response(chatbot_request.user_query)
     if query_valid_bool:
+        # Main function
         chatbot_business_helper(chatbot_request, chatbot_response)
 
     else:
@@ -128,6 +134,31 @@ def chatbot_business_helper(
         chatbot_response: ChatbotResponse,
 ) -> None:
     t = time.time()
+    # Handle conversation
+    conv = ConversationManager(chatbot_request)
+    db_conv = conv.get_all_database()
+    if chatbot_request.conversation_id is not None:
+        # définir la liste en fonction de la BDD
+        current_conv = conv.get_conversation(chatbot_request.conversation_id)
+        already_selected_collabs = "".join(list(current_conv[1][1:-1])).split(",")
+
+        already_selected_user_query = current_conv[2][1:-1].split(",")
+        for i in range(len(already_selected_user_query)):
+            already_selected_user_query[i] = already_selected_user_query[i][1:-1]
+
+        new_conv_id = chatbot_request.conversation_id
+
+    else:
+        already_selected_collabs = []
+        already_selected_user_query = []
+        # il faut récupérer le max ici ds valeurs de conversation_id
+        if len(db_conv.values) < 1:
+            new_conv_id = 1
+        else:
+            max_unique_conv_id = db_conv.values[0][0]
+            new_conv_id = max_unique_conv_id + 1
+    #conv_id defined, place it in the response
+    chatbot_response.conversation_id = new_conv_id
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder()
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
@@ -153,21 +184,60 @@ def chatbot_business_helper(
     t = time.time()
     # Select best candidates
     selector = CandidatesSelector()
+    # il faut modifier select candidates pour retirer ceux déjà listés
+
     chunks, collabs, cvs, profiles = selector.select_candidates(
         df_chunks,
         df_collabs,
         df_cvs,
         df_profiles,
         guess_intention_query,
+        already_selected_collabs
     )
     logging.info(f"CandidatesSelector: {time.time() - t}")
+    # vérification a ce moment de already selected collab
 
     t = time.time()
     chatbot = Chatbot()
     profiles_data = collabs.merge(profiles, on="collab_id")
     profiles_data = chatbot.add_candidates_description(profiles_data,
                                                         guess_intention_query,
-                                                        chunks)
+                                                        chunks).sort_values(
+                                                            by="overall_score",
+                                                            ascending=False
+                                                        )
+    if not isinstance(already_selected_collabs, list):
+        already_selected_collabs = [already_selected_collabs]
+    if not isinstance(already_selected_user_query, list):
+        already_selected_user_query = [already_selected_user_query]
+    concat_user_query = already_selected_user_query + [chatbot_request.user_query]
+    # now insert or update the conversation table with the already_selected_collabs
+    timezone = pytz.timezone("UTC")
+    new_conv = [
+        int(new_conv_id),
+        already_selected_collabs,
+        concat_user_query,
+        datetime.datetime.now(timezone)
+    ]
+
+    # nouvelle tentative
+
+    new_data = pd.DataFrame(new_conv,
+                            ["conversation_id","collabs_ids","requests_content","date_conv"]).T
+    new_data["date_conv"] = pd.to_datetime(new_data["date_conv"])
+    cond_conv = (len(db_conv) > 0) and (new_data["conversation_id"]
+                                        .isin(db_conv["conversation_id"]).all())
+    db_conv.set_index("conversation_id", inplace=True)
+    new_data.set_index("conversation_id", inplace=True)
+    if cond_conv:
+        db_conv.update(new_data)
+        result = db_conv.reset_index()
+    elif len(db_conv) > 0:
+        result = new_data.combine_first(db_conv).reset_index()
+    else:
+        result = new_data.reset_index()
+
+    result.to_sql(Conversations.__tablename__, con_string, if_exists="replace", index=False)
     logging.info(f"profiles_data: {time.time() - t}")
 
     t = time.time()

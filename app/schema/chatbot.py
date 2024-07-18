@@ -21,6 +21,7 @@ class Filters(BaseModel):
 
 class ChatbotRequest(BaseModel):
     user_query: str
+    conversation_id: Optional[str] = None
     region: Optional[list[str]] = Field(
         Query(None, description="Séléctionner des régions"),
     )
@@ -79,4 +80,6 @@ class ChatbotResponse(BaseModel):
     question_valid: bool = True
     query_id: Optional[str] = None
     chatbot_response: Optional[str] = None
+    conversation_id: Optional[int] = None
     candidates: Optional[list[Candidate]] = None
+
