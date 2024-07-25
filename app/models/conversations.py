@@ -5,7 +5,6 @@ from app.models import Base
 
 class Conversations(Base):
     __tablename__ = "conversations"
-
     conversation_id = Column(String, primary_key=True)
     collabs_ids = Column(String)
     requests_content = Column(String)

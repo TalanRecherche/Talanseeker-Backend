@@ -1,4 +1,8 @@
+import pandas as pd
+from sqlalchemy import select
+
 from app.core.azure_modules import azure_pg_manager
+from app.models import con_string
 from app.models.conversations import Conversations
 from app.schema.chatbot import (
     ChatbotRequest,
@@ -28,3 +32,11 @@ class ConversationManager:
     @staticmethod
     def get_all_database()-> None:
         return azure_pg_manager.select_all_conv()
+
+    @staticmethod
+    def get_empty_database_conv()-> bool:
+        req = (select(Conversations))
+
+        return len(pd.read_sql(req, con_string)) == 0
+
+

@@ -138,15 +138,28 @@ def chatbot_business_helper(
     conv = ConversationManager(chatbot_request)
     db_conv = conv.get_all_database()
     if chatbot_request.conversation_id is not None:
-        # définir la liste en fonction de la BDD
-        current_conv = conv.get_conversation(chatbot_request.conversation_id)
-        already_selected_collabs = "".join(list(current_conv[1][1:-1])).split(",")
+        # Vérifier si la table n'est pas vide
+        if conv.get_empty_database_conv():
+#            raise HTTPException(status_code=400, detail="La BDD conversations est vide")
+            chatbot_response.chatbot_response = "La BDD conversations est vide, erreur lors de la requête"
+            chatbot_response.question_valid = False
+            return
+        elif not conv.check_conversation_exist(chatbot_request.conversation_id):
+#            raise HTTPException(status_code=400, detail="La conversation n'existe pas")
+            chatbot_response.chatbot_response = "La conversation n'existe pas, veuillez en créer une nouvelle."
+            chatbot_response.question_valid = False
+            return
+        else:
+            # définir la liste en fonction de la BDD
+            current_conv = conv.get_conversation(chatbot_request.conversation_id)
+            print(current_conv)
+            already_selected_collabs = "".join(list(current_conv[1][1:-1])).split(",")
 
-        already_selected_user_query = current_conv[2][1:-1].split(",")
-        for i in range(len(already_selected_user_query)):
-            already_selected_user_query[i] = already_selected_user_query[i][1:-1]
+            already_selected_user_query = current_conv[2][1:-1].split(",")
+            for i in range(len(already_selected_user_query)):
+                already_selected_user_query[i] = already_selected_user_query[i][1:-1]
 
-        new_conv_id = chatbot_request.conversation_id
+            new_conv_id = chatbot_request.conversation_id
 
     else:
         already_selected_collabs = []
@@ -254,6 +267,9 @@ def chatbot_business_helper(
         profiles_data,
         guess_intention_query,
     )
+
+    print(response)
+
     logging.info(f"Chatbot response: {time.time() - t}")
 
     chatbot_response.chatbot_response = response
