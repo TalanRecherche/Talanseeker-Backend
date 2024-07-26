@@ -109,16 +109,84 @@ def row_to_candidate_schema(
     return candidates
 
 
+from sqlalchemy import create_engine, Column, Integer, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import logging
+
+# URL de connexion
+DATABASE_URL = "postgresql://llm_cv:jw8s0F4@localhost:5432/llm_cv"
+
+# Créez l'objet engine
+engine = create_engine(DATABASE_URL)
+
+# Créez une session locale
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Déclarez la base
+Base = declarative_base()
+
+# Définissez le modèle ajusté
+class Conversation(Base):
+    __tablename__ = 'conversations'
+    
+    conversation_id = Column(Integer, primary_key=True, index=True)
+    requests_content = Column(Text, nullable=False)
+
+# Fonction pour récupérer et imprimer le contenu de la requête
+def get_requests_content(conversation_id):
+    session = SessionLocal()
+    try:
+        # Requête pour récupérer le requests_content du conversation_id donné
+        conversation = session.query(Conversation).filter_by(conversation_id=conversation_id).first()
+        print(conversation)
+        if conversation:
+            print(f"Request content for conversation_id {conversation_id}: {conversation.requests_content}")
+            return conversation.requests_content  # Retourner le contenu pour utilisation dans chatbot_business
+        else:
+            print(f"No conversation found with conversation_id {conversation_id}")
+            return None  # Retourner None si la conversation n'existe pas
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
+
+
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     chatbot_response = ChatbotResponse()
     logging.warning(chatbot_request)
-    # check if query is meaningful and related to staffing
-    router = QueryRouter()
-    query_valid_bool = router.get_router_response(chatbot_request.user_query)
-    if query_valid_bool:
-        # Main function
-        chatbot_business_helper(chatbot_request, chatbot_response)
+    print(chatbot_request)
+    
+    # Récupération des valeurs de conversation_id et user_query
+    conversation_id = chatbot_request.conversation_id
+    user_query = chatbot_request.user_query
 
+    # Affichage des valeurs récupérées pour vérification
+    print(f"Conversation ID: {conversation_id}")
+    print(f"User Query: {user_query}")
+
+    # Récupérer le contenu précédent de la conversation
+    previous_content = get_requests_content(conversation_id)
+    print(previous_content)
+    if previous_content is not None:
+        # Nettoyer previous_content
+        cleaned_previous_content = previous_content.replace('{', '').replace('}', '').replace('"', '').strip()
+        print(cleaned_previous_content)
+        # Fusionner le contenu précédent avec le nouveau user_query
+        merged_text = cleaned_previous_content + " " + user_query
+        print(f"Merged Text: {merged_text}")
+
+    else:
+        merged_text = user_query
+        print(f"Merged Text: {merged_text}")
+    # Vérifier si la requête est pertinente et liée au staffing
+    router = QueryRouter()
+    query_valid_bool = router.get_router_response(merged_text)
+    
+    if query_valid_bool:
+        # Fonction principale
+        chatbot_business_helper(chatbot_request, chatbot_response)
     else:
         chatbot_response.question_valid = False
         chatbot_response.chatbot_response = (
@@ -127,6 +195,13 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
         )
 
     return chatbot_response
+
+
+
+
+
+
+
 
 
 def chatbot_business_helper(
