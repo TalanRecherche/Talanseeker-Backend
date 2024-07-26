@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from sqlalchemy import Column, String
 
 from app.models import Base

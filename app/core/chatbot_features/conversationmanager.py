@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+import numpy as np
 import pandas as pd
 from sqlalchemy import select
 
@@ -38,5 +40,13 @@ class ConversationManager:
         req = (select(Conversations))
 
         return len(pd.read_sql(req, con_string)) == 0
+
+    def define_random_conv_id(self,mini:int=10000000,maxi:int=99999999)-> str:
+        random_conv_id = np.random.randint(mini,maxi)
+        # Tant que le random généré existe, on en trouve un autre
+        while self.check_conversation_exist(str(random_conv_id)):
+            random_conv_id = np.random.randint(mini,maxi)
+
+        return str(random_conv_id)
 
 
