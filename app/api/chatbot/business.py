@@ -213,25 +213,32 @@ def chatbot_business_helper(
     conv = ConversationManager(chatbot_request)
     db_conv = conv.get_all_database()
     if chatbot_request.conversation_id is not None:
-        # définir la liste en fonction de la BDD
-        current_conv = conv.get_conversation(chatbot_request.conversation_id)
-        already_selected_collabs = "".join(list(current_conv[1][1:-1])).split(",")
+        # Vérifier si la table n'est pas vide
+        if conv.get_empty_database_conv():
+            chatbot_response.chatbot_response = "La BDD conversations est vide"
+            chatbot_response.question_valid = False
+            return
+        elif not conv.check_conversation_exist(chatbot_request.conversation_id):
+            chatbot_response.chatbot_response = "L'identifiant de conversation n'existe pas"
+            chatbot_response.question_valid = False
+            return
+        else:
+            # définir la liste en fonction de la BDD
+            current_conv = conv.get_conversation(chatbot_request.conversation_id)
+            already_selected_collabs = "".join(list(current_conv[1][1:-1])).split(",")
 
-        already_selected_user_query = current_conv[2][1:-1].split(",")
-        for i in range(len(already_selected_user_query)):
-            already_selected_user_query[i] = already_selected_user_query[i][1:-1]
+            already_selected_user_query = current_conv[2][1:-1].split(",")
+            for i in range(len(already_selected_user_query)):
+                already_selected_user_query[i] = already_selected_user_query[i][1:-1]
 
-        new_conv_id = chatbot_request.conversation_id
+            new_conv_id = chatbot_request.conversation_id
 
     else:
         already_selected_collabs = []
         already_selected_user_query = []
-        # il faut récupérer le max ici ds valeurs de conversation_id
-        if len(db_conv.values) < 1:
-            new_conv_id = 1
-        else:
-            max_unique_conv_id = db_conv.values[0][0]
-            new_conv_id = max_unique_conv_id + 1
+        # on va definir un conv_id aleatoire
+        new_conv_id = conv.define_random_conv_id()
+
     #conv_id defined, place it in the response
     chatbot_response.conversation_id = new_conv_id
     # Structure Query using IntentionFinderSettings
@@ -329,6 +336,7 @@ def chatbot_business_helper(
         profiles_data,
         guess_intention_query,
     )
+
     logging.info(f"Chatbot response: {time.time() - t}")
 
     chatbot_response.chatbot_response = response
