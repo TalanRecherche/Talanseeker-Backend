@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Created on Thu Sep 13 10:04:44 2023
 
 @author: agarc
@@ -34,9 +35,10 @@ class CandidatesSelector:
         df_cvs: pd.DataFrame,
         df_profiles: pd.DataFrame,
         df_query: pd.DataFrame,
+        already_selected_profiles_ids: list,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
         # Prepare list of selected ids
-        already_selected_profiles_ids = []
+        already_selected_profiles_ids = already_selected_profiles_ids
         # loop through sub queries from GuessIntention
         for _, row in df_query.iterrows():
             query_row = pd.DataFrame(row).T
@@ -62,6 +64,7 @@ class CandidatesSelector:
             )
             # place new profiles in already_selected_profiles_ids
             already_selected_profiles_ids.extend(selected_ids)
+
 
         # push  already_selected_profiles_ids candidates to output tables
         (

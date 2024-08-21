@@ -2,7 +2,7 @@
 
 ​
 
-Talan est une API basée sur l'IA pour aider au staffing en facilitant la recherche de profils. Il est destiné aux personnes devant proposer des consultants pour répondre aux demandes des clients.​
+Talan est une API fastapi basée sur l'IA pour aider au staffing en facilitant la recherche de profils. Il est destiné aux personnes devant proposer des consultants pour répondre aux demandes des clients.​
 
  ​
 A partir de CVs fournis dans un format bureautique, l'outil établit un profil structuré des consultants et permet de chercher une ou plusieurs personnes. Il présente une fiche profil du consultant qui affiche ses compétences et met en exergue celles correspondant à la demande. L'outil permet aussi de contacter les profils trouvés et leur référent.​

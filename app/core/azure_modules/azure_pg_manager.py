@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 
 import pandas as pd
@@ -10,6 +11,7 @@ from app.core.models.pg_pandasmodels import ChunkPg, ProfilePg
 from app.models import Base, con_string, engine
 from app.models.chunks import ChunkModel
 from app.models.collabs import PgCollabs
+from app.models.conversations import Conversations
 from app.models.cvs import PgCvs
 from app.models.profiles import PG_Profiles
 
@@ -90,6 +92,9 @@ class AzurePGManager:
         elif req_target == "check_existence":
             req = (select(kwargs["table"]).
                    where(PgCollabs.collab_id == kwargs["collab_id"]))
+        elif req_target == "check_conv":
+            req = (select(kwargs["table"]).
+                   where(Conversations.conversation_id == kwargs["conversation_id"]))
 
         return req
 
@@ -209,6 +214,32 @@ class AzurePGManager:
                    where(PgCollabs.email == id_value))
 
         return len(pd.read_sql(req, con_string)) != 0
+
+    @staticmethod
+    def check_existence_conv(table_name: str, id_value: str) -> bool:
+        """req = text(f"SELECT * FROM {table_name} WHERE {id_tag} = '{id_value}'")"""
+        req = AzurePGManager._sql_req_creator("check_conv",
+                                              table=Conversations,
+                                              conversation_id=id_value,
+                                              )
+
+        return len(pd.read_sql(req, con_string)) != 0
+
+    @staticmethod
+    def select_all_conv() -> bool:
+        """req = text(f"SELECT * FROM {table_name} WHERE {id_tag} = '{id_value}'")"""
+        req = (select(Conversations).
+                   order_by(Conversations.conversation_id.desc()))
+
+        return (pd.read_sql(req, con_string))
+
+    @staticmethod
+    def get_conv(table_name: str, id_value: str) -> bool:
+        """req = text(f"SELECT * FROM {table_name} WHERE {id_tag} = '{id_value}'")"""
+        req = (select(Conversations).
+                   where(Conversations.conversation_id == id_value))
+
+        return (pd.read_sql(req, con_string)).values[0]
 
     @staticmethod
     def get_collabs_associated_email(table_name: str, id_value: str) -> bool:

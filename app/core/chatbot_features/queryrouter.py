@@ -93,15 +93,11 @@ class QueryRouter:
             return True
 
         # check if the answer is close to yes
-        if StringHandler.check_similarity_string(
+        return StringHandler.check_similarity_string(
             llm_response,
             self.target_strings[0],
             self.threshold,
-        ):
-            return True
-
-        # return False is llm_response is far from yes
-        return False
+        )
 
     def _check_llm_response(self, llm_response: str) -> bool:
         # normalize string
