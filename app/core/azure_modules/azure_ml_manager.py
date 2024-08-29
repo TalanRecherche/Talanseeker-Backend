@@ -14,9 +14,8 @@ class AzureMLManager:
         self.resource_group_name = settings.azure_ml.resource_group_name
         self.workspace_name = settings.azure_ml.workspace_name
 
-    def load_model(self, model_uri: str) -> mlflow.pyfunc.model:
         try:
-            credential = EnvironmentCredential()
+            credential = EnvironmentCredential() #EnvironmentCredential()
         except Exception as ex:
             logging.exception("Azure credential exception %s", ex)
 
@@ -33,4 +32,5 @@ class AzureMLManager:
         mlflow_tracking_uri = ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri
         mlflow.set_tracking_uri(mlflow_tracking_uri)
 
+    def load_model(self, model_uri: str) -> mlflow.pyfunc.model:
         return mlflow.pyfunc.load_model(model_uri)

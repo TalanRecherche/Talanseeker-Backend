@@ -1,0 +1,641 @@
+{
+  "requests": [
+    {
+        "user_query": "Forme moi une équipe de 3 à 4 intervenants pour une mission de data science dans la banque.",
+        "simplified_query": "mission data science banque",
+        "sectors": "banque",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "chef de projet",
+                "nb_profiles": 1,
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["gestion de projet", "leadership"],
+                "technical_skills": ["data science", "machine learning"],
+                "missions": "data science"
+            },
+            {
+                "role": "data scientist",
+                "nb_profiles": 3,
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["esprit critique", "autonomme"],
+                "technical_skills": ["data science", "machine learning"],
+                "missions": "data science"
+            }
+        ]
+    },
+    {
+        "user_query": "J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029.",
+        "simplified_query": "5 ans d'expérience développement java L'Oréal",
+        "sectors": "Non renseigné",
+        "companies": "L'Oreal",
+        "roles": [
+            {
+                "role": "développeur",
+                "nb_profiles": 1,
+                "years": 5,
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["organisé", "bon communiquant"],
+                "technical_skills": ["java", "object oriented programming"],
+                "missions": "développement java"
+            }
+        ]
+    },
+    {
+        "user_query": "Trouve moi des consultants pour un projet de transformation digitale pour une entreprise de BTP. La mission commence en Juillet 2025. Il me faut un manager et des ingénieurs.",
+        "simplified_query": "transformation digitale BTP manager ingénieur",
+        "sectors": "BTP",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "ingénieur",
+                "nb_profiles": "Non renseigné",
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["bon relationnel", "prise de décision"],
+                "technical_skills": ["culture digital"],
+                "missions": "transformation digital"
+            },
+            {
+                "role": "manager",
+                "nb_profiles": "1",
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["bon relationnel", "prise de décision"],
+                "technical_skills": ["culture digital"],
+                "missions": "transformation digital"
+            }
+        ]
+    },
+    {
+        "user_query": "Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024",
+        "simplified_query": "mission data analytics assureur",
+        "sectors": "assurances",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "chef de projet",
+                "nb_profiles": 1,
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["gestion de projet", "leadership"],
+                "technical_skills": ["data vizualisation", "data cleaning"],
+                "missions": "data analytics"
+            },
+            {
+                "role": "data analyst",
+                "nb_profiles": "Non renseigné",
+                "years": "Non renseigné",
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["esprit critique", "curieux"],
+                "technical_skills": ["data vizualisation", "data cleaning"],
+                "missions": "data analytics"
+            }
+        ]
+    },
+    {
+        "user_query": "Trouve un expert en intelligence artificielle pour une start-up tech en plein essor, avec expertise en réseaux neuronaux.",
+        "simplified_query": "expert intelligence artificielle start-up réseaux neuronaux",
+        "sectors": "technologie",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+            "role": "expert en intelligence artificielle",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Doctorat en informatique",
+            "soft_skills": ["capacité d'analyse", "créativité"],
+            "technical_skills": ["intelligence artificielle", "réseaux neuronaux"],
+            "missions": "développement IA"
+            }
+        ]
+    },
+    {
+        "user_query": "Recherche un chef de projet digital pour réorganiser notre site e-commerce, avec compétences SEO et gestion de projet Agile.",
+        "simplified_query": "chef de projet digital site e-commerce SEO Agile",
+        "sectors": "e-commerce",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+            "role": "chef de projet digital",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Master en marketing digital",
+            "soft_skills": ["gestion d'équipe", "flexibilité"],
+            "technical_skills": ["SEO", "gestion de projet Agile"],
+            "missions": "réorganisation site e-commerce"
+            }
+        ]
+    },
+    {
+        "user_query": "Besoin d'un spécialiste SEO pour optimiser notre présence en ligne, avec une expérience dans le secteur de la mode.",
+        "simplified_query": "spécialiste SEO mode optimisation en ligne",
+        "sectors": "mode",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "spécialiste SEO",
+                "nb_profiles": 1,
+                "years": 2,
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["créativité", "adaptabilité"],
+                "technical_skills": ["SEO", "analyse de trafic"],
+                "missions": "optimisation présence en ligne"
+            }
+        ]
+    },
+    {
+        "user_query": "Cherche un architecte système expérimenté pour une mission dans le secteur aérospatial, familiarisé avec les normes de sécurité.",
+        "simplified_query": "architecte système aérospatial sécurité",
+        "sectors": "aérospatial",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "architecte système",
+                "nb_profiles": 1,
+                "years": 5,
+                "diplomas_certifications": "Ingénieur aérospatial",
+                "soft_skills": ["rigueur", "sens de l'innovation"],
+                "technical_skills": ["systèmes embarqués", "normes de sécurité"],
+                "missions": "conception système sécurisé"
+            }
+        ]
+    },
+    {
+        "user_query": "Recherche développeur mobile pour créer une application de santé, connaissances en Flutter et React Native requises.",
+        "simplified_query": "développeur mobile santé Flutter React Native",
+        "sectors": "santé",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "développeur mobile",
+                "nb_profiles": 1,
+                "years": 3,
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["autonomie", "capacité d'apprentissage rapide"],
+                "technical_skills": ["Flutter", "React Native"],
+                "missions": "création application santé"
+            }
+        ]
+    },
+    {
+        "user_query": "À la recherche d'un consultant en gestion de crise pour renforcer notre équipe de management, expérience dans le secteur énergétique préférée.",
+        "simplified_query": "consultant gestion de crise énergétique",
+        "sectors": "énergétique",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "consultant en gestion de crise",
+                "nb_profiles": 1,
+                "years": 7,
+                "diplomas_certifications": "MBA",
+                "soft_skills": ["leadership", "gestion du stress"],
+                "technical_skills": ["gestion de crise", "management"],
+                "missions": "renforcement équipe management"
+            }
+        ]
+    },
+    {
+        "user_query": "Besoin urgent d'un expert en analyse financière pour une startup fintech, maîtrise des outils de data analytics nécessaire.",
+        "simplified_query": "expert analyse financière fintech data analytics",
+        "sectors": "fintech",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "expert en analyse financière",
+                "nb_profiles": 1,
+                "years": 4,
+                "diplomas_certifications": "Master en finance",
+                "soft_skills": ["précision", "capacité d'analyse"],
+                "technical_skills": ["data analytics", "modélisation financière"],
+                "missions": "analyse financière startup"
+            }
+        ]
+    },
+    {
+        "user_query": "Cherche une équipe composée d'un analyste BI et d'un data scientist pour un projet de data visualisation dans le secteur bancaire, maîtrise de Tableau et Python requise.",
+        "simplified_query": "équipe analyste BI data scientist data visualisation bancaire Tableau Python",
+        "sectors": "bancaire",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "analyste BI",
+                "nb_profiles": 1,
+                "years": 2,
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["capacité d'analyse", "communication"],
+                "technical_skills": ["Tableau", "SQL"],
+                "missions": "projet de data visualisation"
+            },
+            {
+                "role": "data scientist",
+                "nb_profiles": 1,
+                "years": 3,
+                "diplomas_certifications": "Master en science des données",
+                "soft_skills": ["résolution de problèmes", "travail en équipe"],
+                "technical_skills": ["Python", "machine learning"],
+                "missions": "modélisation statistique"
+            }
+        ]
+    },
+    {
+        "user_query": "Urgent : besoin d'un développeur front-end et d'un UX/UI designer pour refonte site web e-commerce, compétences en React et Adobe XD.",
+        "simplified_query": "développeur front-end UX/UI designer refonte site web e-commerce React Adobe XD",
+        "sectors": "e-commerce",
+        "companies": "Non renseigné",
+        "roles": [
+            {
+                "role": "développeur front-end",
+                "nb_profiles": 1,
+                "years": 2,
+                "diplomas_certifications": "Non renseigné",
+                "soft_skills": ["créativité", "attention aux détails"],
+                "technical_skills": ["React", "CSS"],
+                "missions": "refonte site web"
+            },
+            {
+                "role": "UX/UI designer",
+                "nb_profiles": 1,
+                "years": 3,
+                "diplomas_certifications": "Diplôme en design graphique",
+                "soft_skills": ["empathie utilisateur", "communication visuelle"],
+                "technical_skills": ["Adobe XD", "Sketch"],
+                "missions": "amélioration expérience utilisateur"
+            }
+        ]
+    },
+    {
+        "user_query": "Pour un projet éducatif innovant, nous cherchons un spécialiste en technologies éducatives et un coordinateur de projet avec expérience en curriculum.",
+        "simplified_query": "projet éducatif, spécialiste technologies éducatives, coordinateur projet",
+        "sectors": "éducation",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "spécialiste en technologies éducatives",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Master en technologies éducatives",
+            "soft_skills": ["innovation pédagogique", "adaptabilité"],
+            "technical_skills": ["développement de programmes en ligne", "outils d'apprentissage numérique"],
+            "missions": "développement de programmes éducatifs"
+          },
+          {
+            "role": "coordinateur de projet éducatif",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Master en administration de l'éducation",
+            "soft_skills": ["gestion de projet", "communication"],
+            "technical_skills": ["élaboration de curriculum", "gestion d'équipe"],
+            "missions": "coordination de projets éducatifs"
+          }
+        ]
+      },
+      {
+        "user_query": "Recherche un analyste de données santé et un développeur d'apps mobiles pour projet innovant dans le bien-être.",
+        "simplified_query": "analyste données santé, développeur apps mobiles, projet bien-être",
+        "sectors": "santé, bien-être",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "analyste de données santé",
+            "nb_profiles": 1,
+            "years": 4,
+            "diplomas_certifications": "Master en bio-informatique",
+            "soft_skills": ["analyse critique", "attention aux détails"],
+            "technical_skills": ["traitement de données santé", "Python"],
+            "missions": "analyse de données pour bien-être"
+          },
+          {
+            "role": "développeur d'applications mobiles",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Licence en développement logiciel",
+            "soft_skills": ["créativité", "travail en équipe"],
+            "technical_skills": ["Flutter", "React Native"],
+            "missions": "développement d'applications bien-être"
+          }
+        ]
+      },
+      {
+        "user_query": "Pour un projet d'innovation en ingénierie, besoin d'un ingénieur mécanique et d'un ingénieur matériaux avec expertise en durabilité.",
+        "simplified_query": "projet ingénierie, ingénieur mécanique, ingénieur matériaux, durabilité",
+        "sectors": "ingénierie, durabilité",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "ingénieur mécanique",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Ingénieur mécanique",
+            "soft_skills": ["résolution de problèmes", "innovation"],
+            "technical_skills": ["conception mécanique", "CAO"],
+            "missions": "conception produits innovants"
+          },
+          {
+            "role": "ingénieur matériaux",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Ingénieur matériaux",
+            "soft_skills": ["recherche et développement", "collaboration"],
+            "technical_skills": ["innovation matériaux", "tests de matériaux"],
+            "missions": "innovation en durabilité des matériaux"
+          }
+        ]
+      },
+      {
+        "user_query": "Recherche data scientist pour optimisation des campagnes de marketing digital via analyse prédictive et un analyste de données expert en SEO.",
+        "simplified_query": "data scientist marketing digital analyse prédictive, analyste données SEO",
+        "sectors": "marketing digital",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "data scientist",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Master en science des données",
+            "soft_skills": ["pensée analytique", "créativité"],
+            "technical_skills": ["analyse prédictive", "Python", "R"],
+            "missions": "optimisation campagnes marketing"
+          },
+          {
+            "role": "analyste de données",
+            "nb_profiles": 1,
+            "years": 2,
+            "diplomas_certifications": "Non renseigné",
+            "soft_skills": ["attention aux détails", "capacité d'analyse"],
+            "technical_skills": ["SEO", "Google Analytics"],
+            "missions": "analyse performance web"
+          }
+        ]
+      },
+      {
+        "user_query": "Besoin d'un ingénieur logiciel pour développement firmware IoT et spécialiste sécurité réseaux pour projet domotique.",
+        "simplified_query": "ingénieur logiciel firmware IoT, spécialiste sécurité réseaux domotique",
+        "sectors": "IoT, domotique",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "ingénieur logiciel",
+            "nb_profiles": 1,
+            "years": 4,
+            "diplomas_certifications": "Ingénieur en informatique",
+            "soft_skills": ["résolution de problèmes", "innovation"],
+            "technical_skills": ["développement firmware", "C++", "Python"],
+            "missions": "développement solutions IoT"
+          },
+          {
+            "role": "spécialiste sécurité des réseaux",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Certification en sécurité (CISSP, CEH)",
+            "soft_skills": ["analyse de risque", "vigilance"],
+            "technical_skills": ["sécurité IoT", "cryptographie"],
+            "missions": "sécurisation projet domotique"
+          }
+        ]
+      },
+      {
+        "user_query": "Startup fintech cherche expert machine learning pour algorithme trading et ingénieur data pour traitement grande distribution données.",
+        "simplified_query": "expert machine learning trading, ingénieur data grande distribution données fintech",
+        "sectors": "fintech",
+        "companies": "Non renseigné",
+        "roles": [
+          {
+            "role": "expert en machine learning",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "PhD en intelligence artificielle",
+            "soft_skills": ["capacité d'innovation", "travail en équipe"],
+            "technical_skills": ["Python", "TensorFlow", "algorithmes de trading"],
+            "missions": "développement algorithmes trading automatique"
+          },
+          {
+            "role": "ingénieur data",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Master en science des données",
+            "soft_skills": ["gestion de projet", "communication"],
+            "technical_skills": ["traitement de données", "Hadoop", "Spark"],
+            "missions": "amélioration processus décision financière"
+          }
+        ]
+      },
+      {
+        "user_query": "Recherche développeur Python expérimenté pour Google, projet sur l'analyse de données massives.",
+        "simplified_query": "développeur Python Google analyse données massives",
+        "sectors": "technologie, données",
+        "companies": "Google",
+        "roles": [
+          {
+            "role": "développeur Python",
+            "nb_profiles": 1,
+            "years": 3,
+            "diplomas_certifications": "Master en informatique",
+            "soft_skills": ["capacité d'analyse", "travail en équipe"],
+            "technical_skills": ["Python", "big data", "machine learning"],
+            "missions": "analyse de données massives"
+          }
+        ]
+      },
+      {
+        "user_query": "Amazon cherche expert en sécurité informatique pour renforcer la protection des données clients.",
+        "simplified_query": "expert sécurité informatique Amazon protection données clients",
+        "sectors": "e-commerce, sécurité",
+        "companies": "Amazon",
+        "roles": [
+          {
+            "role": "expert en sécurité informatique",
+            "nb_profiles": 1,
+            "years": 5,
+            "diplomas_certifications": "Certification en sécurité (CISSP)",
+            "soft_skills": ["vigilance", "capacité d'innovation"],
+            "technical_skills": ["sécurité des réseaux", "cryptographie", "protection des données"],
+            "missions": "renforcer la protection des données clients"
+          }
+        ]
+      },
+      {
+        "user_query": "Pour projet de développement durable, Tesla recherche ingénieur en énergie renouvelable avec expertise en stockage d'énergie.",
+        "simplified_query": "ingénieur énergie renouvelable Tesla stockage énergie",
+        "sectors": "automobile, énergies renouvelables",
+        "companies": "Tesla",
+        "roles": [
+          {
+            "role": "ingénieur en énergie renouvelable",
+            "nb_profiles": 1,
+            "years": 4,
+            "diplomas_certifications": "Ingénieur énergie renouvelable",
+            "soft_skills": ["créativité", "résolution de problèmes"],
+            "technical_skills": ["stockage d'énergie", "systèmes photovoltaïques"],
+            "missions": "développement de solutions de stockage d'énergie"
+          }
+        ]
+      },
+      {
+        "user_query": "Recherche pour Microsoft 10 développeurs Java pour une nouvelle initiative de cloud computing, et 5 experts en sécurité pour audit interne.",
+        "simplified_query": "10 développeurs Java Microsoft cloud computing, 5 experts sécurité audit interne",
+        "sectors": "technologie, cloud computing, sécurité",
+        "companies": "Microsoft",
+        "roles": [
+          {
+            "role": "développeur Java",
+            "nb_profiles": 10,
+            "years": 2,
+            "diplomas_certifications": "Non renseigné",
+            "soft_skills": ["travail en équipe", "adaptabilité"],
+            "technical_skills": ["Java", "cloud AWS/Azure"],
+            "missions": "développement cloud computing"
+          },
+          {
+            "role": "expert en sécurité",
+            "nb_profiles": 5,
+            "years": 3,
+            "diplomas_certifications": "Certification en sécurité (CISSP, CEH)",
+            "soft_skills": ["analyse de risque", "attention aux détails"],
+            "technical_skills": ["sécurité des réseaux", "cryptographie"],
+            "missions": "audit de sécurité interne"
+          }
+        ]
+      },
+      {
+        "user_query": "Airbnb cherche 8 UI/UX designers pour refonte de l'application et 4 data analysts pour optimisation de l'algorithme de suggestion.",
+        "simplified_query": "8 UI/UX designers Airbnb refonte application, 4 data analysts optimisation algorithme",
+        "sectors": "technologie, hébergement",
+        "companies": "Airbnb",
+        "roles": [
+          {
+            "role": "UI/UX designer",
+            "nb_profiles": 8,
+            "years": 3,
+            "diplomas_certifications": "Diplôme en design graphique",
+            "soft_skills": ["créativité", "empathie utilisateur"],
+            "technical_skills": ["Sketch", "Adobe XD", "Figma"],
+            "missions": "refonte de l'application"
+          },
+          {
+            "role": "data analyst",
+            "nb_profiles": 4,
+            "years": 2,
+            "diplomas_certifications": "Master en science des données",
+            "soft_skills": ["capacité d'analyse", "pensée critique"],
+            "technical_skills": ["SQL", "Python", "machine learning"],
+            "missions": "optimisation algorithme de suggestion"
+          }
+        ]
+    },
+    {
+      "user_query": "Besoin d'un expert en cybersécurité avec expérience en technologie blockchain pour une entreprise de services financiers à partir de janvier 2025.",
+      "simplified_query": "cybersécurité blockchain services financiers",
+      "sectors": "finance, technologie",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Expert en cybersécurité",
+          "nb_profiles": 1,
+          "years": 5,
+          "diplomas_certifications": "Certifié en systèmes de sécurité de l'information (CISSP), Hacker éthique certifié (CEH)",
+          "soft_skills": ["pensée analytique", "souci du détail"],
+          "technical_skills": ["technologie blockchain", "meilleures pratiques en cybersécurité"],
+          "missions": "améliorer la sécurité des données et intégrer des solutions blockchain"
+        }
+      ]
+    },
+    {
+      "user_query": "Recherche d'une équipe pour développer une solution de santé pilotée par l'IA, axée sur l'analytique prédictive pour le soin des patients, à commencer en juin 2025.",
+      "simplified_query": "IA santé analytique prédictive",
+      "sectors": "santé, technologie",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Développeur IA",
+          "nb_profiles": 2,
+          "years": 3,
+          "diplomas_certifications": "Master en informatique ou domaine connexe",
+          "soft_skills": ["travail d'équipe", "résolution de problèmes"],
+          "technical_skills": ["IA", "analytique prédictive", "Python"],
+          "missions": "développement de solutions de santé pilotées par l'IA"
+        },
+        {
+          "role": "Analyste de données de santé",
+          "nb_profiles": 1,
+          "years": 2,
+          "diplomas_certifications": "Master en science des données ou domaine connexe",
+          "soft_skills": ["pensée critique", "communication"],
+          "technical_skills": ["analyse de données", "analytique de santé"],
+          "missions": "analyse de données pour l'amélioration des soins aux patients"
+        }
+      ]
+    },
+    {
+      "user_query": "Recherche d'un chef de projet avec expérience dans les projets d'énergie renouvelable pour une compagnie d'utilité publique, projet débutant en septembre 2025.",
+      "simplified_query": "énergie renouvelable chef de projet utilité",
+      "sectors": "énergie, utilités",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Chef de projet",
+          "nb_profiles": 1,
+          "years": 7,
+          "diplomas_certifications": "Certification PMP, Master en gestion d'ingénierie",
+          "soft_skills": ["leadership", "planification stratégique"],
+          "technical_skills": ["gestion de projet", "technologies d'énergie renouvelable"],
+          "missions": "superviser des projets d'énergie renouvelable"
+        }
+      ]
+    },
+    {
+      "user_query": "Recherche un architecte logiciel expérimenté dans les systèmes embarqués pour un projet d'innovation en avril 2025.",
+      "simplified_query": "architecte logiciel systèmes embarqués",
+      "sectors": "technologie, ingénierie logicielle",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Architecte logiciel",
+          "nb_profiles": 1,
+          "years": 8,
+          "diplomas_certifications": "Master en ingénierie logicielle",
+          "soft_skills": ["vision stratégique", "communication technique"],
+          "technical_skills": ["conception de systèmes embarqués", "C/C++", "assemblage"],
+          "missions": "concevoir l'architecture pour un projet d'innovation en systèmes embarqués"
+        }
+      ]
+    },
+    {
+      "user_query": "Besoin d'un chef de projet expérimenté en développement durable pour superviser une initiative écologique, démarrage en juillet 2025.",
+      "simplified_query": "chef de projet développement durable écologie",
+      "sectors": "environnement, développement durable",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Chef de projet en développement durable",
+          "nb_profiles": 1,
+          "years": 5,
+          "diplomas_certifications": "Master en développement durable",
+          "soft_skills": ["leadership", "sensibilisation environnementale"],
+          "technical_skills": ["gestion de projet écologique", "normes environnementales"],
+          "missions": "superviser une initiative écologique pour promouvoir le développement durable"
+        }
+      ]
+    },
+    {
+      "user_query": "Cherche un expert en intelligence artificielle pour optimiser les algorithmes de trading, projet prévu pour octobre 2025.",
+      "simplified_query": "expert IA optimisation algorithmes trading",
+      "sectors": "finance, technologie",
+      "companies": "Non spécifié",
+      "roles": [
+        {
+          "role": "Expert en intelligence artificielle",
+          "nb_profiles": 1,
+          "years": 7,
+          "diplomas_certifications": "PhD en intelligence artificielle",
+          "soft_skills": ["analyse quantitative", "gestion de projet"],
+          "technical_skills": ["machine learning", "optimisation d'algorithmes", "Python"],
+          "missions": "optimiser les algorithmes de trading à l'aide de l'intelligence artificielle"
+        }
+      ]
+    }
+  ]
+}
+  

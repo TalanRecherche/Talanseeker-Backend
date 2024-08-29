@@ -13,7 +13,7 @@ modules/Recettes/tests.txt
 .env
 env
 venv/
-data/
+#data/
 .idea/
 .env.local
 .env_backup
