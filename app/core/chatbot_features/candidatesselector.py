@@ -50,8 +50,11 @@ class CandidatesSelector:
             )
             # number of identical profiles needed in this subquery
 
+
             try:
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
+                 # Print the value of nb_profiles for debugging
+
             except Exception as e:
                 nb_profiles = 6
                 logging.exception(e)

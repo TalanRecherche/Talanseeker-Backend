@@ -9,7 +9,6 @@ import pytz
 from fastapi import Response
 from pyinstrument import Profiler
 from sqlalchemy import Column, Integer, Text, create_engine
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -18,7 +17,7 @@ from app.core.chatbot_features.chatbot import Chatbot
 from app.core.chatbot_features.conversationmanager import ConversationManager
 from app.core.chatbot_features.intentionfinder import IntentionFinder
 from app.core.chatbot_features.pg_fetcher import PGfetcher
-from app.core.chatbot_features.queryrouter import QueryRouter
+from app.core.chatbot_features.queryrouter import QueryRouter, QuerySynthesizer
 from app.core.models.pg_pandasmodels import CollabPg, CvPg, ProfilePg
 from app.core.models.query_pandasmodels import QueryStruct
 from app.models import con_string
@@ -127,6 +126,7 @@ Base = declarative_base()
 # Définissez le modèle ajusté
 class Conversation(Base):
     __tablename__ = "conversations"
+
     conversation_id = Column(Integer, primary_key=True, index=True)
     requests_content = Column(Text, nullable=False)
 
@@ -140,52 +140,62 @@ def get_requests_content(conversation_id : int) -> str:
         if conversation:
             return conversation.requests_content  # Retourner le contenu dans chatbot_business
         else:
+
             return None  # Retourner None si la conversation n'existe pas
-    except SQLAlchemyError :
+    except (ValueError, TypeError, KeyError) as e:
+        logging.error(f"An error occurred: {e}")
         return None
     finally:
         session.close()
 
 
+
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
     chatbot_response = ChatbotResponse()
-    logging.warning(chatbot_request)
     # Récupération des valeurs de conversation_id et user_query
     conversation_id = chatbot_request.conversation_id
     user_query = chatbot_request.user_query
-
     # Récupérer le contenu précédent de la conversation
     previous_content = get_requests_content(conversation_id)
+
     if previous_content is not None:
         # Nettoyer previous_content
         cleaned_previous_content = previous_content.replace("{", "").replace(
             "}", "").replace('"', "").strip()
-        # Fusionner le contenu précédent avec le nouveau user_query
-        merged_text = cleaned_previous_content + " " + user_query
 
+        # Synthétiser la requête avec le contexte
+        synthesizer = QuerySynthesizer()
+        synthesized_query  = synthesizer.get_synthesis_response(
+            cleaned_previous_content, user_query)
+
+        # Vérifier la pertinence de la requête synthétisée
+        router = QueryRouter()
+        query_valid_bool = router.get_router_response(synthesized_query)
+
+        if query_valid_bool:
+            chatbot_request.user_query = synthesized_query
+            chatbot_business_helper(chatbot_request, chatbot_response)
+        else:
+            chatbot_response.question_valid = False
+            chatbot_response.chatbot_response = (
+                "Je suis désolé, mais cette question ne "
+                "concerne pas le staffing de consultants."
+            )
     else:
-        merged_text = user_query
-    # Vérifier si la requête est pertinente et liée au staffing
-    router = QueryRouter()
-    query_valid_bool = router.get_router_response(merged_text)
-    if query_valid_bool:
-        # Fonction principale
-        chatbot_business_helper(chatbot_request, chatbot_response)
-    else:
-        chatbot_response.question_valid = False
-        chatbot_response.chatbot_response = (
-            "Je suis désolé, mais cette question ne "
-            "concerne pas le staffing de consultants."
-        )
+        # Vérifier directement la pertinence de la nouvelle requête
+        router = QueryRouter()
+        query_valid_bool = router.get_router_response(user_query)
+
+        if query_valid_bool:
+            chatbot_business_helper(chatbot_request, chatbot_response)
+        else:
+            chatbot_response.question_valid = False
+            chatbot_response.chatbot_response = (
+                "Je suis désolé, mais cette question ne "
+                "concerne pas le staffing de consultants."
+            )
 
     return chatbot_response
-
-
-
-
-
-
-
 
 
 def chatbot_business_helper(
