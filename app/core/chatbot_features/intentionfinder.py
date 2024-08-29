@@ -64,7 +64,7 @@ class IntentionFinder:
         )
 
     def guess_intention(
-        self, user_query: str, _format: str = "dataframe"
+        self, user_query: str, synthesized: bool = False, _format: str = "dataframe"
     ) -> pd.DataFrame:
         """Process the user query and extract the intention of the user.
 
@@ -79,8 +79,14 @@ class IntentionFinder:
             format: Result of the process in the format specified. Defaults to
             'dataframe'.
         """
+        if synthesized :
+
+            user_query = synthesized
+        else :
+            user_query = user_query
         # prepare prompt for roleseeker llm
         role_seeker_template = self._prepare_roleseeker_template(user_query)
+
         # calling roleseeker llm with prompt
         output_roleseeker_llm = self.llm(role_seeker_template)
         # process output of roleseeker llm
