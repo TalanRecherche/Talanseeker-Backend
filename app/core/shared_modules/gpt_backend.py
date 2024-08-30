@@ -74,11 +74,13 @@ class GptBackend(AbcLlmBackend):
         """Send payload via API .create() function
         Response is dictionary containing responses and prompt
         """
+        logging.info("payload :", payload)
         response_string = ""
         max_retries = 5
         for retry in range(max_retries):
             try:
                 # get response
+                logging.info("self.engine :", self.engine)
                 if self.engine == "gpt-35-turbo-instruct":
                     prompt = "\n".join([item["content"] for item in payload])
                     response = openai.Completion.create(
@@ -94,6 +96,7 @@ class GptBackend(AbcLlmBackend):
                     )
                     response_string = response["choices"][0]["text"]
                 else:
+                    logging.info("here")
                     response = openai.ChatCompletion.create(
                         engine=self.engine,
                         messages=payload,
@@ -105,6 +108,7 @@ class GptBackend(AbcLlmBackend):
                         stop=self.stop,
                         request_timeout=self.request_timeout,
                     )
+                    logging.info("response :", response)
                     response_string = response["choices"][0]["message"]["content"]
 
                 # exit the retry loop if the llm response is not None

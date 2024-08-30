@@ -2,6 +2,8 @@
 Features:
 """
 
+import logging
+
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
@@ -52,10 +54,13 @@ class QueryRouter:
             True : the query is a staffing question
             False: the query is outside the scope of staffing
         """
+        logging.info("début router")
         query_string = self._make_query_string(user_query)
         system_string = self._make_system_string()
         # get first response from the chatbot
+        logging.info("llm")
         llm_response = self._get_llm_response(query_string, system_string)
+        logging.info("llm response", llm_response)
         # check if the llm response is satisfactory
         llm_good_response = self._check_llm_response(llm_response)
 

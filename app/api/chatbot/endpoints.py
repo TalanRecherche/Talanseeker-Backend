@@ -1,4 +1,6 @@
 
+import logging
+
 from fastapi import APIRouter, Depends, Response
 
 from app.schema.chatbot import ChatbotRequest, ChatbotResponse
@@ -10,6 +12,7 @@ router = APIRouter(prefix="/chatbot")
 
 @router.get("")
 def chatbot(chatbot_request: ChatbotRequest = Depends()) -> ChatbotResponse:
+    logging.info(chatbot_request.dict())
     return chatbot_business(chatbot_request)
 
 

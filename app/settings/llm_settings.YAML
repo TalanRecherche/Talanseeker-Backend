@@ -3,7 +3,7 @@ EMBEDDER:
   ENCODING_NAME: cl100k_base
 
 CHATBOT_CANDIDATE_QUALITIES:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous êtes un assistant d'aide au staffing.
     Vous répondez de manière courte.
@@ -265,7 +265,7 @@ CHATBOTUI:
 
 
 QUERY_ROUTER:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous êtes un agent qui filtre les requêtes utilisateurs.
     Vous devez déterminer si une requête correspond à un besoin de constituer une équipe de conseil.
@@ -479,7 +479,7 @@ QUERY_SYNTHESIS:
 
 
 ETL:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     You will be given parts of Resumes/CV.
     You will extract information from the context resume cv prodived.
