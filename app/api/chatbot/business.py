@@ -151,13 +151,14 @@ def get_requests_content(conversation_id : int) -> str:
 
 
 def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
+    logging.info("init")
     chatbot_response = ChatbotResponse()
     # Récupération des valeurs de conversation_id et user_query
     conversation_id = chatbot_request.conversation_id
     user_query = chatbot_request.user_query
     # Récupérer le contenu précédent de la conversation
     previous_content = get_requests_content(conversation_id)
-
+    logging.info("previous_content :", previous_content)
     if previous_content is not None:
         # Nettoyer previous_content
         cleaned_previous_content = previous_content.replace("{", "").replace(
@@ -171,6 +172,7 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
         # Vérifier la pertinence de la requête synthétisée
         router = QueryRouter()
         query_valid_bool = router.get_router_response(synthesized_query)
+        logging.info("query_valid_bool :", query_valid_bool)
 
         if query_valid_bool:
             chatbot_request.user_query = synthesized_query
@@ -183,8 +185,10 @@ def chatbot_business(chatbot_request: ChatbotRequest) -> ChatbotResponse:
             )
     else:
         # Vérifier directement la pertinence de la nouvelle requête
+        logging.info("router")
         router = QueryRouter()
         query_valid_bool = router.get_router_response(user_query)
+        logging.info("post router")
 
         if query_valid_bool:
             chatbot_business_helper(chatbot_request, chatbot_response)
