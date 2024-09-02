@@ -8,7 +8,7 @@ import pandas as pd
 import pytz
 from fastapi import Response
 from pyinstrument import Profiler
-from sqlalchemy import Column, Integer, Text, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -123,33 +123,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Déclarez la base
 Base = declarative_base()
 
-# Définissez le modèle ajusté
-#class Conversation(Base):
-#    __tablename__ = "conversations"
-#
-#    conversation_id = Column(Integer, primary_key=True, index=True)
-#    requests_content = Column(Text, nullable=False)
-
 # Fonction pour récupérer et imprimer le contenu de la requête
 def get_requests_content(conversation_id : int) -> str:
     if ConversationManager.check_conversation_exist(conversation_id):
         return ConversationManager.get_conversation(conversation_id)[2]
     else :
         return None
-    #try:
-        # Requête pour récupérer le requests_content du conversation_id donné
-    #    conversation = session.query(Conversation).filter_by(
-    #        conversation_id=conversation_id).first()
-    #    if conversation:
-    #        return conversation.requests_content  # Retourner le contenu dans chatbot_business
-    #    else:
-#
-#            return None  # Retourner None si la conversation n'existe pas
-#    except (ValueError, TypeError, KeyError) as e:
-#        logging.error(f"An error occurred: {e}")
-#        return None
-#    finally:
-#        session.close()
 
 
 
