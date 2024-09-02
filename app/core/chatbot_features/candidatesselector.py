@@ -80,7 +80,7 @@ class CandidatesSelector:
             df_collabs,
             df_cvs,
             df_profiles_scored,
-            already_selected_profiles_ids,
+            selected_ids,
         )
         return (
             df_candidates_chunks,
