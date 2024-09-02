@@ -91,6 +91,14 @@ class PGfetcher:
             if cities != ["Non renseigné"]:
                 cities = [elem.lower() for elem in cities]
                 query += f"and lower(c.{CollabPg.city}) in {tuple(cities)} "
+            bus = filters.bu
+            if bus != ["Non renseigné"]:
+                bus = [elem.lower() for elem in bus]
+                query += f"and lower(c.{CollabPg.bu}) in {tuple(bus)} "
+            bu_secondaries = filters.bu_secondary
+            if bu_secondaries != ["Non renseigné"]:
+                bu_secondaries = [elem.lower() for elem in bu_secondaries]
+                query += f"and lower(c.{CollabPg.bu_secondary}) in {tuple(bu_secondaries)} "
             grades = filters.grade
             if grades and len(grades) > 0:
                 query += f"and c.{CollabPg.grade} in {tuple(grades)} "
