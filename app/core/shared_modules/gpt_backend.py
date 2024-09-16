@@ -1,8 +1,3 @@
-"""Created on Tue Aug 22 14:59:58 2023
-
-@author: agarc
-
-"""
 import logging
 import time
 
@@ -17,7 +12,8 @@ class GptBackend(AbcLlmBackend):
     def __init__(
         self, llm_model: str = "gpt-35-turbo", max_token_in_response: int = 300
     ) -> None:
-        if llm_model not in ["gpt-4", "gpt-4-32k", "gpt-35-turbo"]:
+        if llm_model not in ["gpt-4", "gpt-4-32k", "gpt-35-turbo",
+                              "gpt-35-turbo-instruct" , "gpt-4o-mini"]:
             error_message = "Invalid GPT llm_model"
             logging.error(error_message)
             raise ValueError(error_message)
@@ -78,23 +74,43 @@ class GptBackend(AbcLlmBackend):
         """Send payload via API .create() function
         Response is dictionary containing responses and prompt
         """
+        logging.info("payload :", payload)
         response_string = ""
         max_retries = 5
         for retry in range(max_retries):
             try:
                 # get response
-                response = openai.ChatCompletion.create(
-                    engine=self.engine,
-                    messages=payload,
-                    temperature=self.temperature,
-                    max_tokens=self.max_tokens,
-                    top_p=self.top_p,
-                    frequency_penalty=self.frequency_penalty,
-                    presence_penalty=self.presence_penalty,
-                    stop=self.stop,
-                    request_timeout=self.request_timeout,
-                )
-                response_string = response["choices"][0]["message"]["content"]
+                logging.info("self.engine :", self.engine)
+                if self.engine == "gpt-35-turbo-instruct":
+                    prompt = "\n".join([item["content"] for item in payload])
+                    response = openai.Completion.create(
+                        engine=self.engine,
+                        prompt=prompt,
+                        temperature=self.temperature,
+                        max_tokens=self.max_tokens,
+                        top_p=self.top_p,
+                        frequency_penalty=self.frequency_penalty,
+                        presence_penalty=self.presence_penalty,
+                        stop=self.stop,
+                        request_timeout=self.request_timeout,
+                    )
+                    response_string = response["choices"][0]["text"]
+                else:
+                    logging.info("here")
+                    response = openai.ChatCompletion.create(
+                        engine=self.engine,
+                        messages=payload,
+                        temperature=self.temperature,
+                        max_tokens=self.max_tokens,
+                        top_p=self.top_p,
+                        frequency_penalty=self.frequency_penalty,
+                        presence_penalty=self.presence_penalty,
+                        stop=self.stop,
+                        request_timeout=self.request_timeout,
+                    )
+                    logging.info("response :", response)
+                    response_string = response["choices"][0]["message"]["content"]
+
                 # exit the retry loop if the llm response is not None
                 if response_string:
                     break
@@ -102,8 +118,12 @@ class GptBackend(AbcLlmBackend):
                 time.sleep(0.1)
 
             except Exception as error:
-                logging.exception(error, retry)
+                logging.error(f"Error on attempt {retry + 1}/{max_retries}: {error}")
+                logging.error(f"Payload: {payload}")
+                logging.exception(error)
                 # wait before retrying
-                time.sleep(0.1*retry)
+                time.sleep(0.1 * retry)
 
+        if not response_string:
+            logging.error("API call failed after reaching the maximum number of retries.")
         return response_string

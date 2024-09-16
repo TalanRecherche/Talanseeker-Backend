@@ -242,6 +242,28 @@ class QueryRouterSettings:
         return os.environ.get("QUERY_ROUTER__LLM_MODEL")
 
 
+class QuerySynthesisSettings:
+    """Query synthesis settings."""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def query_synthesis_query_template(self) -> str:
+        """Query template for the query synthesis."""
+        return os.environ.get("QUERY_SYNTHESIS__QUERY_TEMPLATE")
+
+    @property
+    def query_synthesis_system_template(self) -> str:
+        """System template for the query synthesis."""
+        return os.environ.get("QUERY_SYNTHESIS__SYSTEM_TEMPLATE")
+
+    @property
+    def query_synthesis_llm_model(self) -> str:
+        """LLM model for the query synthesis."""
+        return os.environ.get("QUERY_SYNTHESIS__LLM_MODEL")
+
+
 # =============================================================================
 # Every call to properties, config and settings start from here
 # =============================================================================
@@ -307,6 +329,11 @@ class Settings:
     def query_router_settings(self) -> QueryRouterSettings:
         """Query router settings."""
         return QueryRouterSettings()
+
+    @property
+    def query_synthesis_settings(self) -> QuerySynthesisSettings:
+        """Query synthesis settings."""
+        return QuerySynthesisSettings()
 
     @property
     def db_settings(self) -> DbSettings:

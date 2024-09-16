@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Created on Thu Sep 13 10:04:44 2023
 
 @author: agarc
@@ -34,9 +35,10 @@ class CandidatesSelector:
         df_cvs: pd.DataFrame,
         df_profiles: pd.DataFrame,
         df_query: pd.DataFrame,
+        already_selected_profiles_ids: list,
     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] | list[None]:
         # Prepare list of selected ids
-        already_selected_profiles_ids = []
+        already_selected_profiles_ids = already_selected_profiles_ids
         # loop through sub queries from GuessIntention
         for _, row in df_query.iterrows():
             query_row = pd.DataFrame(row).T
@@ -48,8 +50,11 @@ class CandidatesSelector:
             )
             # number of identical profiles needed in this subquery
 
+
             try:
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
+                 # Print the value of nb_profiles for debugging
+
             except Exception as e:
                 nb_profiles = 6
                 logging.exception(e)
@@ -63,6 +68,7 @@ class CandidatesSelector:
             # place new profiles in already_selected_profiles_ids
             already_selected_profiles_ids.extend(selected_ids)
 
+
         # push  already_selected_profiles_ids candidates to output tables
         (
             df_candidates_chunks,
@@ -74,7 +80,7 @@ class CandidatesSelector:
             df_collabs,
             df_cvs,
             df_profiles_scored,
-            already_selected_profiles_ids,
+            selected_ids,
         )
         return (
             df_candidates_chunks,

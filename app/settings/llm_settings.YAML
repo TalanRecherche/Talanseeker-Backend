@@ -3,12 +3,12 @@ EMBEDDER:
   ENCODING_NAME: cl100k_base
 
 CHATBOT_CANDIDATE_QUALITIES:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous êtes un assistant d'aide au staffing.
     Vous répondez de manière courte.
   QUERY_TEMPLATE: |
-    Expliquez en une phrase pourquoi {name} {surname} et un bon candidat pour la requête suivante {query_user}.
+    Expliquez en une phrase pourquoi {name} {surname} est un bon candidat pour la requête suivante {query_user}.
     Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {name} {surname} :
     {list_top_chunks}
 
@@ -47,7 +47,7 @@ CHATBOT:
 
 
 INTENTIONFINDER:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-35-turbo-instruct
   GUESS_INTENTION_SYSTEM_TEMPLATE: |
     '''
     Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et un role et tu dois extraire les informations nécessaires dans un format attendu.
@@ -242,7 +242,7 @@ INTENTIONFINDER:
 
 
 CHATBOTUI:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-35-turbo-instruct
   UI_LOGO_TALAN: ui/assets/logos/Talan_couleur_small.png
   UI_LOGO_CHATBOT: ui/assets/logos/Logo_TalanSeeker.png
   SYSTEM_TEMPLATE: |
@@ -265,7 +265,7 @@ CHATBOTUI:
 
 
 QUERY_ROUTER:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous êtes un agent qui filtre les requêtes utilisateurs.
     Vous devez déterminer si une requête correspond à un besoin de constituer une équipe de conseil.
@@ -367,9 +367,119 @@ QUERY_ROUTER:
     Utilisateur: {query}
     agent:
 
+QUERY_SYNTHESIS:
+  LLM_MODEL: gpt-35-turbo-instruct
+  SYSTEM_TEMPLATE: |
+    Vous êtes un assistant intelligent qui aide à reformuler les requêtes des utilisateurs pour les rendre claires et concises.
+
+    **Objectif :**
+    Vous devez reformuler uniquement la nouvelle requête de l'utilisateur en l'intégrant dans son contexte, tout en la rendant autonome et compréhensible comme une première requête.
+
+    **Instructions :**
+
+    **Compréhension et Contexte :**
+
+    - Comprenez la nouvelle requête de l'utilisateur en utilisant les demandes précédentes pour le contexte.
+    - **Ne pas combiner ou additionner les requêtes précédentes à la nouvelle requête.**
+    - Reformulez uniquement la nouvelle requête, indépendamment des requêtes précédentes.
+
+    **Reformulation :**
+
+    - Reformulez la nouvelle requête de l'utilisateur de manière à ce qu'elle soit claire et autonome.
+    - Créez une phrase avec un verbe et les détails pertinents déduits du contexte.
+    - **Ne reformulez que la dernière requête en tant que demande isolée.** Ne tenez pas compte des quantités globales mentionnées dans les requêtes précédentes.
+
+    **Exclusions :**
+
+    - Ne mentionnez pas les requêtes précédentes dans la nouvelle requête.
+    - **Évitez absolument les termes comme "un autre", "un de plus", "deuxième", ou toute expression qui induit un ajout ou une somme des requêtes précédentes.**
+    - Reformulez pour qu'il n'y ait aucune référence à des ajouts ou à des références implicites aux requêtes antérieures.
+
+    **Exemples :**
+
+    - Si l'utilisateur demande "je veux 3 data analyst" puis "un de plus", la nouvelle requête doit rester "je veux 1 data analyst" sans combiner avec les requêtes précédentes.
+    - Si l'utilisateur dit "je veux un consultant" puis "un autre", reformulez simplement en "je veux un consultant".
+
+    **Règles de Reformulation :**
+
+    1. **Nouvelle Requête :** Reformulez uniquement la nouvelle requête.
+    2. **Phrase Complète :** Assurez-vous que la nouvelle requête est une phrase complète avec un verbe et des détails contextuels.
+    3. **Autonome :** La nouvelle requête doit être autonome et compréhensible comme une première requête, sans combiner ou additionner les informations des requêtes antérieures.
+
+    **Attention :** Le modèle doit comprendre que chaque nouvelle requête est traitée indépendamment des précédentes. Ne réalisez pas d'addition entre les demandes.
+
+    
+  QUERY_TEMPLATE: |
+    Reformulez la requête utilisateur suivante en tenant compte du contexte précédent :
+
+    Contexte : je veux 3 data analyst
+    Nouvelle Requête: un de plus
+    Reformulation : je veux 1 data analyst
+
+    Contexte : je veux 2 data analyst
+    Nouvelle Requête: 1 de plus
+    Reformulation : je veux 1 data analyst
+
+    Contexte : je veux un consultant python
+    Contexte : je veux 3 consultants java
+    Nouvelle Requête: et 1 consultant data
+    Reformulation : je veux 1 consultant data
+
+    Contexte : je veux 1 consultant Product owner
+    Nouvelle Requête: plus technique
+    Reformulation : je veux 1 consultant Product owner technique
+
+    Contexte : je veux 5 consultants product owner
+    Contexte : je veux 2 consultants méthode agile
+    Nouvelle Requête: 1 de plus
+    Reformulation : je veux 1 consultant agile
+
+    Contexte : je veux 1 consultant product owner
+    Contexte : je veux 2 consultants ERP
+    Nouvelle Requête: un autre
+    Reformulation : je veux 1 consultant ERP
+
+    Contexte : Je veux 2 consultants en cybersécurité
+    Contexte : Ajoute 3 consultants en analyse de données
+    Contexte : 1 expert en blockchain en plus
+    Contexte : Besoin de 2 consultants en IA
+    Nouvelle Requête : Et un consultant en cloud computing
+    Reformulation : Je veux 1 consultant en data science
+
+    Contexte : Je cherche 3 développeurs Java
+    Contexte : Et 2 développeurs Python
+    Contexte : Plus 1 expert en DevOps
+    Contexte : Besoin de 3 consultants en gestion des risques
+    Nouvelle Requête : Un autre développeur Java
+    Reformulation : Je veux 1 développeur Java
+
+    Contexte : Je cherche 3 développeurs Java
+    Contexte : Et 2 développeurs Python
+    Contexte : Plus 1 expert en DevOps
+    Contexte : Besoin de 3 consultants en gestion des risques
+    Nouvelle Requête : Un autre développeur Java
+    Reformulation : Je veux 1 développeur Java
+
+    Contexte : Nous avons besoin de 2 consultants SAP   
+    Contexte : Ajoute 1 consultant CRM
+    Contexte : Plus 2 experts en BI
+    Nouvelle Requête : Et un autre consultant SAP
+    Reformulation : Je veux 1 consultant SAP
+
+    Contexte : Requis 2 consultants en stratégie d’entreprise
+    Contexte : Et 3 consultants en finance
+    Contexte : Plus 1 expert en mergers & acquisitions
+    Nouvelle Requête : Un autre consultant en stratégie
+    Reformulation : Je veux 1 consultant en stratégie d’entreprise
+
+    Contexte: {context}
+    Nouvelle Requête: {query}
+
+    Reformultation: 
+
 
 ETL:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     You will be given parts of Resumes/CV.
     You will extract information from the context resume cv prodived.
