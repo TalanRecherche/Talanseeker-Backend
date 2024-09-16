@@ -10,7 +10,7 @@ A partir de CVs fournis dans un format bureautique, l'outil établit un profil s
 
 ## Installation
 
-Pour installer et configurer votre environnement local pour le développement avec Talan Seeker, suivez les étapes ci-dessous :
+Pour installer/configurer votre environnement local pour le développement avec Talan Seeker, suivez les étapes ci-dessous :
 
 ### Prérequis
 
