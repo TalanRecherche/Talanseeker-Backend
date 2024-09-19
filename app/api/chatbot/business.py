@@ -224,6 +224,7 @@ def chatbot_business_helper(
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder()
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
+    print(guess_intention_query)
     logging.info(f"IntentionFinder: {time.time() - t}")
 
     # Fetch data from postgres
