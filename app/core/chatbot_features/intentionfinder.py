@@ -190,7 +190,6 @@ class IntentionFinder:
             uquery_template = uquery_template.replace("DATETOSUBSITUTE", curent_date_str)
             # calling llm with prompt
             output_llm = self.llm(uquery_template)
-            print(output_llm)
             # process output of llm
             ans = self._process_answer(output_llm, user_query, role, n_role)
             # prepare output and return it
@@ -294,6 +293,7 @@ class IntentionFinder:
             'simplified_query': 'mission développement banque',
             'soft_skills': ['Non renseigné'],
             'start_mission': 'Non renseigné',
+            'grade": 'Non renseigné',
             'region' : 'Non renseigné',
             'city' : 'Non renseigné',
             'technical_skills': ['développement'],
@@ -323,6 +323,9 @@ class IntentionFinder:
         else:
             ans[QueryStruct.start_date] = self._wrap_txt_with_list(
                 self._extract_text_from_llmoutput(output_llm, "Date de début"),
+            )
+        ans[QueryStruct.grade] = self._wrap_txt_with_list(
+                self._extract_text_from_llmoutput(output_llm, "Grade"),
             )
         ans[QueryStruct.region] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Pays"),
