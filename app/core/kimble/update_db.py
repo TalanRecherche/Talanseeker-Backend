@@ -177,7 +177,7 @@ class KimbleUpdater:
         """Convert date from dd/mm/yyyy to yyyy-mm-dd"""
         if str(date_) == "nan":
             return date_
-        return "-".join(reversed(date_.split("/")))
+        return "-".join(reversed(str(date_).split("/")))
 
     @staticmethod
     def update_db(file: bytes) -> None:

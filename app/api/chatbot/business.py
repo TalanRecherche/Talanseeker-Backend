@@ -231,6 +231,8 @@ def chatbot_business_helper(
         chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0]
     if chatbot_request.region is None :
         chatbot_request.region = guess_intention_query[QueryStruct.region].min()
+    if chatbot_request.grade is None :
+        chatbot_request.grade = guess_intention_query[QueryStruct.grade].min()
     if chatbot_request.city is None :
         chatbot_request.city = guess_intention_query[QueryStruct.city].min()
     if chatbot_request.bu is None :

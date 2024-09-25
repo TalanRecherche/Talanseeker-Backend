@@ -293,6 +293,7 @@ class IntentionFinder:
             'simplified_query': 'mission développement banque',
             'soft_skills': ['Non renseigné'],
             'start_mission': 'Non renseigné',
+            'grade": 'Non renseigné',
             'region' : 'Non renseigné',
             'city' : 'Non renseigné',
             'technical_skills': ['développement'],
@@ -314,9 +315,18 @@ class IntentionFinder:
         """
         ans = {}
         ans[QueryStruct.user_query] = self._wrap_txt_with_list(uquery)
-        ans[QueryStruct.start_date] = self._wrap_txt_with_list(
-            self._extract_text_from_llmoutput(output_llm, "Date de début"),
-        )
+        if self._extract_text_from_llmoutput(output_llm, "Date de début") == "Non renseigné":
+            tz_paris = pytz.timezone("Europe/Paris")
+            paris_date_time = datetime.datetime.now(tz=tz_paris)
+            curent_date_str = paris_date_time.strftime("%Y-%m-%d")
+            ans[QueryStruct.start_date] = self._wrap_txt_with_list(curent_date_str)
+        else:
+            ans[QueryStruct.start_date] = self._wrap_txt_with_list(
+                self._extract_text_from_llmoutput(output_llm, "Date de début"),
+            )
+        ans[QueryStruct.grade] = self._wrap_txt_with_list(
+                self._extract_text_from_llmoutput(output_llm, "Grade"),
+            )
         ans[QueryStruct.region] = self._wrap_txt_with_list(
             self._extract_text_from_llmoutput(output_llm, "Pays"),
         )
