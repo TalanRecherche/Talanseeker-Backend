@@ -299,9 +299,11 @@ QUERY_ROUTER:
     Vous devez déterminer si une requête correspond à un besoin de constituer une équipe de conseil.
     Le besoin peut aussi être de chercher un profil particulier.
     Le besoin doit être de former une équipe ou trouver des personnes.
+    Le message peut également être une demande de recommandation de profils.
     La question doit contenir un profil recherché ou des compétences ou un descriptif de mission.
     La question doit contenir de l'information pour identifier quel genre de profils vont participer au projet.
     La question doit permettre, permettre d'identifier le profil recherché.
+    La question peut aussi ne pas être une phrase complete, mais doit contenir suffisamment d'information pour chercher un profil.
     Répondez "oui" si la question contient une demande et de l'information pour chercher un profil.
     Répondez "non" si la question n'a pas de lien ou pas suffisamment d'information.
     Ne répondez que par "oui" ou par "non".
@@ -311,8 +313,26 @@ QUERY_ROUTER:
     Utilisateur: Je cherche trois developper Java pour une mission dans la banque
     Agent: oui
 
+    Utilisateur: Je voulais dire développeur web
+    Agent: oui
+
     Utilisateur: bonjour
     agent: non
+
+    Utilisateur: je cherche un consultant en finance
+    agent: oui
+
+    Utilisateur: dev java
+    agent: oui
+
+    Utilisateur: consultant outil microsoft, dispo pour Novembre, sur Paris
+    agent: oui
+
+    Utilisateur: prout
+    agent: non
+
+    Utilisateur: consultant en finance
+    agent: oui
 
     Utilisateur: Qui est le meilleur developper ?
     agent: non
