@@ -57,6 +57,7 @@ INTENTIONFINDER:
     Pour "Pays", utilise uk pour le royaume-uni et usa pour les état-unis. Dans les 2 cas, je veux les noms français sans majuscule. 
     Il est également très important de repérer une date de début de mission si une temporalité est indiquée. Le format de la date est YYYY-MM-DD.
     Si une temporalité relative est renseigné (semaine prochaine, mois prochain, pour le 26 etc...) calcul la bonne date sachant que l'on est le DATETOSUBSITUTE
+    Tu dois également voir si un grade est précisé. Si tu un nombre d'année d'expériences, tu dois proposer un grade correspondant. Un grade renseigné est une valeur comprise STRICTEMENT dans ("Alternance/Stage/Apprentice/Intern", "Junior", "Confirmé / Professional", "Senior", "Expert", "Manager", "Manager Senior / Senior Manager", "Directeur / Director", "Directeur Senior / Senior Director").
     Tu dois aussi voir si une BU principale (Buisness Unit) ainsi qu'une BU secondaire sont renseignés.
     La valeur de BU principale est comprise STRICTEMENT dans ("Non renseigné", "Spain", "Corporate North America", "Switzerland", "COE Corporate", "Data & Technologies (FR)", "COE Hungary", "Luxembourg", "Belgium", "Corporate Groupe", "GEMSERV", "COE Tunisia", "Data & Technologies (NAM)", "Consulting et Innovation", "Cloud and Applications services", "Insum", "UK", "Poland", "Digital Impulse", "Singapore", "Supply Chain", "COE Mauritius", "Régions", "Corporate EMEA-APAC", "Licences", "Corporate France")
     La valeur de BU secondaire est comprise STRICTEMENT dans ("Non renseigné", "SPA_OUT", "SCH_SC Morocco", "DTN_USA", "DIM_Structure", "DTF_Cyber", "POL_Warsaw", "MUS_Cloud & Application Services", "BEL_EUROPEAN Union & Co", "REG_Sud-Est", "REG_Structure", "CNA_Marketing Communication", "C&I_Structure", "MUS_Data & Technologies", "TUN_Emerging", "SPA_General", "CAS_Structure", "CGR_DATA", "DIM_SMAC", "C&I_Régions", "C&I_People & Culture", "CGR_Sales", "SCH_SC France", "DTF_Structure", "DTF_Tech for Business", "MUS_Structure", "CGR_DSI", "CFR_SGE France", "CGR_Finance & Admin", "LIC_Sales", "HUN_Cloud & Application Services", "SIN_Singapore", "C&I_Finance", "LUX_CLOUD & Applications Services", "CGR_General Management", "CFR_DSI France", "INS_Insum Canada", "CNA_Sales", "CFR_Commerce France", "C&I_IDEA", "DTF_Tech for Data", "DTN_Canada", "LUX_Cyber Security & Infrastructure", "REG_Hauts-de-France", "CNA_Finance & Admin", "CFR_Juridique France", "SWI_OPERATIONS", "CGR_Marketing Communication", "CEA_Finance & Admin", "C&I_Fonctions RH", "CFR_DAF France", "CFR_Delivery France", "C&I_Energie & Industrie", "LUX_EUROPEAN Union & Co", "LUX_Consulting", "C&I_Transport & Mobilités", "CNA_Management", "TUN_CCSR", "TUN_Digital", "REG_Nouvelle-Aquitaine", "CEA_Sales", "CGR_HROD", "UKG_TUK", "CFR_Marketing Communication France", "GEM_Low Carbon France", "BEL_CLOUD & Applications Services", "REG_Ouest", "CEA_Recruitment", "C&I_Assurance & Santé", "CGR_Delivery", "DTF_Tech Digital et plateform", "CFR_HRD France", "CGR_Juridique", "CEC_Corporate Tunisia", "UKG_BDP", "REG_Occitanie", "CNA_Delivery", "CEA_HRD", "CFR_Recrutement France", "TUN_Data & ERP", "CAS_Digital Experience", "CEA_Management", "SWI_DATA", "CFR_Achats France", "CNA_Recruitment", "CFR_Direction Générale France", "CAS_Digital Core", "INS_Insum Peru", "LUX_DATA & TECHNOLOGIES", "CEA_Digital & Marketing", "INS_Insum USA", "CFR_Recherche & Innovation France")
@@ -64,6 +65,7 @@ INTENTIONFINDER:
     Format attendu :
     simplified_mission : -
     Date de début : -
+    Grade : -
     Pays : -
     Ville : -
     BU principale : -
@@ -95,6 +97,7 @@ INTENTIONFINDER:
     Exemple de réponse attendue :
     simplified_mission : mission data science banque
     Date de début : Non renseigné
+    Grade : Non renseigné
     Pays : france
     Ville : paris
     BU principale : Data & Technologies (FR)
@@ -108,6 +111,27 @@ INTENTIONFINDER:
     Compagnie : Non renseigné
     --
     Exemple de mission :
+    Je cherche un consultant confirmé qui a fait du python et du flask
+    Exemple de role :
+    développeur web
+
+    Exemple de réponse attendue :
+    simplified_mission : mission python flask
+    Date de début : Non renseigné
+    Grade : Confirmé / Professional
+    Pays : Non renseigné
+    Ville : Non renseigné
+    BU principale : Non renseigné
+    BU secondaire : Non renseigné
+    Années d'expérience : Non renseigné
+    Certifications : Non renseigné
+    Compétences non techniques : Non renseigné
+    Compétences techniques : python,flask
+    Objectif mission : python flask web
+    Secteurs d'activité : Non renseigné
+    Compagnie : Non renseigné
+    --
+    Exemple de mission :
     J'ai besoin d'une personne avec 5 ans d'expérience pour faire du developpement java chez l'Oréal pour Décembre 2029 de digital impulse.
     Exemple de role :
     développeur
@@ -115,6 +139,7 @@ INTENTIONFINDER:
     Exemple de réponse attendue :
     simplified_mission : 5 ans d'expérience développement java L'Oréal
     Date de début : 2029-12-01
+    Grade : Confirmé / Professional
     Pays : Non renseigné
     Ville : Non renseigné
     BU principale : Digital Impulse
@@ -135,6 +160,7 @@ INTENTIONFINDER:
     Exemple de réponse attendue :
     simplified_mission : transformation digitale BTP manager ingénieur
     Date de début : 2025-07-05
+    Grade : Non renseigné
     Pays : uk
     Ville : Non renseigné
     BU principale : Corporate France
@@ -148,13 +174,14 @@ INTENTIONFINDER:
     Compagnie : Non renseigné
     --
     Exemple de mission :
-    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024 et se trouver à Bruxelles et venir de Tech for Data.
+    Qui sont les meilleurs pour une mission de data analytics chez un grand assureur ? Les profils doivent être disponibles six mois à partir de Mars 2024, être des seniors et se trouver à Bruxelles et venir de Tech for Data.
     Exemple de role :
     data analyst
 
     Exemple de réponse attendue :
     simplified_mission : mission data analytics assureur
     Date de début : 2024-03-01
+    Grade : Senior
     Pays : belgique
     Ville : bruxelles
     BU principale : Data & Technologies (FR)
@@ -175,6 +202,7 @@ INTENTIONFINDER:
     Exemple de réponse attendue :
     simplified_mission : mission data analytics assureur
     Date de début : 2024-03-01
+    Grade : Non renseigné
     Pays : belgique
     Ville : bruxelles
     BU principale : Non renseigné
@@ -271,9 +299,11 @@ QUERY_ROUTER:
     Vous devez déterminer si une requête correspond à un besoin de constituer une équipe de conseil.
     Le besoin peut aussi être de chercher un profil particulier.
     Le besoin doit être de former une équipe ou trouver des personnes.
+    Le message peut également être une demande de recommandation de profils.
     La question doit contenir un profil recherché ou des compétences ou un descriptif de mission.
     La question doit contenir de l'information pour identifier quel genre de profils vont participer au projet.
     La question doit permettre, permettre d'identifier le profil recherché.
+    La question peut aussi ne pas être une phrase complete, mais doit contenir suffisamment d'information pour chercher un profil.
     Répondez "oui" si la question contient une demande et de l'information pour chercher un profil.
     Répondez "non" si la question n'a pas de lien ou pas suffisamment d'information.
     Ne répondez que par "oui" ou par "non".
@@ -283,8 +313,26 @@ QUERY_ROUTER:
     Utilisateur: Je cherche trois developper Java pour une mission dans la banque
     Agent: oui
 
+    Utilisateur: Je voulais dire développeur web
+    Agent: oui
+
     Utilisateur: bonjour
     agent: non
+
+    Utilisateur: je cherche un consultant en finance
+    agent: oui
+
+    Utilisateur: dev java
+    agent: oui
+
+    Utilisateur: consultant outil microsoft, dispo pour Novembre, sur Paris
+    agent: oui
+
+    Utilisateur: prout
+    agent: non
+
+    Utilisateur: consultant en finance
+    agent: oui
 
     Utilisateur: Qui est le meilleur developper ?
     agent: non

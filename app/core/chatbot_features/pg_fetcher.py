@@ -100,9 +100,9 @@ class PGfetcher:
                 bu_secondaries = [elem.lower() for elem in bu_secondaries]
                 query += f"and lower(c.{CollabPg.bu_secondary}) in {tuple(bu_secondaries)} "
             grades = filters.grade
-            if grades and len(grades) > 0:
-                query += f"and c.{CollabPg.grade} in {tuple(grades)} "
-
+            if grades != ["Non renseigné"]:
+                grades = [elem.lower() for elem in grades]
+                query += f"and lower(c.{CollabPg.grade}) in {tuple(grades)} "
             date = filters.assigned_until
             availability_score = filters.availability_score
 

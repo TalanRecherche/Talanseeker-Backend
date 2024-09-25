@@ -16,6 +16,7 @@ class QueryStruct(ParentPandasModel):
     user_query = "user_query"  # appears on all rows
     start_date = "start_date"
     region = "region"
+    grade = "grade"
     city = "city"
     bu = "bu"
     bu_secondary = "bu_secondary"

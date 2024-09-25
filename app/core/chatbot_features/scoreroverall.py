@@ -68,8 +68,8 @@ class ScorerOverall:
     # =============================================================================
 
     def _average_scores(self, df_profiles_scored: pd.DataFrame) -> pd.Series:
-        beta = 0.5
-        alpha = 1 - beta
+        alpha = 0.5
+        beta = 1 - alpha
 
         average_col = (
                 alpha * df_profiles_scored[ScoredProfilesDF.keywords_score_normalized]
