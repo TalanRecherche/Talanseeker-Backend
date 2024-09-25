@@ -2,6 +2,8 @@
 Features:
 """
 
+import logging
+
 from app.core.shared_modules.gpt_backend import GptBackend
 from app.core.shared_modules.stringhandler import StringHandler
 from app.settings import settings
@@ -52,10 +54,13 @@ class QueryRouter:
             True : the query is a staffing question
             False: the query is outside the scope of staffing
         """
+        logging.info("début router")
         query_string = self._make_query_string(user_query)
         system_string = self._make_system_string()
         # get first response from the chatbot
+        logging.info("llm")
         llm_response = self._get_llm_response(query_string, system_string)
+        logging.info("llm response", llm_response)
         # check if the llm response is satisfactory
         llm_good_response = self._check_llm_response(llm_response)
 
@@ -93,15 +98,11 @@ class QueryRouter:
             return True
 
         # check if the answer is close to yes
-        if StringHandler.check_similarity_string(
+        return StringHandler.check_similarity_string(
             llm_response,
             self.target_strings[0],
             self.threshold,
-        ):
-            return True
-
-        # return False is llm_response is far from yes
-        return False
+        )
 
     def _check_llm_response(self, llm_response: str) -> bool:
         # normalize string
@@ -159,3 +160,49 @@ class QueryRouter:
     def _get_llm_response(self, query_string: str, system_string: str) -> str:
         response = self.llm_backend.send_receive_message(query_string, system_string)
         return response
+
+
+
+class QuerySynthesizer:
+    def __init__(self) -> None:
+        # engine
+        self.engine = settings.query_synthesis_settings.query_synthesis_llm_model
+        # get query and system template
+        self.system_string = settings.query_synthesis_settings.query_synthesis_system_template
+        self.query_string = settings.query_synthesis_settings.query_synthesis_query_template
+
+        # set tokens memory of the engine
+        max_tokens_in_response = 100
+        max_tokens = 2000
+        buffer_tokens = 500
+        # rest of available tokens
+        self.max_token_context = max_tokens - max_tokens_in_response - buffer_tokens
+        # initialize the number of token in context
+        self.current_nb_tokens = 0
+
+        # initialize the backend llm
+        self.llm_backend = GptBackend(
+            self.engine, max_token_in_response=max_tokens_in_response
+        )
+
+        # encoding name is used to compute number of tokens in context
+        self.encoding_name = settings.embedder_settings.encoding_name
+
+    def get_synthesis_response(self, context: str, user_query: str) -> str:
+        """This function sends the context and user_query to the llm for synthesis.
+        Returns the synthesized query.
+        """
+        query_string = self._make_query_string(context, user_query)
+        system_string = self._make_system_string()
+        # get the response from the chatbot
+        llm_response = self._get_llm_response(query_string, system_string)
+        return llm_response
+
+    def _make_system_string(self) -> str:
+        return self.system_string
+
+    def _make_query_string(self, context: str, user_query: str) -> str:
+        return self.query_string.format(context=context, query=user_query)
+
+    def _get_llm_response(self, query_string: str, system_string: str) -> str:
+        return self.llm_backend.send_receive_message(query_string, system_string)
