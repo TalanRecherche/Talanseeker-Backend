@@ -224,7 +224,6 @@ def chatbot_business_helper(
     # Structure Query using IntentionFinderSettings
     intention_finder = IntentionFinder()
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
-    print(guess_intention_query)
     logging.info(f"IntentionFinder: {time.time() - t}")
 
     # Fetch data from postgres
@@ -241,7 +240,6 @@ def chatbot_business_helper(
     if chatbot_request.bu_secondary is None :
         chatbot_request.bu_secondary = guess_intention_query[QueryStruct.bu_secondary].min()
     fetcher = PGfetcher()
-    print(chatbot_request)
     df_chunks, df_collabs, df_cvs, df_profiles = fetcher.fetch_all(
         filters=chatbot_request,
     )
