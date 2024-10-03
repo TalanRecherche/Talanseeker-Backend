@@ -268,7 +268,7 @@ class Chatbot:
             candidate_cvs = candidates_cvs.loc[candidates_cvs["collab_id"]==collab_id]
             #pour l'instant on prend le dernier cv du candidate ajouté à la base de données
             cv_id = candidate_cvs.iloc[-1,0]
-            cv_weblink = f"https://talanseeker-prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
+            cv_weblink = f"https://talanseeker--prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
         except Exception as e:
             cv_weblink = "aucun CV n'a été trouvé dans la base de données de Talan Seeker"
             logging.exception("get CV candidate %s", e)

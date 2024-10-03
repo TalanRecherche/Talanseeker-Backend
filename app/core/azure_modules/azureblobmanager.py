@@ -15,7 +15,6 @@ class AzureBlobManager:
 
     def connect_to_bloc(self) -> None:
         faster_retry = ExponentialRetry(initial_backoff=1, increment_base=1)
-
         blob_service_client = BlobServiceClient.from_connection_string(
             settings.azure_storage.connection_string, retry_policy=faster_retry
         )
