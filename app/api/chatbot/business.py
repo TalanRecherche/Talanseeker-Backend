@@ -44,15 +44,15 @@ def df_to_candidate_schema(
     return candidates
 
 def _create_cv_link(cv_id:str) -> str:
-    """create the url request to download a cv for a given cv_id on talanseeker-PROD
+    """create the url request to download a cv for a given cv_id on talanseeker--PROD
 
     Args:
         cv_id (str): cv_id from sql tables CVS
 
     Returns:
-        str: url to download the CV from talanseeker-PROD
+        str: url to download the CV from talanseeker--PROD
     """
-    return f"https://talanseeker-prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
+    return f"https://talanseeker--prod.azurewebsites.net/api/v1/cv_manager/download?cv_id={cv_id}&type=file"
 
 def row_to_candidate_schema(
         row: pd.Series,
