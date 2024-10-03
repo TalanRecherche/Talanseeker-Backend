@@ -70,6 +70,7 @@ class CVManagerBusiness:
                 media_type="application/octet-stream",
             )
         if request.type == "link":
+            logging.warning("Download link generated")
             return Response(
                 status_code=200,
                 content=str(
