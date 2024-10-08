@@ -6,20 +6,17 @@ CHATBOT_CANDIDATE_QUALITIES:
   LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous êtes un assistant d'aide au staffing.
-    Vous répondez de manière courte.
+    Vous répondez de manière courte, méliorative sans remise en doute du profil.
   QUERY_TEMPLATE: |
     Expliquez en une phrase pourquoi {name} {surname} est un bon candidat pour la requête suivante {query_user}.
     Pour expliquer votre réponse vous pouvez vous appuyer sur les passages du cv de {name} {surname} :
     {list_top_chunks}
 
 CHATBOT:
-  LLM_MODEL: gpt-35-turbo
+  LLM_MODEL: gpt-4o-mini
   SYSTEM_TEMPLATE: |
     Vous allez former une équipe pour une mission.
-    Vous recevez les profils des personnes qui peuvent constituer l'équipe.
-    Expliquez en detail pourquoi ces personnes sont des bons membres de l'équipe.
-    Décrivez leurs profils et expliquez pourquoi ils peuvent faire partie du projet.
-    N'oubliez personne parmi les profils suggérés.
+    Fais un texte qui donne le nom des profils et qui rappel la requête traitée.
   CONTEXT_TEMPLATE: |
     -----------------------
     Employé numéro: {index}
@@ -36,11 +33,7 @@ CHATBOT:
     Répondez à la question suivante avec les informations données:
     Question : {query}
     -------------------------------
-    Expliquez votre réponse en détail en utilisant les profils décrits.
-    Expliquez comment et pourquoi les profils peuvent participer positivement à la mission.
-    Expliquez en quoi les profils sont complémentaires.
-    Désignez les personnes par leurs nom et prénoms.
-    N'oubliez aucun des profils suggérés.
+    Nomme chacun des profils.
 
     Profils suggérés:
     {profiles_names}
