@@ -323,7 +323,6 @@ def chatbot_business_helper(
 
     chatbot_response.chatbot_response = response
 
-
 def profile_chatbot_business(chatbot_request: ChatbotRequest) -> Response:
     with tempfile.TemporaryDirectory() as dir_:
         file_name = Path(dir_) / "profiling.html"

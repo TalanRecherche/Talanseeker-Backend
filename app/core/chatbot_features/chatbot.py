@@ -132,9 +132,9 @@ class Chatbot:
         #3 prompt to send to the LLM
         prompt = f"""
         Ton rôle est d'aider au staffing de consultants pour Talan.
-        Répond en 2 phrases.
-        Tu dois juger si la liste des profils suivants
-        sont pertinent pour la requête suivante {query_user}.
+        Répond succintement, pas de conclusions.
+        Fais une phrase nommant les profils trouvés pour la
+        requête : {query_user}.
         voici les profils :
         """
         prompt = prompt + summary_str #on ajoute les résumés des n_candidates

@@ -13,7 +13,8 @@ class GptBackend(AbcLlmBackend):
         self, llm_model: str = "gpt-35-turbo", max_token_in_response: int = 300
     ) -> None:
         if llm_model not in ["gpt-4", "gpt-4-32k", "gpt-35-turbo",
-                              "gpt-35-turbo-instruct" , "gpt-4o-mini"]:
+                              "gpt-35-turbo-instruct" , "gpt-4o-mini",
+                              "gpt-4o"]:
             error_message = "Invalid GPT llm_model"
             logging.error(error_message)
             raise ValueError(error_message)
