@@ -192,6 +192,8 @@ class QuerySynthesizer:
         """This function sends the context and user_query to the llm for synthesis.
         Returns the synthesized query.
         """
+        context = "Contexte : " + context
+        context = context.replace(",", "\nContexte : ")
         query_string = self._make_query_string(context, user_query)
         system_string = self._make_system_string()
         # get the response from the chatbot

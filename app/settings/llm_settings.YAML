@@ -306,6 +306,9 @@ QUERY_ROUTER:
     Utilisateur: Je cherche trois developper Java pour une mission dans la banque
     Agent: oui
 
+    Utilisateur: Je cherche un manager
+    Agent: oui
+
     Utilisateur: Je voulais dire développeur web
     Agent: oui
 
@@ -409,7 +412,7 @@ QUERY_ROUTER:
     agent:
 
 QUERY_SYNTHESIS:
-  LLM_MODEL: gpt-35-turbo-instruct
+  LLM_MODEL: gpt-4o
   SYSTEM_TEMPLATE: |
     Vous êtes un assistant intelligent qui aide à reformuler les requêtes des utilisateurs pour les rendre claires et concises.
 
@@ -429,17 +432,20 @@ QUERY_SYNTHESIS:
     - Reformulez la nouvelle requête de l'utilisateur de manière à ce qu'elle soit claire et autonome.
     - Créez une phrase avec un verbe et les détails pertinents déduits du contexte.
     - **Ne reformulez que la dernière requête en tant que demande isolée.** Ne tenez pas compte des quantités globales mentionnées dans les requêtes précédentes.
+    - La reformulation ne doit contenir qu'un seul type de profil.
 
     **Exclusions :**
 
     - Ne mentionnez pas les requêtes précédentes dans la nouvelle requête.
     - **Évitez absolument les termes comme "un autre", "un de plus", "deuxième", ou toute expression qui induit un ajout ou une somme des requêtes précédentes.**
     - Reformulez pour qu'il n'y ait aucune référence à des ajouts ou à des références implicites aux requêtes antérieures.
+    - La reformulation ne doit pas avoir plus d'un type de profil.
 
     **Exemples :**
 
     - Si l'utilisateur demande "je veux 3 data analyst" puis "un de plus", la nouvelle requête doit rester "je veux 1 data analyst" sans combiner avec les requêtes précédentes.
     - Si l'utilisateur dit "je veux un consultant" puis "un autre", reformulez simplement en "je veux un consultant".
+    - Si l'utilisateur demande "je veux un consultant" puis "et un développeur", reformulez en "je veux un développeur".
 
     **Règles de Reformulation :**
 
@@ -456,6 +462,24 @@ QUERY_SYNTHESIS:
     Contexte : je veux 3 data analyst
     Nouvelle Requête: un de plus
     Reformulation : je veux 1 data analyst
+
+    Contexte : je veux manager
+    Nouvelle Requête: donne-moi des devs python maintenant
+    Reformulation : je veux des developpeurs python
+
+    Contexte : je veux manager
+    Contexte : chef d'équipe senior
+    Nouvelle Requête: devs java junior
+    Reformulation : developpeurs java junior
+
+    Contexte : je veux manager
+    Contexte : chef d'équipe senior
+    Nouvelle Requête: devs java junior
+    Reformulation : developpeurs java junior
+
+    Contexte : je veux un consultant en finance
+    Contexte : et des devs c++ confirmés
+    Reformulation : developpeurs c++ confirmés
 
     Contexte : je veux 2 data analyst
     Nouvelle Requête: 1 de plus
@@ -513,10 +537,17 @@ QUERY_SYNTHESIS:
     Nouvelle Requête : Un autre consultant en stratégie
     Reformulation : Je veux 1 consultant en stratégie d’entreprise
 
-    Contexte: {context}
-    Nouvelle Requête: {query}
+    Contexte : je cherche un manager
+    Nouvelle Requête: et des devs c#
+    Reformulation : je veux des developpeurs C#
 
-    Reformultation: 
+    Contexte : je cherche un chef de projet
+    Nouvelle Requête: et des devs web aussi
+    Reformulation : je veux des developpeurs web
+
+    {context}
+    Nouvelle Requête : {query}
+    Reformultation : 
 
 
 ETL:
