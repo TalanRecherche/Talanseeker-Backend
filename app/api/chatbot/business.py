@@ -226,6 +226,12 @@ def chatbot_business_helper(
     guess_intention_query = intention_finder.guess_intention(chatbot_request.user_query)
     logging.info(f"IntentionFinder: {time.time() - t}")
 
+    if (len(guess_intention_query) > 1): #Plus d'un seul type de profils dans la requête
+        txt = "Pour une efficacité optimale, veuillez ne demander un seul type de profil à la fois."
+        chatbot_response.chatbot_response = txt
+        chatbot_response.question_valid = False
+        return
+
     # Fetch data from postgres
     if chatbot_request.assigned_until is None :
         chatbot_request.assigned_until = guess_intention_query[QueryStruct.start_date].min()[0]
