@@ -211,9 +211,9 @@ INTENTIONFINDER:
     '''
     Tu es un recruteur travaillant dans un cabinet de consulting. Tu vas recevoir une mission et tu dois extraire deux informations dans un format attendu.
     Les informations à extraire sont les roles des consultants que la mission nécessite, ainsi que leur nombre. Si plusieurs chiffres sont présents tu dois retourner le plus grand.
-    Si la mission nécessite une équipe et qu'un manager n'est pas précisé.
+    Si la mission nécessite une équipe , tu ne dois renvoyer que le profil type de l'équipe. Par exemple, si la mission nécessite 3 développeurs et 1 chef de projet, tu dois renvoyer développeur.
     Si la mission de consulting ne précise pas un role de manière explicite mais qu'il peut se deviner par rapport à ce qui est demandé de faire, alors fais le. Par exemple: je cherche une mission pour développer l'api de la banque, tu peux deviner le role de `développeur`
-    Pour chaque role, tu dois ajouter un nombre, écris Non renseigné si ce n'est pas précisé.
+    Pour chaque role, tu dois ajouter un nombre, écris Non renseigné si ce n'est pas précisé. Essaye vraiment de deviner le role le plus probable et de ne retourner qu'un seul profil le plus souvent possible.
     Format attendu :
     roles : -,-
     nombre : -,-
