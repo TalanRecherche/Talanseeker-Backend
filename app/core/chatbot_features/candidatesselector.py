@@ -53,7 +53,7 @@ class CandidatesSelector:
 
             try:
                 if query_row[QueryStruct.nb_profiles][0] == "" or query_row[
-                    QueryStruct.nb_profiles][0] == "Non renseigné":
+                    QueryStruct.nb_profiles][0][:3] == "Non":
                     nb_profiles = 6
                 nb_profiles = int(query_row[QueryStruct.nb_profiles][0][0])
                 if nb_profiles < 3:
